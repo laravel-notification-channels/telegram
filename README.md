@@ -1,4 +1,14 @@
-# Telegram Notification Channel for Laravel 5.3 [WIP]
+# Telegram Notifications Channel for Laravel 5.3 [WIP]
+
+[![Author](https://img.shields.io/badge/author-%40iRazaSyed-blue.svg?style=flat-square)][author]
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/laravel-notification-channels/telegram.svg?style=flat-square)](https://packagist.org/packages/laravel-notification-channels/telegram)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
+[![Build Status](https://img.shields.io/travis/laravel-notification-channels/telegram/master.svg?style=flat-square)](https://travis-ci.org/laravel-notification-channels/telegram)
+[![Total Downloads](https://img.shields.io/packagist/dt/laravel-notification-channels/telegram.svg?style=flat-square)](https://packagist.org/packages/laravel-notification-channels/telegram)
+
+[![Author](https://cloud.githubusercontent.com/assets/1915268/17607505/cea5dd0e-6043-11e6-98f5-af8f5f878d31.png)][author]
+
+## Overview
 
 > This package makes it easy to send Telegram notification using [Telegram Bot API](https://core.telegram.org/bots) with Laravel 5.3.
 >
@@ -102,9 +112,11 @@ If you discover any security related issues, please email syed@lukonet.com inste
 
 ## Credits
 
-- [Syed Irfaq R.](https://github.com/irazasyed)
+- [Syed Irfaq R.][author]
 - [All Contributors](../../contributors)
 
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+[author]: https://github.com/irazasyed
