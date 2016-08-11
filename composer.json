@@ -1,11 +1,12 @@
 {
     "name": "laravel-notification-channels/telegram",
-    "description": "Telegram Notification Driver for Laravel",
+    "description": "Telegram Notifications Driver",
     "keywords": [
       "telegram notification",
       "laravel",
       "telegram",
-      "notification"
+      "notification",
+      "telegram notifications channel"
     ],
     "homepage": "https://github.com/laravel-notification-channels/telegram",
     "license": "MIT",
