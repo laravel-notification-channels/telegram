@@ -4,6 +4,7 @@ namespace NotificationChannels\Telegram;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\ClientInterface as HttpClientInterface;
+use GuzzleHttp\Exception\ClientException;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 
 class Telegram
@@ -37,7 +38,7 @@ class Telegram
     public function __construct($token = null, HttpClientInterface $httpClient = null)
     {
         $this->token = $token ?: getenv(static::BOT_TOKEN_ENV_NAME);
-        $this->http = $httpClient ?: new HttpClient();
+        $this->http = $httpClient;
     }
 
     /**
@@ -62,6 +63,16 @@ class Telegram
     public function getToken()
     {
         return $this->token;
+    }
+
+    /**
+     * Get HttpClient.
+     *
+     * @return HttpClient
+     */
+    protected function httpClient()
+    {
+        return $this->http ?: $this->http = new HttpClient();
     }
 
     /**
@@ -128,13 +139,20 @@ class Telegram
      * @param $endpoint
      * @param $params
      *
-     * @return mixed
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws CouldNotSendNotification
      */
     protected function sendRequest($endpoint, $params)
     {
-        return $this->http->post($this->prepareApiUrl($endpoint), [
-            'form_params' => $params,
-        ]);
+        try {
+            return $this->httpClient()->post($this->prepareApiUrl($endpoint), [
+                'form_params' => $params,
+            ]);
+        } catch (ClientException $e) {
+            throw CouldNotSendNotification::telegramRespondedWithAnError($e);
+        } catch (\Exception $e) {
+            throw CouldNotSendNotification::serviceCommunicationError();
+        }
     }
 
     /**

@@ -6,7 +6,6 @@ use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Telegram\Events\MessageWasSent;
 use NotificationChannels\Telegram\Events\SendingMessage;
 use Illuminate\Notifications\Notification;
-use GuzzleHttp\Exception\ClientException;
 
 class Channel
 {
@@ -30,9 +29,6 @@ class Channel
      *
      * @param mixed        $notifiable
      * @param Notification $notification
-     *
-     * @return bool|void
-     * @throws CouldNotSendNotification
      */
     public function send($notifiable, Notification $notification)
     {
@@ -59,21 +55,9 @@ class Channel
             'reply_markup' => $this->getReplyMarkup($message),
         ], $message->options);
 
-        try {
-            $response = $this->telegram->sendMessage($params);
+        $this->telegram->sendMessage($params);
 
-            if ($response->getStatusCode() === 200) {
-                event(new MessageWasSent($notifiable, $notification));
-
-                return true;
-            }
-
-            $responseBody = $response->getBody();
-        } catch (ClientException $e) {
-            $responseBody = $e->getResponse()->getBody();
-        }
-
-        throw CouldNotSendNotification::telegramRespondedWithAnError($responseBody);
+        event(new MessageWasSent($notifiable, $notification));
     }
 
     /**
