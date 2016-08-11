@@ -1,12 +1,12 @@
 # Telegram Notification Channel for Laravel 5.3 [WIP]
 
-> This package makes it easy to send Telegram notification using Telegram Bot API with Laravel 5.3.
+> This package makes it easy to send Telegram notification using [Telegram Bot API](https://core.telegram.org/bots) with Laravel 5.3.
 >
 > For advance usage, Please consider using [telegram-bot-sdk](https://github.com/irazasyed/telegram-bot-sdk) instead.
 
 ## Prerequisites
 
-- Telegram Bot API Token - Talk to [@BotFather](https://core.telegram.org/bots#botfather) and generate one.
+- Telegram Bot API Token - Talk to [@BotFather](https://core.telegram.org/bots#6-botfather) and generate one.
 
 ## Installation
 
@@ -16,13 +16,13 @@ Before you can send notifications via Telegram, you must install the Guzzle HTTP
 composer require guzzlehttp/guzzle
 ```
 
-You can install the package via composer:
+Then, You can install the package via composer:
 
 ``` bash
 composer require laravel-notification-channels/telegram
 ```
 
-You must install the service provider:
+You must now, install the service provider:
 ```php
 // config/app.php
 'providers' => [
@@ -30,7 +30,7 @@ You must install the service provider:
 ];
 ```
 
-Set the Telegram Bot API Token:
+Then, configure your Telegram Bot API Token:
 
 ```php
 // config/services.php
@@ -39,43 +39,13 @@ Set the Telegram Bot API Token:
 ]
 ```
 
-You can also set the token in your `.env` file using the env variable `TELEGRAM_BOT_TOKEN`.
+**TIP:** You can also set the token in your `.env` file using the env variable `TELEGRAM_BOT_TOKEN`.
 
 ## Usage
 
-(Optional) Now, Add a `routeNotificationForTelegram` method in your `App\User` model.
+You can now use the channel in your `via()` method inside the Notification class.
 
 ``` php
-<?php
-
-namespace App;
-
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-
-class User extends Authenticatable
-{
-    use Notifiable;
-
-    /**
-     * Route notifications for the Telegram channel.
-     *
-     * @return string
-     */
-    public function routeNotificationForTelegram()
-    {
-        return $this->telegram_user_id;
-    }
-}
-```
-
-You can now use the channel in your `via()` method inside the notification as well as send a Telegram notification:
-
-``` php
-<?php
-
-namespace App\Notifications;
-
 use NotificationChannels\Telegram\Channel as TelegramChannel;
 use NotificationChannels\Telegram\Message;
 use Illuminate\Notifications\Notification;
@@ -91,9 +61,10 @@ class InvoicePaid extends Notification
     {
         $url = url('/invoice/' . $this->invoice->id);
 
-        return (new Message())
-            ->content("*HELLO!* \n One of your invoices has been paid!")
-            ->action('View Invoice', $url);
+        return Message::create()
+            ->to($this->user->telegram_user_id) // Optional.
+            ->content("*HELLO!* \n One of your invoices has been paid!") // Markdown supported.
+            ->action('View Invoice', $url); // Inline Button
     }
 }
 ```
@@ -102,25 +73,32 @@ Here's a screenshot preview of the above notification on Telegram Messenger:
 
 ![Laravel Telegram Notification Example](https://cloud.githubusercontent.com/assets/1915268/17590374/2e05e872-5ff7-11e6-992f-63d5f3df2db3.png)
 
-You can also override the recipient for this notification by passing a chat id to the method `to($chatId)` in your `toTelegram()` method above.
+You can either send the notification by providing with the chat id of the recipient to the `to($chatId)` method like shown in the above example or add a `routeNotificationForTelegram` method in your notifiable model:
 
-Here's an example of that:
-
-```php
-public function toTelegram($notifiable)
+``` php
+...
+/**
+ * Route notifications for the Telegram channel.
+ *
+ * @return int
+ */
+public function routeNotificationForTelegram()
 {
-    $url = url('/invoice/' . $this->invoice->id);
-
-    return (new Message())
-        ->to($this->user->telegram_user_id)
-        ->content("One of your invoices has been paid!")
-        ->action('View Invoice', $url);
+    return $this->telegram_user_id;
 }
+...
 ```
 
-The content supports markdown, please refer these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage#section-markdown-style) for supported formating style.
+### Available Message methods
 
-(Advance) The `Message` class also has an `options()` method which can be used to add additional or override parameters, refer these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage) to know more about other parameters.
+- `to($chatId)`: (integer) Recipient's chat id.
+- `content('')`: (string) Notification message, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage#section-markdown-style).
+- `action($text, $url)`: (string) Adds an inline "Call to Action" button.
+- `options([])`: (array) Allows you to add additional or override `sendMessage` payload (A Telegram Bot API method used to send message internally). For more information on supported parameters, check out these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage).
+
+## Security
+
+If you discover any security related issues, please email syed@lukonet.com instead of using the issue tracker.
 
 ## Credits
 
