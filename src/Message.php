@@ -40,6 +40,16 @@ class Message
     public $options = [];
 
     /**
+     * @param string $content
+     *
+     * @return static
+     */
+    public static function create($content = '')
+    {
+        return new static($content);
+    }
+
+    /**
      * Message constructor.
      *
      * @param string $content
