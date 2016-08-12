@@ -10,6 +10,20 @@
 
 This package makes it easy to send Telegram notification using [Telegram Bot API](https://core.telegram.org/bots) with Laravel 5.3.
 
+## Contents
+
+- [Installation](#installation)
+	- [Setting up your Telegram bot](#setting-up-your-telegram-bot)
+- [Usage](#usage)
+	- [Available Message methods](#available-message-methods)
+- [Alternatives](#alternatives)
+- [Changelog](#changelog)
+- [Testing](#testing)
+- [Security](#security)
+- [Contributing](#contributing)
+- [Credits](#credits)
+- [License](#license)
+
 ## Installation
 
 Before you can send notifications via Telegram, you must install the Guzzle HTTP library via Composer:
@@ -33,6 +47,10 @@ You must now install the service provider:
 ];
 ```
 
+## Setting up your Telegram Bot
+
+Talk to [@BotFather](https://core.telegram.org/bots#6-botfather) and generate a Bot API Token.
+
 Then, configure your Telegram Bot API Token:
 
 ```php
@@ -41,10 +59,6 @@ Then, configure your Telegram Bot API Token:
     'token' => env('TELEGRAM_BOT_TOKEN', 'YOUR BOT TOKEN HERE')
 ]
 ```
-
-## Getting an API token
-
-- Talk to [@BotFather](https://core.telegram.org/bots#6-botfather) and generate one.
 
 ## Usage
 
@@ -104,6 +118,17 @@ public function routeNotificationForTelegram()
 ## Alternatives
 
 For advance usage, please consider using [telegram-bot-sdk](https://github.com/irazasyed/telegram-bot-sdk) instead.
+
+
+## Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
+
+## Testing
+    
+``` bash
+$ composer test
+```
 
 ## Security
 
