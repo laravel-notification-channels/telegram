@@ -3,14 +3,13 @@
 namespace NotificationChannels\Telegram;
 
 use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\ClientInterface as HttpClientInterface;
 use GuzzleHttp\Exception\ClientException;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 
 class Telegram
 {
     /**
-     * @var HttpClientInterface HTTP Client
+     * @var HttpClient HTTP Client
      */
     protected $http;
 
@@ -28,9 +27,9 @@ class Telegram
      * Telegram constructor.
      *
      * @param null                     $token
-     * @param HttpClientInterface|null $httpClient
+     * @param HttpClient|null $httpClient
      */
-    public function __construct($token = null, HttpClientInterface $httpClient = null)
+    public function __construct($token = null, HttpClient $httpClient = null)
     {
         $this->token = $token;
         $this->http = $httpClient;
