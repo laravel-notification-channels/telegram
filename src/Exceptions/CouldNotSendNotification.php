@@ -16,18 +16,17 @@ class CouldNotSendNotification extends \Exception
     public static function telegramRespondedWithAnError(ClientException $e)
     {
         $statusCode = $e->getResponse()->getStatusCode();
+        $description = '';
 
         if ($result = json_decode($e->getResponse()->getBody())) {
-            if (isset($result->description)) {
-                return new static(sprintf(
-                    'Telegram responded with an error (%d): %s',
-                    $statusCode,
-                    $result->description
-                ));
-            }
+            $description = $result->description ?: '';
         }
 
-        return new static('Telegram responded with an error ('.$statusCode.').');
+        return new static(sprintf(
+            'Telegram responded with an error (%d) %s',
+            $statusCode,
+            $description
+        ));
     }
 
     /**
