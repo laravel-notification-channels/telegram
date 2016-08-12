@@ -6,7 +6,6 @@ use Illuminate\Notifications\Notification;
 
 class SendingMessage
 {
-
     protected $notifiable;
 
     /** @var \Illuminate\Notifications\Notification */
