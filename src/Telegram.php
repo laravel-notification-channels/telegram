@@ -116,7 +116,7 @@ class Telegram
      *
      * @link https://core.telegram.org/bots/api#sendmessage
      *
-     * @param array    $params
+     * @param array $params
      *
      * @var int|string $params ['chat_id']
      * @var string     $params ['text']
@@ -139,8 +139,9 @@ class Telegram
      * @param $endpoint
      * @param $params
      *
-     * @return \Psr\Http\Message\ResponseInterface
      * @throws CouldNotSendNotification
+     *
+     * @return \Psr\Http\Message\ResponseInterface
      */
     protected function sendRequest($endpoint, $params)
     {
