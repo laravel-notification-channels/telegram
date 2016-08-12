@@ -7,13 +7,13 @@
 [![SensioLabsInsight](https://img.shields.io/sensiolabs/i/d28e31ec-55ce-4306-88a3-84d5d14ad3db.svg?style=flat-square)](https://insight.sensiolabs.com/projects/d28e31ec-55ce-4306-88a3-84d5d14ad3db)
 [![Quality Score](https://img.shields.io/scrutinizer/g/laravel-notification-channels/telegram.svg?style=flat-square)](https://scrutinizer-ci.com/g/laravel-notification-channels/telegram)
 [![Total Downloads](https://img.shields.io/packagist/dt/laravel-notification-channels/telegram.svg?style=flat-square)](https://packagist.org/packages/laravel-notification-channels/telegram)
+[![Author](https://img.shields.io/badge/author-%40iRazaSyed-blue.svg?style=flat-square)][author]
+
 [![Author](https://cloud.githubusercontent.com/assets/1915268/17607505/cea5dd0e-6043-11e6-98f5-af8f5f878d31.png)][author]
 
-## Overview
+This package makes it easy to send Telegram notification using [Telegram Bot API](https://core.telegram.org/bots) with Laravel 5.3.
 
-> This package makes it easy to send Telegram notification using [Telegram Bot API](https://core.telegram.org/bots) with Laravel 5.3.
->
-> For advance usage, Please consider using [telegram-bot-sdk](https://github.com/irazasyed/telegram-bot-sdk) instead.
+For advance usage, please consider using [telegram-bot-sdk](https://github.com/irazasyed/telegram-bot-sdk) instead.
 
 ## Installation
 
