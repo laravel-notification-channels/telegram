@@ -31,28 +31,25 @@ class TelegramChannel
      */
     public function send($notifiable, Notification $notification)
     {
+        if (!$this->shouldSendMessage($notifiable, $notification)) {
+            return;
+        }
+
         $message = $notification->toTelegram($notifiable);
 
         if (is_string($message)) {
-            $message = new TelegramMessage($message);
+            $message = TelegramMessage::create($message);
         }
 
-        if (!$chatId = $this->chatId($message, $notifiable)) {
-            return;
+        if ($message->toNotGiven()) {
+            if (!$to = $notifiable->routeNotificationFor('telegram')) {
+                return;
+            }
+
+            $message->to($to);
         }
 
-        $shouldSendMessage = event(new SendingMessage($notifiable, $notification), [], true) !== false;
-
-        if (!$shouldSendMessage) {
-            return;
-        }
-
-        $params = array_merge([
-            'chat_id'      => $chatId,
-            'text'         => trim($message->content),
-            'parse_mode'   => 'Markdown',
-            'reply_markup' => $this->getReplyMarkup($message),
-        ], $message->options);
+        $params = $message->toArray();
 
         $this->telegram->sendMessage($params);
 
@@ -60,34 +57,15 @@ class TelegramChannel
     }
 
     /**
-     * @param TelegramMessage $message
-     * @param                 $notifiable
+     * Check if we can send the notification.
      *
-     * @return mixed
+     * @param              $notifiable
+     * @param Notification $notification
+     *
+     * @return bool
      */
-    protected function chatId(TelegramMessage $message, $notifiable)
+    protected function shouldSendMessage($notifiable, Notification $notification)
     {
-        return $message->chatId ?: $notifiable->routeNotificationFor('telegram') ?: null;
-    }
-
-    /**
-     * Get Reply Markup (Inline Keyboard).
-     *
-     * @param TelegramMessage $message
-     *
-     * @return $this|void
-     */
-    protected function getReplyMarkup(TelegramMessage $message)
-    {
-        if (!$message->actionText) {
-            return;
-        }
-
-        return (new Telegram())
-            ->buttons([
-                'text' => $message->actionText,
-                'url'  => $message->actionUrl,
-            ])
-            ->getKeyboardMarkup();
+        return event(new SendingMessage($notifiable, $notification), [], true) !== false;
     }
 }

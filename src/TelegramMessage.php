@@ -5,39 +5,14 @@ namespace NotificationChannels\Telegram;
 class TelegramMessage
 {
     /**
-     * The Telegram Chat ID the message should be sent to.
-     *
-     * @var string
+     * @var array Params payload.
      */
-    public $chatId;
+    public $payload = [];
 
     /**
-     * The message content.
-     *
-     * @var string
+     * @var array Inline Keyboard Buttons.
      */
-    public $content;
-
-    /**
-     * The text / label for the action.
-     *
-     * @var string
-     */
-    public $actionText;
-
-    /**
-     * The action URL.
-     *
-     * @var string
-     */
-    public $actionUrl;
-
-    /**
-     * Additional options to be passed to the sendMessage method.
-     *
-     * @var array
-     */
-    public $options = [];
+    protected $buttons = [];
 
     /**
      * @param string $content
@@ -56,45 +31,52 @@ class TelegramMessage
      */
     public function __construct($content = '')
     {
-        $this->content = $content;
+        $this->content($content);
+        $this->payload['parse_mode'] = 'Markdown';
     }
 
     /**
+     * Recipient's Chat ID.
+     *
      * @param $chatId
      *
      * @return $this
      */
     public function to($chatId)
     {
-        $this->chatId = $chatId;
+        $this->payload['chat_id'] = $chatId;
 
         return $this;
     }
 
     /**
+     * Notification message (Supports Markdown).
+     *
      * @param $content
      *
      * @return $this
      */
     public function content($content)
     {
-        $this->content = $content;
+        $this->payload['text'] = $content;
 
         return $this;
     }
 
     /**
-     * Configure the "call to action" button.
+     * Add an inline button.
      *
      * @param string $text
      * @param string $url
      *
      * @return $this
      */
-    public function action($text, $url)
+    public function button($text, $url)
     {
-        $this->actionText = $text;
-        $this->actionUrl = $url;
+        $this->buttons[] = compact('text', 'url');
+
+        $replyMarkup['inline_keyboard'] = array_chunk($this->buttons, 2);
+        $this->payload['reply_markup'] = json_encode($replyMarkup);
 
         return $this;
     }
@@ -108,8 +90,28 @@ class TelegramMessage
      */
     public function options(array $options)
     {
-        $this->options = $options;
+        $this->payload = array_merge($this->payload, $options);
 
         return $this;
+    }
+
+    /**
+     * Determine if chat id is not given.
+     *
+     * @return bool
+     */
+    public function toNotGiven()
+    {
+        return !isset($this->payload['chat_id']);
+    }
+
+    /**
+     * Returns params payload.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->payload;
     }
 }
