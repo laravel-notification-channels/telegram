@@ -145,6 +145,8 @@ class Telegram
      */
     protected function sendRequest($endpoint, $params)
     {
+        $this->isTokenExist();
+
         try {
             return $this->httpClient()->post($this->prepareApiUrl($endpoint), [
                 'form_params' => $params,
@@ -165,8 +167,6 @@ class Telegram
      */
     protected function prepareApiUrl($endpoint)
     {
-        $this->isTokenExist();
-
         return 'https://api.telegram.org/bot'.$this->token.'/'.$endpoint;
     }
 
@@ -179,7 +179,7 @@ class Telegram
     {
         $token = $this->getToken();
 
-        if (!$token) {
+        if ($token === null) {
             throw CouldNotSendNotification::telegramBotTokenNotProvided('You must provide your telegram bot token to make any API requests.');
         }
     }
