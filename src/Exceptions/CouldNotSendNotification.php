@@ -23,7 +23,7 @@ class CouldNotSendNotification extends \Exception
             $description = $result->description ?: '';
         }
 
-        return new static( "Telegram responded with an error `{$statusCode} - {$description}`");
+        return new static("Telegram responded with an error `{$statusCode} - {$description}`");
     }
 
     /**

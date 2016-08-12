@@ -61,7 +61,7 @@ class TelegramChannel
 
     /**
      * @param TelegramMessage $message
-     * @param         $notifiable
+     * @param                 $notifiable
      *
      * @return mixed
      */
