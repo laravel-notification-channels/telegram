@@ -13,8 +13,6 @@
 
 This package makes it easy to send Telegram notification using [Telegram Bot API](https://core.telegram.org/bots) with Laravel 5.3.
 
-For advance usage, please consider using [telegram-bot-sdk](https://github.com/irazasyed/telegram-bot-sdk) instead.
-
 ## Installation
 
 Before you can send notifications via Telegram, you must install the Guzzle HTTP library via Composer:
@@ -106,13 +104,17 @@ public function routeNotificationForTelegram()
 - `action($text, $url)`: (string) Adds an inline "Call to Action" button.
 - `options([])`: (array) Allows you to add additional or override `sendMessage` payload (A Telegram Bot API method used to send message internally). For more information on supported parameters, check out these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage).
 
+## Alternatives
+
+For advance usage, please consider using [telegram-bot-sdk](https://github.com/irazasyed/telegram-bot-sdk) instead.
+
 ## Security
 
 If you discover any security related issues, please email syed@lukonet.com instead of using the issue tracker.
 
 ## Credits
 
-- [Syed Irfaq R.][author]
+- [Syed Irfaq R.](https://github.com/irazasyed)
 - [All Contributors](../../contributors)
 
 ## License
