@@ -43,7 +43,7 @@ You must now install the service provider:
 ```php
 // config/app.php
 'providers' => [
-    NotificationChannels\Telegram\Provider::class,
+    NotificationChannels\Telegram\TelegramServiceProvider::class,
 ];
 ```
 
@@ -65,8 +65,7 @@ Then, configure your Telegram Bot API Token:
 You can now use the channel in your `via()` method inside the Notification class.
 
 ``` php
-use NotificationChannels\Telegram\Channel as TelegramChannel;
-use NotificationChannels\Telegram\Message;
+use NotificationChannels\Telegram\TelegramMessage;
 use Illuminate\Notifications\Notification;
 
 class InvoicePaid extends Notification
@@ -80,7 +79,7 @@ class InvoicePaid extends Notification
     {
         $url = url('/invoice/' . $this->invoice->id);
 
-        return Message::create()
+        return TelegramMessage::create()
             ->to($this->user->telegram_user_id) // Optional.
             ->content("*HELLO!* \n One of your invoices has been paid!") // Markdown supported.
             ->action('View Invoice', $url); // Inline Button
