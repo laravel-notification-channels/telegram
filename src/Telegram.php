@@ -14,9 +14,6 @@ class Telegram
     /** @var null|string Telegram Bot API Token. */
     protected $token = null;
 
-    /** @var array Keyboard Markup */
-    protected $keyboard = [];
-
     /**
      * @param null            $token
      * @param HttpClient|null $httpClient
@@ -39,30 +36,6 @@ class Telegram
     }
 
     /**
-     * Create a new row for keyboard markup with inline buttons.
-     *
-     * @return $this
-     */
-    public function buttons()
-    {
-        $this->keyboard['inline_keyboard'][] = func_get_args();
-
-        return $this;
-    }
-
-    /**
-     * Get Keyboard Markup.
-     *
-     * @param int $options
-     *
-     * @return string
-     */
-    public function getKeyboardMarkup($options = 0)
-    {
-        return json_encode($this->keyboard, $options);
-    }
-
-    /**
      * Send text message.
      *
      * <code>
@@ -79,7 +52,7 @@ class Telegram
      *
      * @link https://core.telegram.org/bots/api#sendmessage
      *
-     * @param array $params
+     * @param array    $params
      *
      * @var int|string $params ['chat_id']
      * @var string     $params ['text']
