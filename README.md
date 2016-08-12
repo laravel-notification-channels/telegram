@@ -112,6 +112,10 @@ For advance usage, please consider using [telegram-bot-sdk](https://github.com/i
 
 If you discover any security related issues, please email syed@lukonet.com instead of using the issue tracker.
 
+## Contributing
+
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+
 ## Credits
 
 - [Syed Irfaq R.](https://github.com/irazasyed)
