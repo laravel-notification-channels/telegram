@@ -6,7 +6,7 @@ use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\Events\MessageWasSent;
 use NotificationChannels\Telegram\Events\SendingMessage;
 
-class Channel
+class TelegramChannel
 {
     /**
      * @var Telegram
