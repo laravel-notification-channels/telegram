@@ -10,10 +10,6 @@ use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 class Telegram
 {
     /**
-     * @const string The name of the environment variable that contains the Telegram Bot API Token.
-     */
-    const BOT_TOKEN_ENV_NAME = 'TELEGRAM_BOT_TOKEN';
-
     /**
      * @var HttpClient HTTP Client
      */
@@ -37,7 +33,7 @@ class Telegram
      */
     public function __construct($token = null, HttpClientInterface $httpClient = null)
     {
-        $this->token = $token ?: getenv(static::BOT_TOKEN_ENV_NAME);
+        $this->token = $token;
         $this->http = $httpClient;
     }
 
