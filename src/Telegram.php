@@ -52,7 +52,7 @@ class Telegram
      *
      * @link https://core.telegram.org/bots/api#sendmessage
      *
-     * @param array    $params
+     * @param array $params
      *
      * @var int|string $params ['chat_id']
      * @var string     $params ['text']
