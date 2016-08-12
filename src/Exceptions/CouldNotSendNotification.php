@@ -17,10 +17,10 @@ class CouldNotSendNotification extends \Exception
     {
         $statusCode = $exception->getResponse()->getStatusCode();
 
-        $description = '';
+        $description = 'no description given';
 
         if ($result = json_decode($exception->getResponse()->getBody())) {
-            $description = $result->description ?: '';
+            $description = $result->description ?: $description;
         }
 
         return new static("Telegram responded with an error `{$statusCode} - {$description}`");
