@@ -17,10 +17,6 @@
 >
 > For advance usage, Please consider using [telegram-bot-sdk](https://github.com/irazasyed/telegram-bot-sdk) instead.
 
-## Prerequisites
-
-- Telegram Bot API Token - Talk to [@BotFather](https://core.telegram.org/bots#6-botfather) and generate one.
-
 ## Installation
 
 Before you can send notifications via Telegram, you must install the Guzzle HTTP library via Composer:
@@ -35,7 +31,8 @@ Then, You can install the package via composer:
 composer require laravel-notification-channels/telegram
 ```
 
-You must now, install the service provider:
+You must now install the service provider:
+
 ```php
 // config/app.php
 'providers' => [
@@ -52,7 +49,9 @@ Then, configure your Telegram Bot API Token:
 ]
 ```
 
-**TIP:** You can also set the token in your `.env` file using the env variable `TELEGRAM_BOT_TOKEN`.
+## Getting an API token
+
+- Talk to [@BotFather](https://core.telegram.org/bots#6-botfather) and generate one.
 
 ## Usage
 
@@ -121,5 +120,3 @@ If you discover any security related issues, please email syed@lukonet.com inste
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
-
-[author]: https://github.com/irazasyed
