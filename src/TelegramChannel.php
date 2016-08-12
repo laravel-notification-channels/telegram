@@ -6,7 +6,7 @@ use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\Events\MessageWasSent;
 use NotificationChannels\Telegram\Events\SendingMessage;
 
-class Channel
+class TelegramChannel
 {
     /**
      * @var Telegram
@@ -34,7 +34,7 @@ class Channel
         $message = $notification->toTelegram($notifiable);
 
         if (is_string($message)) {
-            $message = new Message($message);
+            $message = new TelegramMessage($message);
         }
 
         if (!$chatId = $this->chatId($message, $notifiable)) {
@@ -60,12 +60,12 @@ class Channel
     }
 
     /**
-     * @param Message $message
+     * @param TelegramMessage $message
      * @param         $notifiable
      *
      * @return mixed
      */
-    protected function chatId(Message $message, $notifiable)
+    protected function chatId(TelegramMessage $message, $notifiable)
     {
         return $message->chatId ?: $notifiable->routeNotificationFor('telegram') ?: null;
     }
@@ -73,11 +73,11 @@ class Channel
     /**
      * Get Reply Markup (Inline Keyboard).
      *
-     * @param Message $message
+     * @param TelegramMessage $message
      *
      * @return $this|void
      */
-    protected function getReplyMarkup(Message $message)
+    protected function getReplyMarkup(TelegramMessage $message)
     {
         if (!$message->actionText) {
             return;

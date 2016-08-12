@@ -8,55 +8,24 @@ use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 
 class Telegram
 {
-    /**
-     * @var HttpClient HTTP Client
-     */
+    /** @var HttpClient HTTP Client */
     protected $http;
 
-    /**
-     * @var null|string Telegram Bot API Token.
-     */
+    /** @var null|string Telegram Bot API Token. */
     protected $token = null;
 
-    /**
-     * @var array Keyboard Markup
-     */
+    /** @var array Keyboard Markup */
     protected $keyboard = [];
 
     /**
-     * Telegram constructor.
-     *
      * @param null            $token
      * @param HttpClient|null $httpClient
      */
     public function __construct($token = null, HttpClient $httpClient = null)
     {
         $this->token = $token;
+
         $this->http = $httpClient;
-    }
-
-    /**
-     * Set Telegram Bot API Token.
-     *
-     * @param $token
-     *
-     * @return $this
-     */
-    public function setToken($token)
-    {
-        $this->token = $token;
-
-        return $this;
-    }
-
-    /**
-     * Get Telegram Bot API Token.
-     *
-     * @return null|string
-     */
-    public function getToken()
-    {
-        return $this->token;
     }
 
     /**
@@ -139,42 +108,20 @@ class Telegram
      */
     protected function sendRequest($endpoint, $params)
     {
-        $this->isTokenExist();
+        if (empty($this->token)) {
+            throw CouldNotSendNotification::telegramBotTokenNotProvided('You must provide your telegram bot token to make any API requests.');
+        }
+
+        $endPointUrl = 'https://api.telegram.org/bot'.$this->token.'/'.$endpoint;
 
         try {
-            return $this->httpClient()->post($this->prepareApiUrl($endpoint), [
+            return $this->httpClient()->post($endPointUrl, [
                 'form_params' => $params,
             ]);
-        } catch (ClientException $e) {
-            throw CouldNotSendNotification::telegramRespondedWithAnError($e);
-        } catch (\Exception $e) {
-            throw CouldNotSendNotification::serviceCommunicationError();
-        }
-    }
-
-    /**
-     * Prepare API URL.
-     *
-     * @param string $endpoint
-     *
-     * @return string
-     */
-    protected function prepareApiUrl($endpoint)
-    {
-        return 'https://api.telegram.org/bot'.$this->token.'/'.$endpoint;
-    }
-
-    /**
-     * Determines telegram bot token exists.
-     *
-     * @throws TelegramChannelException
-     */
-    protected function isTokenExist()
-    {
-        $token = $this->getToken();
-
-        if ($token === null) {
-            throw CouldNotSendNotification::telegramBotTokenNotProvided('You must provide your telegram bot token to make any API requests.');
+        } catch (ClientException $exception) {
+            throw CouldNotSendNotification::telegramRespondedWithAnError($exception);
+        } catch (\Exception $exception) {
+            throw CouldNotSendNotification::couldNotCommunicateWithTelegram();
         }
     }
 }

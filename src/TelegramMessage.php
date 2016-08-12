@@ -2,7 +2,7 @@
 
 namespace NotificationChannels\Telegram;
 
-class Message
+class TelegramMessage
 {
     /**
      * The Telegram Chat ID the message should be sent to.
