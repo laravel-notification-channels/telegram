@@ -4,6 +4,9 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/laravel-notification-channels/telegram.svg?style=flat-square)](https://packagist.org/packages/laravel-notification-channels/telegram)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Build Status](https://img.shields.io/travis/laravel-notification-channels/telegram/master.svg?style=flat-square)](https://travis-ci.org/laravel-notification-channels/telegram)
+[![StyleCI](https://styleci.io/repos/xxxx/shield)](https://styleci.io/repos/xxxx)
+[![SensioLabsInsight](https://img.shields.io/sensiolabs/i/xxxx.svg?style=flat-square)](https://insight.sensiolabs.com/projects/xxxx)
+[![Quality Score](https://img.shields.io/scrutinizer/g/laravel-notification-channels/telegram.svg?style=flat-square)](https://scrutinizer-ci.com/g/laravel-notification-channels/telegram)
 [![Total Downloads](https://img.shields.io/packagist/dt/laravel-notification-channels/telegram.svg?style=flat-square)](https://packagist.org/packages/laravel-notification-channels/telegram)
 
 [![Author](https://cloud.githubusercontent.com/assets/1915268/17607505/cea5dd0e-6043-11e6-98f5-af8f5f878d31.png)][author]
