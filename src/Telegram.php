@@ -10,8 +10,7 @@ use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 class Telegram
 {
     /**
-    /**
-     * @var HttpClient HTTP Client
+     * @var HttpClientInterface HTTP Client
      */
     protected $http;
 
