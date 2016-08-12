@@ -86,8 +86,8 @@ class Message
     /**
      * Configure the "call to action" button.
      *
-     * @param  string $text
-     * @param  string $url
+     * @param string $text
+     * @param string $url
      *
      * @return $this
      */

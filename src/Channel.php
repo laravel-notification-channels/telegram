@@ -2,10 +2,9 @@
 
 namespace NotificationChannels\Telegram;
 
-use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
+use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\Events\MessageWasSent;
 use NotificationChannels\Telegram\Events\SendingMessage;
-use Illuminate\Notifications\Notification;
 
 class Channel
 {
@@ -49,9 +48,9 @@ class Channel
         }
 
         $params = array_merge([
-            'chat_id' => $chatId,
-            'text' => trim($message->content),
-            'parse_mode' => 'Markdown',
+            'chat_id'      => $chatId,
+            'text'         => trim($message->content),
+            'parse_mode'   => 'Markdown',
             'reply_markup' => $this->getReplyMarkup($message),
         ], $message->options);
 
@@ -61,8 +60,8 @@ class Channel
     }
 
     /**
-     * @param Message         $message
-     * @param                 $notifiable
+     * @param Message $message
+     * @param         $notifiable
      *
      * @return mixed
      */
@@ -84,10 +83,10 @@ class Channel
             return;
         }
 
-        return (new Telegram)
+        return (new Telegram())
             ->buttons([
                 'text' => $message->actionText,
-                'url' => $message->actionUrl,
+                'url'  => $message->actionUrl,
             ])
             ->getKeyboardMarkup();
     }
