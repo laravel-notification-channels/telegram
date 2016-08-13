@@ -37,8 +37,9 @@ You must install the service provider:
 ```php
 // config/app.php
 'providers' => [
+    ...
     NotificationChannels\Telegram\TelegramServiceProvider::class,
-];
+],
 ```
 
 ## Setting up your Telegram Bot
@@ -49,9 +50,11 @@ Then, configure your Telegram Bot API Token:
 
 ```php
 // config/services.php
+...
 'telegram-bot-api' => [
     'token' => env('TELEGRAM_BOT_TOKEN', 'YOUR BOT TOKEN HERE')
-]
+],
+...
 ```
 
 ## Usage
