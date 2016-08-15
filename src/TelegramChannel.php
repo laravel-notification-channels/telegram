@@ -5,6 +5,7 @@ namespace NotificationChannels\Telegram;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\Events\MessageWasSent;
 use NotificationChannels\Telegram\Events\SendingMessage;
+use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 
 class TelegramChannel
 {
@@ -43,7 +44,7 @@ class TelegramChannel
 
         if ($message->toNotGiven()) {
             if (!$to = $notifiable->routeNotificationFor('telegram')) {
-                return;
+                throw CouldNotSendNotification::chatIdNotProvided();
             }
 
             $message->to($to);
