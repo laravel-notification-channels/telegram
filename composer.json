@@ -21,9 +21,8 @@
     "require": {
         "php": ">=5.6.4",
         "guzzlehttp/guzzle": "^6.2",
-        "illuminate/events": "^5.3@dev",
-        "illuminate/notifications": "^5.3@dev",
-        "illuminate/support": "^5.3@dev"
+        "illuminate/notifications": "5.3.*",
+        "illuminate/support": "5.1.*|5.2.*|5.3.*"
     },
     "require-dev": {
         "mockery/mockery": "^0.9.5",
@@ -44,6 +43,5 @@
     },
     "config": {
         "sort-packages": true
-    },
-    "minimum-stability": "dev"
+    }
 }
