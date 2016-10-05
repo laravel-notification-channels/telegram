@@ -31,7 +31,7 @@ class TelegramPhoto
      */
     public function __construct($photo = '')
     {
-        $this->photo($content);
+        $this->photo($photo);
     }
 
     /**
