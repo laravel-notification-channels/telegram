@@ -106,12 +106,12 @@ class TelegramMessage
     }
 
     /**
-     * Returns params payload.
+     * Send message.
      *
-     * @return array
+     * @param Telegram $telegram
      */
-    public function toArray()
+    public function send(Telegram $telegram)
     {
-        return $this->payload;
+        $telegram->sendMessage($this->payload);
     }
 }
