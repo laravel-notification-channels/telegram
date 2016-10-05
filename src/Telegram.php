@@ -68,6 +68,7 @@ class Telegram
     {
         return $this->sendRequest('sendMessage', $params);
     }
+
     /**
      * Send photo.
      *
@@ -99,7 +100,6 @@ class Telegram
     {
         return $this->sendRequest('sendPhoto', $params);
     }
-
 
     /**
      * Send an API request and return response.

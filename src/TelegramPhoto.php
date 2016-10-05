@@ -61,6 +61,7 @@ class TelegramPhoto
 
         return $this;
     }
+
     /**
      * Notification message (Supports Markdown).
      *
