@@ -27,12 +27,11 @@ class TelegramPhoto
     /**
      * Message constructor.
      *
-     * @param string $content
+     * @param string $photo
      */
-    public function __construct($content = '')
+    public function __construct($photo = '')
     {
-        $this->content($content);
-        $this->payload['parse_mode'] = 'Markdown';
+        $this->photo($content);
     }
 
     /**
