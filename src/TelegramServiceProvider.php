@@ -21,4 +21,11 @@ class TelegramServiceProvider extends ServiceProvider
                 );
             });
     }
+
+    /**
+     * Register any package services.
+     */
+    public function register()
+    {
+    }
 }
