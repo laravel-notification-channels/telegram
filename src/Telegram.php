@@ -70,6 +70,38 @@ class Telegram
     }
 
     /**
+     * Send photo.
+     *
+     * <code>
+     * $params = [
+     *   'chat_id'                  => '',
+     *   'photo'                    => '',
+     *   'caption'                  => '',
+     *   'disable_notification'     => '',
+     *   'reply_to_message_id'      => '',
+     *   'reply_markup'             => '',
+     * ];
+     * </code>
+     *
+     * @link https://core.telegram.org/bots/api#sendphoto
+     *
+     * @param array $params
+     *
+     * @var int|string $params ['chat_id']
+     * @var string     $params ['photo']
+     * @var string     $params ['caption']
+     * @var bool       $params ['disable_notification']
+     * @var int        $params ['reply_to_message_id']
+     * @var string     $params ['reply_markup']
+     *
+     * @return mixed
+     */
+    public function sendPhoto($params)
+    {
+        return $this->sendRequest('sendPhoto', $params);
+    }
+
+    /**
      * Send an API request and return response.
      *
      * @param $endpoint

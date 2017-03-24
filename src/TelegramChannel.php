@@ -44,8 +44,6 @@ class TelegramChannel
             $message->to($to);
         }
 
-        $params = $message->toArray();
-
-        $this->telegram->sendMessage($params);
+        $message->send($this->telegram);
     }
 }

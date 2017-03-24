@@ -77,7 +77,7 @@ class InvoicePaid extends Notification
     public function toTelegram($notifiable)
     {
         $url = url('/invoice/' . $this->invoice->id);
-
+        // or TelegramPhoto class for sending photo
         return TelegramMessage::create()
             ->to($this->user->telegram_user_id) // Optional.
             ->content("*HELLO!* \n One of your invoices has been paid!") // Markdown supported.
@@ -110,10 +110,17 @@ public function routeNotificationForTelegram()
 
 ### Available Message methods
 
-- `to($chatId)`: (integer) Recipient's chat id.
-- `content('')`: (string) Notification message, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage#section-markdown-style).
-- `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want and they'll be placed 2 in a row.
-- `options([])`: (array) Allows you to add additional or override `sendMessage` payload (A Telegram Bot API method used to send message internally). For more information on supported parameters, check out these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage).
+- TelegramMessage::class
+  - `to($chatId)`: (integer) Recipient's chat id.
+  - `content('')`: (string) Notification message, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage#section-markdown-style).
+  - `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want and they'll be placed 2 in a row.
+  - `options([])`: (array) Allows you to add additional or override `sendMessage` payload (A Telegram Bot API method used to send message internally). For more information on supported parameters, check out these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage).
+- TelegramPhoto::class
+  - `to($chatId)`: (integer) Recipient's chat id.
+  - `photo('')`: (string) Photo to send. You can either pass a file_id as String to resend a photo that is already on the Telegram servers. You can also directly pass Image URL as String to automatically download and send it to Telegram.
+  - `caption('')`: (string) Photo caption (may also be used when resending photos by file_id), 0-200 characters.
+  - `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want and they'll be placed 2 in a row.
+  - `options([])`: (array) Allows you to add additional or override `sendMessage` payload (A Telegram Bot API method used to send message internally). For more information on supported parameters, check out these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage).
 
 ## Alternatives
 

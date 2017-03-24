@@ -2,7 +2,7 @@
 
 namespace NotificationChannels\Telegram;
 
-class TelegramMessage
+class TelegramPhoto
 {
     /**
      * @var array Params payload.
@@ -27,12 +27,11 @@ class TelegramMessage
     /**
      * Message constructor.
      *
-     * @param string $content
+     * @param string $photo
      */
-    public function __construct($content = '')
+    public function __construct($photo = '')
     {
-        $this->content($content);
-        $this->payload['parse_mode'] = 'Markdown';
+        $this->photo($photo);
     }
 
     /**
@@ -52,13 +51,27 @@ class TelegramMessage
     /**
      * Notification message (Supports Markdown).
      *
-     * @param $content
+     * @param $photo
      *
      * @return $this
      */
-    public function content($content)
+    public function photo($photo)
     {
-        $this->payload['text'] = $content;
+        $this->payload['photo'] = $photo;
+
+        return $this;
+    }
+
+    /**
+     * Notification message (Supports Markdown).
+     *
+     * @param $caption
+     *
+     * @return $this
+     */
+    public function caption($caption)
+    {
+        $this->payload['caption'] = $caption;
 
         return $this;
     }
@@ -112,6 +125,6 @@ class TelegramMessage
      */
     public function send(Telegram $telegram)
     {
-        $telegram->sendMessage($this->payload);
+        $telegram->sendPhoto($this->payload);
     }
 }
