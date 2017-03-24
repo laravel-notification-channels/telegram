@@ -47,13 +47,17 @@ You must install the service provider:
 
 Talk to [@BotFather](https://core.telegram.org/bots#6-botfather) and generate a Bot API Token.
 
-Then, configure your Telegram Bot API Token:
+Then, append provider values to your `.env` file:
 
+```bash
+TELEGRAM_BOT_TOKEN=yourtelegramtoken
+```
+
+Add to `config/services.php`:
 ```php
-// config/services.php
 ...
 'telegram-bot-api' => [
-    'token' => env('TELEGRAM_BOT_TOKEN', 'YOUR BOT TOKEN HERE')
+    'token' => env('TELEGRAM_BOT_TOKEN'),
 ],
 ...
 ```
