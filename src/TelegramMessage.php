@@ -71,11 +71,11 @@ class TelegramMessage
      *
      * @return $this
      */
-    public function button($text, $url)
+    public function button($text, $url, $columns = 2)
     {
         $this->buttons[] = compact('text', 'url');
 
-        $replyMarkup['inline_keyboard'] = array_chunk($this->buttons, 2);
+        $replyMarkup['inline_keyboard'] = array_chunk($this->buttons, $columns);
         $this->payload['reply_markup'] = json_encode($replyMarkup);
 
         return $this;
