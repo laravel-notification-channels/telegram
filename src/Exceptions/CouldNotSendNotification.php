@@ -43,9 +43,9 @@ class CouldNotSendNotification extends \Exception
      *
      * @return static
      */
-    public static function couldNotCommunicateWithTelegram()
+     public static function couldNotCommunicateWithTelegram($message)
     {
-        return new static('The communication with Telegram failed.');
+        return new static("The communication with Telegram failed. `{$message}`");
     }
 
     /**
