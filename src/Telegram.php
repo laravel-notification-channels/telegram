@@ -92,14 +92,16 @@ class Telegram
      *
      * @param $endpoint
      * @param $params
+     * @param bool $multipart
      *
      * @throws CouldNotSendNotification
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    protected function sendRequest($endpoint, $params)
+    protected function sendRequest($endpoint, $params, $multipart = false)
     {
-        if (empty($this->token)) {
+        if (empty($this->token))
+        {
             throw CouldNotSendNotification::telegramBotTokenNotProvided('You must provide your telegram bot token to make any API requests.');
         }
 
