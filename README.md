@@ -90,6 +90,50 @@ Here's a screenshot preview of the above notification on Telegram Messenger:
 
 ![Laravel Telegram Notification Example](https://cloud.githubusercontent.com/assets/1915268/17590374/2e05e872-5ff7-11e6-992f-63d5f3df2db3.png)
 
+### Attach a Photo
+
+``` php
+...
+    public function toTelegram($notifiable)
+    {
+        $url = url('/file/' . $this->file->id);
+
+        return TelegramMessage::create()
+            ->to($this->user->telegram_user_id) // Optional.
+            ->content("*bold text* [inline URL](http://www.example.com/)") // Markdown supported.
+            ->file('/storage/archive/6029014.jpg', 'photo') // local photo
+            // OR
+            // ->file('https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6029/6029014_rd.jpg', 'photo') // remote photo
+            ->button('Download PDF', $url); // Inline Button
+    }
+...
+```
+Sample :
+![photo5879686121305255739](https://user-images.githubusercontent.com/785830/46316802-ff82b300-c5dd-11e8-85c9-58c66ad29895.jpg)
+
+
+### Attach a Document
+
+``` php
+...
+    public function toTelegram($notifiable)
+    {
+        $url = url('/file/' . $this->file->id);
+
+        return TelegramMessage::create()
+            ->to($this->user->telegram_user_id) // Optional.
+            ->content("*bold text* [inline URL](http://www.example.com/)") // Markdown supported.
+            ->file('/storage/archive/file.pdf', 'document') // local file
+            // OR
+            // ->file('http://www.domain.com/file.pdf', 'document') // remote file
+            ->button('Download PDF', $url); // Inline Button
+    }
+...
+```
+Sample :
+![photo5879686121305255737](https://user-images.githubusercontent.com/785830/46316801-feea1c80-c5dd-11e8-99c2-21d00b165a66.jpg)
+
+
 ### Routing a message
 
 You can either send the notification by providing with the chat id of the recipient to the `to($chatId)` method like shown in the above example or add a `routeNotificationForTelegram()` method in your notifiable model:

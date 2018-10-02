@@ -5,6 +5,7 @@ namespace NotificationChannels\Telegram;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ClientException;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
+use GuzzleHttp\Post\PostFile;
 
 class Telegram
 {
@@ -69,32 +70,57 @@ class Telegram
         return $this->sendRequest('sendMessage', $params);
     }
 
+
+    /**
+    * Send File as Image or Document
+    *
+    * @param array $params
+    * @param string $type
+    * @param bool $multipart
+    * 
+    * @return mixed
+    * 
+    */
+    public function sendFile($params, $type, $multipart = false)
+    {
+        return $this->sendRequest('send'.ucfirst($type), $params, $multipart);
+    }
+
+
     /**
      * Send an API request and return response.
      *
      * @param $endpoint
      * @param $params
+     * @param bool $multipart
      *
      * @throws CouldNotSendNotification
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    protected function sendRequest($endpoint, $params)
+    protected function sendRequest($endpoint, $params, $multipart = false)
     {
-        if (empty($this->token)) {
+        if (empty($this->token))
+        {
             throw CouldNotSendNotification::telegramBotTokenNotProvided('You must provide your telegram bot token to make any API requests.');
         }
 
         $endPointUrl = 'https://api.telegram.org/bot'.$this->token.'/'.$endpoint;
 
         try {
+            if($multipart)
+                $post_name = 'multipart';
+            else
+                $post_name = 'form_params';
+
             return $this->httpClient()->post($endPointUrl, [
-                'form_params' => $params,
+                $post_name => $params,
             ]);
+
         } catch (ClientException $exception) {
             throw CouldNotSendNotification::telegramRespondedWithAnError($exception);
         } catch (\Exception $exception) {
-            throw CouldNotSendNotification::couldNotCommunicateWithTelegram();
+            throw CouldNotSendNotification::couldNotCommunicateWithTelegram($exception);
         }
     }
 }

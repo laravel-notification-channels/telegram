@@ -2,8 +2,13 @@
 
 namespace NotificationChannels\Telegram;
 
-class TelegramMessage
+class TelegramFile
 {
+    /**
+     * @var string content type.
+     */
+    public $type = 'document';
+
     /**
      * @var array Params payload.
      */
@@ -25,7 +30,7 @@ class TelegramMessage
     }
 
     /**
-     * Message constructor.
+     * Document constructor.
      *
      * @param string $content
      */
@@ -58,7 +63,34 @@ class TelegramMessage
      */
     public function content($content)
     {
-        $this->payload['text'] = $content;
+        $this->payload['caption'] = $content;
+
+        return $this;
+    }
+
+
+    /**
+    * add File to Message
+    *
+    * @param string $file
+    * @param string $type
+    * @param string $filename
+    *
+    * @return $this
+    *
+    */
+    public function file($file, $type, $filename = null)
+    {
+        $this->type = $type;
+
+        if(is_file($file))
+        {
+            $this->payload['file'] = ['name' => $type, 'contents'=> fopen($file, 'r')];
+            if($filename)
+                $this->payload['file']['filename'] = $filename;
+        }
+        else
+            $this->payload[$type] = $file;
 
         return $this;
     }
@@ -83,7 +115,7 @@ class TelegramMessage
     }
 
     /**
-     * Additional options to pass to sendMessage method.
+     * Additional options to pass to sendDocument method.
      *
      * @param array $options
      *
@@ -114,5 +146,28 @@ class TelegramMessage
     public function toArray()
     {
         return $this->payload;
+    }
+
+
+    /**
+    * Create Multipart array
+    *
+    * @return array
+    *
+    */
+    public function toMultipart()
+    {
+        $data = [];
+        foreach ($this->payload as $key => $value) {
+            if($key!='file')
+            {
+                $data[] = ['name' => $key, 'contents' => $value];
+            }
+            else
+            {
+                $data[] = $value;
+            }
+        }
+        return $data;
     }
 }
