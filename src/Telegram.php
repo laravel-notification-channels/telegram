@@ -86,6 +86,19 @@ class Telegram
         return $this->sendRequest('send'.ucfirst($type), $params, $multipart);
     }
 
+    /**
+     * Send a Location
+     *
+     * @param array $params
+     * @return mixed
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function sendLocation($params)
+    {
+        return $this->sendRequest('sendLocation', $params);
+    }
+
 
     /**
      * Send an API request and return response.
