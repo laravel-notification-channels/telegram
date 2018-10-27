@@ -30,8 +30,6 @@ class TelegramLocation
     {
         $this->latitude($latitude);
         $this->longitude($longitude);
-
-        $this->payload['parse_mode'] = 'Markdown';
     }
 
     /**
