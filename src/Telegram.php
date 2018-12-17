@@ -27,6 +27,26 @@ class Telegram
     }
 
     /**
+     * Token getter
+     * 
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * Token setter
+     * 
+     * @param string
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+    }
+    
+    /**
      * Get HttpClient.
      *
      * @return HttpClient
