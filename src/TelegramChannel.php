@@ -44,9 +44,10 @@ class TelegramChannel
             $message->to($to);
         }
 
-        if(isset($message->payload['text']) && $message->payload['text'])
+        if($message->type == 'text' && $message->payload['text'])
         {
             $params = $message->toArray();
+
             $this->telegram->sendMessage($params);
         }
         else
@@ -54,11 +55,13 @@ class TelegramChannel
             if(isset($message->payload['file']))
             {
                 $params = $message->toMultipart();
+
                 $this->telegram->sendFile($params, $message->type, true);
             }
             else
             {
                 $params = $message->toArray();
+
                 $this->telegram->sendFile($params, $message->type);
             }
         }

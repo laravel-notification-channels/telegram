@@ -5,6 +5,11 @@ namespace NotificationChannels\Telegram;
 class TelegramMessage
 {
     /**
+     * @var string content type.
+     */
+    public $type = 'text';
+
+    /**
      * @var array Params payload.
      */
     public $payload = [];
@@ -63,6 +68,33 @@ class TelegramMessage
         return $this;
     }
 
+
+    /**
+     * add File to Message
+     *
+     * @param string $file
+     * @param string $type
+     * @param string $filename
+     *
+     * @return $this
+     *
+     */
+    public function file($file, $type, $filename = null)
+    {
+        $this->type = $type;
+
+        if(is_file($file))
+        {
+            $this->payload['file'] = ['name' => $type, 'contents'=> fopen($file, 'r')];
+            if($filename)
+                $this->payload['file']['filename'] = $filename;
+        }
+        else
+            $this->payload[$type] = $file;
+
+        return $this;
+    }
+
     /**
      * Add an inline button.
      *
@@ -113,6 +145,48 @@ class TelegramMessage
      */
     public function toArray()
     {
+        $this->contentKey();
+
         return $this->payload;
+    }
+
+
+    /**
+     * Create Multipart array
+     *
+     * @return array
+     *
+     */
+    public function toMultipart()
+    {
+        $this->contentKey();
+
+        $data = [];
+        foreach ($this->payload as $key => $value)
+        {
+            if($key != 'file')
+            {
+                $data[] = ['name' => $key, 'contents' => $value];
+            }
+            else
+            {
+                $data[] = $value;
+            }
+        }
+        return $data;
+    }
+
+
+    /**
+     * Choose between ['text'] and ['caption'] for payload
+     */
+    public function contentKey()
+    {
+        if($this->type != 'text')
+        {
+            $this->payload['caption'] = $this->payload['text'];
+
+            $this->payload = array_except($this->payload, ['text']);
+        }
     }
 }
