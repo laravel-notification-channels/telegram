@@ -9,6 +9,7 @@ class TelegramMessage
      */
     public $payload = [];
 
+    public $token;
     /**
      * @var array Inline Keyboard Buttons.
      */
@@ -24,6 +25,11 @@ class TelegramMessage
         return new static($content);
     }
 
+    public function from($token)
+    {
+        $this->token = $token;
+        return $this;
+    }
     /**
      * Message constructor.
      *
