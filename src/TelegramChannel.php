@@ -36,6 +36,7 @@ class TelegramChannel
             $message = TelegramMessage::create($message);
         }
 
+        $this->telegram->setToken($message->token? $message->token: $this->telegram->getToken());
         if ($message->toNotGiven()) {
             if (!$to = $notifiable->routeNotificationFor('telegram')) {
                 throw CouldNotSendNotification::chatIdNotProvided();
