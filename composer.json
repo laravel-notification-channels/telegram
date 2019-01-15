@@ -1,14 +1,14 @@
 {
-    "name": "laravel-notification-channels/telegram",
-    "description": "Telegram Notifications Driver",
+    "name": "fastreserve/laravel-notification-channels/telegram",
+    "description": "Fastreserve Telegram Notifications Driver",
     "keywords": [
-      "telegram notification",
-      "laravel",
-      "telegram",
-      "notification",
-      "telegram notifications channel"
+        "telegram notification",
+        "laravel",
+        "telegram",
+        "notification",
+        "telegram notifications channel"
     ],
-    "homepage": "https://github.com/laravel-notification-channels/telegram",
+    "homepage": "https://gitlab.com/fastreserve/laravel-notification-channels/telegram",
     "license": "MIT",
     "authors": [
         {
