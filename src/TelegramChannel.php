@@ -49,6 +49,10 @@ class TelegramChannel
             $params = $message->toArray();
             $this->telegram->sendMessage($params);
         }
+        elseif (isset($message->payload['latitude']) && isset($message->payload['longitude'])) {
+            $params = $message->toArray();
+            $this->telegram->sendLocation($params);
+        }
         else
         {
             if(isset($message->payload['file']))
