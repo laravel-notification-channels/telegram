@@ -1,15 +1,13 @@
-# Telegram Notifications Channel for Laravel 5.3 [WIP]
+# Telegram Notifications Channel for Laravel
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/laravel-notification-channels/telegram.svg?style=flat-square)](https://packagist.org/packages/laravel-notification-channels/telegram)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://img.shields.io/travis/laravel-notification-channels/telegram/master.svg?style=flat-square)](https://travis-ci.org/laravel-notification-channels/telegram)
 [![StyleCI](https://styleci.io/repos/65490735/shield)](https://styleci.io/repos/65490735)
 [![SensioLabsInsight](https://img.shields.io/sensiolabs/i/d28e31ec-55ce-4306-88a3-84d5d14ad3db.svg?style=flat-square)](https://insight.sensiolabs.com/projects/d28e31ec-55ce-4306-88a3-84d5d14ad3db)
 [![Quality Score](https://img.shields.io/scrutinizer/g/laravel-notification-channels/telegram.svg?style=flat-square)](https://scrutinizer-ci.com/g/laravel-notification-channels/telegram)
-[![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/laravel-notification-channels/telegram/master.svg?style=flat-square)](https://scrutinizer-ci.com/g/laravel-notification-channels/telegram/?branch=master)
 [![Total Downloads](https://img.shields.io/packagist/dt/laravel-notification-channels/telegram.svg?style=flat-square)](https://packagist.org/packages/laravel-notification-channels/telegram)
 
-This package makes it easy to send Telegram notification using [Telegram Bot API](https://core.telegram.org/bots) with Laravel 5.3.
+This package makes it easy to send Telegram notification using [Telegram Bot API](https://core.telegram.org/bots) with Laravel.
 
 ## Contents
 
@@ -31,16 +29,6 @@ You can install the package via composer:
 
 ``` bash
 composer require laravel-notification-channels/telegram
-```
-
-You must install the service provider:
-
-```php
-// config/app.php
-'providers' => [
-    ...
-    NotificationChannels\Telegram\TelegramServiceProvider::class,
-],
 ```
 
 ## Setting up your Telegram Bot
