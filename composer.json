@@ -19,15 +19,14 @@
         }
     ],
     "require": {
-        "php": ">=5.6.4",
+        "php": "^7.2",
         "guzzlehttp/guzzle": "^6.2",
-        "illuminate/notifications": ">=5.3",
-        "illuminate/support": ">=5.1"
+        "illuminate/notifications": "^5.5 || ^6.0",
+        "illuminate/support": "^5.5 || ^6.0"
     },
     "require-dev": {
-        "mockery/mockery": "^0.9.5",
-        "phpunit/phpunit": "5.*",
-        "orchestra/testbench": "3.4.x-dev"
+        "mockery/mockery": "^1.0",
+        "phpunit/phpunit": "^7.5"
     },
     "autoload": {
         "psr-4": {
