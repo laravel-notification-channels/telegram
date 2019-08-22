@@ -1,6 +1,6 @@
 {
     "name": "laravel-notification-channels/telegram",
-    "description": "Telegram Notifications Driver",
+    "description": "Telegram Notifications Driver for Laravel",
     "keywords": [
       "telegram notification",
       "laravel",
