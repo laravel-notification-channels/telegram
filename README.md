@@ -79,47 +79,58 @@ Here's a screenshot preview of the above notification on Telegram Messenger:
 
 ### Attach a Photo
 
-``` php
-...
+```php
     public function toTelegram($notifiable)
     {
         $url = url('/file/' . $this->file->id);
 
-        return TelegramMessage::create()
-            ->to($this->user->telegram_user_id) // Optional.
-            ->content("*bold text* [inline URL](http://www.example.com/)") // Markdown supported.
+        return TelegramFile::create()
+            ->to($notifiable->telegram_user_id) // Optional.
+            ->content('*bold text* [inline URL](http://www.example.com/)') // Markdown supported.
             ->file('/storage/archive/6029014.jpg', 'photo') // local photo
             // OR
             // ->file('https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6029/6029014_rd.jpg', 'photo') // remote photo
             ->button('Download PDF', $url); // Inline Button
     }
-...
 ```
-Sample :
-![photo5879686121305255739](https://user-images.githubusercontent.com/785830/46316802-ff82b300-c5dd-11e8-85c9-58c66ad29895.jpg)
+
+Example:
+
+![Laravel Telegram Photo Notification Example](https://user-images.githubusercontent.com/785830/46316802-ff82b300-c5dd-11e8-85c9-58c66ad29895.jpg)
 
 
 ### Attach a Document
 
-``` php
-...
+```php
     public function toTelegram($notifiable)
     {
         $url = url('/file/' . $this->file->id);
 
-        return TelegramMessage::create()
-            ->to($this->user->telegram_user_id) // Optional.
-            ->content("*bold text* [inline URL](http://www.example.com/)") // Markdown supported.
+        return TelegramFile::create()
+            ->to($notifiable->telegram_user_id) // Optional.
+            ->content('*bold text* [inline URL](http://www.example.com/)') // Markdown supported.
             ->file('/storage/archive/file.pdf', 'document') // local file
             // OR
             // ->file('http://www.domain.com/file.pdf', 'document') // remote file
             ->button('Download PDF', $url); // Inline Button
     }
-...
 ```
-Sample :
-![photo5879686121305255737](https://user-images.githubusercontent.com/785830/46316801-feea1c80-c5dd-11e8-99c2-21d00b165a66.jpg)
 
+Example:
+
+![Laravel Telegram Document Notification Example](https://user-images.githubusercontent.com/785830/46316801-feea1c80-c5dd-11e8-99c2-21d00b165a66.jpg)
+
+### Attach a Location
+
+```php
+    public function toTelegram($notifiable)
+    {
+        return TelegramLocation::create()
+            ->to($notifiable->telegram_user_id) // Optional.
+            ->latitude('40.6892494')
+            ->longitude('-74.0466891');
+    }
+```
 
 ### Routing a message
 
