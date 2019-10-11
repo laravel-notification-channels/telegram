@@ -67,7 +67,7 @@ class TelegramFile implements JsonSerializable
 
         $isLocalFile = $this->isReadableFile($file);
 
-        if($filename !== null || $isLocalFile) {
+        if ($filename !== null || $isLocalFile) {
             $this->payload['file'] = [
                 'filename'  => $filename,
                 'name'     => $type,
