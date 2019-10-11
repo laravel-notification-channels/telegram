@@ -2,58 +2,62 @@
 
 namespace NotificationChannels\Telegram;
 
+use Exception;
+use Illuminate\Support\Str;
 use GuzzleHttp\Client as HttpClient;
+use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\ClientException;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
-use GuzzleHttp\Post\PostFile;
 
+/**
+ * Class Telegram
+ */
 class Telegram
 {
     /** @var HttpClient HTTP Client */
     protected $http;
 
     /** @var null|string Telegram Bot API Token. */
-    protected $token = null;
+    protected $token;
 
     /**
-     * @param null            $token
-     * @param HttpClient|null $httpClient
+     * @param  null             $token
+     * @param  HttpClient|null  $httpClient
      */
     public function __construct($token = null, HttpClient $httpClient = null)
     {
         $this->token = $token;
-
         $this->http = $httpClient;
     }
 
     /**
      * Token getter
-     * 
+     *
      * @return string
      */
-    public function getToken()
+    public function getToken(): string
     {
         return $this->token;
     }
 
     /**
      * Token setter
-     * 
-     * @param string
+     *
+     * @param  string
      */
-    public function setToken($token)
+    public function setToken($token): void
     {
         $this->token = $token;
     }
-    
+
     /**
      * Get HttpClient.
      *
      * @return HttpClient
      */
-    protected function httpClient()
+    protected function httpClient(): HttpClient
     {
-        return $this->http ?: $this->http = new HttpClient();
+        return $this->http ?? new HttpClient();
     }
 
     /**
@@ -73,86 +77,70 @@ class Telegram
      *
      * @link https://core.telegram.org/bots/api#sendmessage
      *
-     * @param array $params
+     * @param  array  $params
      *
-     * @var int|string $params ['chat_id']
-     * @var string     $params ['text']
-     * @var string     $params ['parse_mode']
-     * @var bool       $params ['disable_web_page_preview']
-     * @var bool       $params ['disable_notification']
-     * @var int        $params ['reply_to_message_id']
-     * @var string     $params ['reply_markup']
-     *
-     * @return mixed
+     * @throws CouldNotSendNotification
+     * @return ResponseInterface|null
      */
-    public function sendMessage($params)
+    public function sendMessage(array $params): ?ResponseInterface
     {
         return $this->sendRequest('sendMessage', $params);
     }
 
-
     /**
-    * Send File as Image or Document
-    *
-    * @param array $params
-    * @param string $type
-    * @param bool $multipart
-    * 
-    * @return mixed
-    * 
-    */
-    public function sendFile($params, $type, $multipart = false)
+     * Send File as Image or Document
+     *
+     * @param  array   $params
+     * @param  string  $type
+     * @param  bool    $multipart
+     *
+     * @throws CouldNotSendNotification
+     * @return ResponseInterface|null
+     */
+    public function sendFile(array $params, string $type, bool $multipart = false): ?ResponseInterface
     {
-        return $this->sendRequest('send'.ucfirst($type), $params, $multipart);
+        return $this->sendRequest('send'.Str::studly($type), $params, $multipart);
     }
 
     /**
      * Send a Location
      *
-     * @param array $params
-     * @return mixed
+     * @param  array  $params
      *
      * @throws CouldNotSendNotification
+     * @return ResponseInterface|null
      */
-    public function sendLocation($params)
+    public function sendLocation(array $params): ?ResponseInterface
     {
         return $this->sendRequest('sendLocation', $params);
     }
 
-
     /**
      * Send an API request and return response.
      *
-     * @param $endpoint
-     * @param $params
-     * @param bool $multipart
+     * @param  string  $endpoint
+     * @param  array   $params
+     * @param  bool    $multipart
      *
      * @throws CouldNotSendNotification
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface|null
      */
-    protected function sendRequest($endpoint, $params, $multipart = false)
+    protected function sendRequest(string $endpoint, array $params, bool $multipart = false): ?ResponseInterface
     {
-        if (empty($this->token))
-        {
+        if (blank($this->token)) {
             throw CouldNotSendNotification::telegramBotTokenNotProvided('You must provide your telegram bot token to make any API requests.');
         }
 
         $endPointUrl = 'https://api.telegram.org/bot'.$this->token.'/'.$endpoint;
 
         try {
-            if($multipart)
-                $post_name = 'multipart';
-            else
-                $post_name = 'form_params';
-
             return $this->httpClient()->post($endPointUrl, [
-                $post_name => $params,
+                $multipart ? 'multipart' : 'form_params' => $params,
             ]);
 
         } catch (ClientException $exception) {
             throw CouldNotSendNotification::telegramRespondedWithAnError($exception);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             throw CouldNotSendNotification::couldNotCommunicateWithTelegram($exception);
         }
     }

@@ -1,12 +1,12 @@
 {
     "name": "laravel-notification-channels/telegram",
-    "description": "Telegram Notifications Driver for Laravel",
+    "description": "Telegram Notifications Channel for Laravel",
     "keywords": [
-      "telegram notification",
-      "laravel",
-      "telegram",
-      "notification",
-      "telegram notifications channel"
+        "telegram notification",
+        "laravel",
+        "telegram",
+        "notification",
+        "telegram notifications channel"
     ],
     "homepage": "https://github.com/laravel-notification-channels/telegram",
     "license": "MIT",
@@ -26,6 +26,7 @@
     },
     "require-dev": {
         "mockery/mockery": "^1.0",
+        "orchestra/testbench": "^3.5 || ^4.0",
         "phpunit/phpunit": "^7.5"
     },
     "autoload": {

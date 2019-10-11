@@ -5,6 +5,9 @@ namespace NotificationChannels\Telegram;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 
+/**
+ * Class TelegramChannel
+ */
 class TelegramChannel
 {
     /**
@@ -15,7 +18,7 @@ class TelegramChannel
     /**
      * Channel constructor.
      *
-     * @param Telegram $telegram
+     * @param  Telegram  $telegram
      */
     public function __construct(Telegram $telegram)
     {
@@ -25,10 +28,12 @@ class TelegramChannel
     /**
      * Send the given notification.
      *
-     * @param mixed        $notifiable
-     * @param Notification $notification
+     * @param  mixed         $notifiable
+     * @param  Notification  $notification
+     *
+     * @throws CouldNotSendNotification
      */
-    public function send($notifiable, Notification $notification)
+    public function send($notifiable, Notification $notification): void
     {
         $message = $notification->toTelegram($notifiable);
 
@@ -44,27 +49,14 @@ class TelegramChannel
             $message->to($to);
         }
 
-        if(isset($message->payload['text']) && $message->payload['text'])
-        {
-            $params = $message->toArray();
+        $params = $message->toArray();
+
+        if ($message instanceof TelegramMessage) {
             $this->telegram->sendMessage($params);
-        }
-        elseif (isset($message->payload['latitude']) && isset($message->payload['longitude'])) {
-            $params = $message->toArray();
+        } elseif ($message instanceof TelegramLocation) {
             $this->telegram->sendLocation($params);
-        }
-        else
-        {
-            if(isset($message->payload['file']))
-            {
-                $params = $message->toMultipart();
-                $this->telegram->sendFile($params, $message->type, true);
-            }
-            else
-            {
-                $params = $message->toArray();
-                $this->telegram->sendFile($params, $message->type);
-            }
+        } elseif ($message instanceof TelegramFile) {
+            $this->telegram->sendFile($message->toMultipart(), $message->type, true);
         }
     }
 }

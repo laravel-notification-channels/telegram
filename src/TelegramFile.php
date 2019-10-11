@@ -2,56 +2,38 @@
 
 namespace NotificationChannels\Telegram;
 
-class TelegramFile
+use JsonSerializable;
+use NotificationChannels\Telegram\Traits\HasSharedLogic;
+
+/**
+ * Class TelegramFile.
+ */
+class TelegramFile implements JsonSerializable
 {
-    /**
-     * @var string content type.
-     */
+    use HasSharedLogic;
+
+    /** @var string content type. */
     public $type = 'document';
 
     /**
-     * @var array Params payload.
-     */
-    public $payload = [];
-
-    /**
-     * @var array Inline Keyboard Buttons.
-     */
-    protected $buttons = [];
-
-    /**
-     * @param string $content
+     * @param  string  $content
      *
-     * @return static
+     * @return self
      */
-    public static function create($content = '')
+    public static function create($content = ''): self
     {
-        return new static($content);
+        return new self($content);
     }
 
     /**
-     * Document constructor.
+     * Message constructor.
      *
-     * @param string $content
+     * @param  string  $content
      */
     public function __construct($content = '')
     {
         $this->content($content);
         $this->payload['parse_mode'] = 'Markdown';
-    }
-
-    /**
-     * Recipient's Chat ID.
-     *
-     * @param $chatId
-     *
-     * @return $this
-     */
-    public function to($chatId)
-    {
-        $this->payload['chat_id'] = $chatId;
-
-        return $this;
     }
 
     /**
@@ -61,113 +43,161 @@ class TelegramFile
      *
      * @return $this
      */
-    public function content($content)
+    public function content($content): self
     {
         $this->payload['caption'] = $content;
 
         return $this;
     }
 
-
     /**
-    * add File to Message
-    *
-    * @param string $file
-    * @param string $type
-    * @param string $filename
-    *
-    * @return $this
-    *
-    */
-    public function file($file, $type, $filename = null)
+     * Add File to Message.
+     *
+     * Generic method to attach files of any type based on API.
+     *
+     * @param  string       $file
+     * @param  string       $type
+     * @param  string|null  $filename
+     *
+     * @return $this
+     */
+    public function file($file, string $type, string $filename = null): self
     {
         $this->type = $type;
 
-        if(is_file($file))
-        {
-            $this->payload['file'] = ['name' => $type, 'contents'=> fopen($file, 'r')];
-            if($filename)
-                $this->payload['file']['filename'] = $filename;
+        $this->payload['file'] = [
+            'name'     => $type,
+            'contents' => (is_file($file) && is_readable($file)) ? fopen($file, 'rb') : $file,
+        ];
+
+        if ($filename) {
+            $this->payload['file']['filename'] = $filename;
         }
-        else
-            $this->payload[$type] = $file;
 
         return $this;
     }
 
     /**
-     * Add an inline button.
+     * Attach an image.
      *
-     * @param string $text
-     * @param string $url
-     * @param int   $columns
+     * Use this method to send photos.
+     *
+     * @param  string       $file
+     * @param  string|null  $filename
      *
      * @return $this
      */
-    public function button($text, $url, $columns = 2)
+    public function photo(string $file, string $filename = null): self
     {
-        $this->buttons[] = compact('text', 'url');
-
-        $replyMarkup['inline_keyboard'] = array_chunk($this->buttons, $columns);
-        $this->payload['reply_markup'] = json_encode($replyMarkup);
-
-        return $this;
+        return $this->file($file, 'photo', $filename);
     }
 
     /**
-     * Additional options to pass to sendDocument method.
+     * Attach an audio file.
      *
-     * @param array $options
+     * Use this method to send audio files, if you want Telegram clients to display them in the music player.
+     * Your audio must be in the .mp3 format.
+     *
+     * @param  string       $file
+     * @param  string|null  $filename
      *
      * @return $this
      */
-    public function options(array $options)
+    public function audio(string $file, string $filename = null): self
     {
-        $this->payload = array_merge($this->payload, $options);
-
-        return $this;
+        return $this->file($file, 'audio', $filename);
     }
 
     /**
-     * Determine if chat id is not given.
+     * Attach a document or any file as document.
      *
-     * @return bool
+     * Use this method to send general files.
+     *
+     * @param  string       $file
+     * @param  string|null  $filename
+     *
+     * @return $this
      */
-    public function toNotGiven()
+    public function document(string $file, string $filename = null): self
     {
-        return !isset($this->payload['chat_id']);
+        return $this->file($file, 'document', $filename);
     }
 
     /**
-     * Returns params payload.
+     * Attach a video file.
+     *
+     * Use this method to send video files, Telegram clients support mp4 videos.
+     *
+     * @param  string       $file
+     * @param  string|null  $filename
+     *
+     * @return $this
+     */
+    public function video(string $file, string $filename = null): self
+    {
+        return $this->file($file, 'video', $filename);
+    }
+
+    /**
+     * Attach an animation file.
+     *
+     * Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
+     *
+     * @param  string       $file
+     * @param  string|null  $filename
+     *
+     * @return $this
+     */
+    public function animation(string $file, string $filename = null): self
+    {
+        return $this->file($file, 'animation', $filename);
+    }
+
+    /**
+     * Attach a voice file.
+     *
+     * Use this method to send audio files, if you want Telegram clients to display the file as a playable voice
+     * message. For this to work, your audio must be in an .ogg file encoded with OPUS.
+     *
+     * @param  string       $file
+     * @param  string|null  $filename
+     *
+     * @return $this
+     */
+    public function voice(string $file, string $filename = null): self
+    {
+        return $this->file($file, 'voice', $filename);
+    }
+
+    /**
+     * Attach a video note file.
+     *
+     * Telegram clients support rounded square mp4 videos of up to 1 minute long.
+     * Use this method to send video messages.
+     *
+     * @param  string       $file
+     * @param  string|null  $filename
+     *
+     * @return $this
+     */
+    public function videoNote(string $file, string $filename = null): self
+    {
+        return $this->file($file, 'video_note', $filename);
+    }
+
+    /**
+     * Create Multipart array
      *
      * @return array
+     *
      */
-    public function toArray()
-    {
-        return $this->payload;
-    }
-
-
-    /**
-    * Create Multipart array
-    *
-    * @return array
-    *
-    */
-    public function toMultipart()
+    public function toMultipart(): array
     {
         $data = [];
-        foreach ($this->payload as $key => $value) {
-            if($key!='file')
-            {
-                $data[] = ['name' => $key, 'contents' => $value];
-            }
-            else
-            {
-                $data[] = $value;
-            }
+        foreach ($this->payload as $name => $contents) {
+            $data[] = ($name === 'file') ? $contents : compact('name', 'contents');
         }
+
         return $data;
     }
 }

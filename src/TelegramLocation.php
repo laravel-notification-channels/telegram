@@ -2,20 +2,23 @@
 
 namespace NotificationChannels\Telegram;
 
-class TelegramLocation
+use JsonSerializable;
+use NotificationChannels\Telegram\Traits\HasSharedLogic;
+
+/**
+ * Class TelegramLocation
+ */
+class TelegramLocation implements JsonSerializable
 {
-    /**
-     * @var array Params payload.
-     */
-    public $payload = [];
+    use HasSharedLogic;
 
     /**
-     * @param null $latitude
-     * @param null $longitude
+     * @param  float|string|null  $latitude
+     * @param  float|string|null  $longitude
      *
      * @return static
      */
-    public static function create($latitude = null, $longitude = null)
+    public static function create($latitude = null, $longitude = null): TelegramLocation
     {
         return new static($latitude, $longitude);
     }
@@ -23,8 +26,8 @@ class TelegramLocation
     /**
      * Message constructor.
      *
-     * @param null $latitude
-     * @param null $longitude
+     * @param  float|string|null  $latitude
+     * @param  float|string|null  $longitude
      */
     public function __construct($latitude = null, $longitude = null)
     {
@@ -33,27 +36,13 @@ class TelegramLocation
     }
 
     /**
-     * Recipient's Chat ID.
+     * Location's latitude.
      *
-     * @param $chatId
+     * @param  float|string  $latitude
      *
      * @return $this
      */
-    public function to($chatId)
-    {
-        $this->payload['chat_id'] = $chatId;
-
-        return $this;
-    }
-
-    /**
-     * Location's latitude.
-     *
-     * @param $latitude
-     *
-     * @return TelegramLocation
-     */
-    public function latitude($latitude)
+    public function latitude($latitude): self
     {
         $this->payload['latitude'] = $latitude;
 
@@ -63,48 +52,14 @@ class TelegramLocation
     /**
      * Location's latitude.
      *
-     * @param $longitude
+     * @param  float|string  $longitude
      *
-     * @return TelegramLocation
+     * @return $this
      */
-    public function longitude($longitude)
+    public function longitude($longitude): self
     {
         $this->payload['longitude'] = $longitude;
 
         return $this;
-    }
-
-    /**
-     * Additional options to pass to sendLocation method.
-     *
-     * @param array $options
-     *
-     * @return $this
-     */
-    public function options(array $options)
-    {
-        $this->payload = array_merge($this->payload, $options);
-
-        return $this;
-    }
-
-    /**
-     * Determine if chat id is not given.
-     *
-     * @return bool
-     */
-    public function toNotGiven()
-    {
-        return !isset($this->payload['chat_id']);
-    }
-
-    /**
-     * Returns params payload.
-     *
-     * @return array
-     */
-    public function toArray()
-    {
-        return $this->payload;
     }
 }

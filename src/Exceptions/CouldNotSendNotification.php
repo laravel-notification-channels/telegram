@@ -2,26 +2,31 @@
 
 namespace NotificationChannels\Telegram\Exceptions;
 
+use Exception;
 use GuzzleHttp\Exception\ClientException;
 
-class CouldNotSendNotification extends \Exception
+/**
+ * Class CouldNotSendNotification
+ */
+class CouldNotSendNotification extends Exception
 {
     /**
      * Thrown when there's a bad request and an error is responded.
      *
-     * @param ClientException $exception
+     * @param  ClientException  $exception
      *
      * @return static
      */
-    public static function telegramRespondedWithAnError(ClientException $exception)
+    public static function telegramRespondedWithAnError(ClientException $exception): self
     {
+        if (!$exception->hasResponse()) {
+            return new static('Telegram responded with an error but no response body found');
+        }
+
         $statusCode = $exception->getResponse()->getStatusCode();
 
-        $description = 'no description given';
-
-        if ($result = json_decode($exception->getResponse()->getBody())) {
-            $description = $result->description ?: $description;
-        }
+        $result = json_decode($exception->getResponse()->getBody(), false);
+        $description = $result->description ?? 'no description given';
 
         return new static("Telegram responded with an error `{$statusCode} - {$description}`");
     }
@@ -29,11 +34,11 @@ class CouldNotSendNotification extends \Exception
     /**
      * Thrown when there's no bot token provided.
      *
-     * @param string $message
+     * @param  string  $message
      *
      * @return static
      */
-    public static function telegramBotTokenNotProvided($message)
+    public static function telegramBotTokenNotProvided($message): self
     {
         return new static($message);
     }
@@ -41,9 +46,11 @@ class CouldNotSendNotification extends \Exception
     /**
      * Thrown when we're unable to communicate with Telegram.
      *
+     * @param $message
+     *
      * @return static
      */
-     public static function couldNotCommunicateWithTelegram($message)
+    public static function couldNotCommunicateWithTelegram($message): self
     {
         return new static("The communication with Telegram failed. `{$message}`");
     }
@@ -53,7 +60,7 @@ class CouldNotSendNotification extends \Exception
      *
      * @return static
      */
-    public static function chatIdNotProvided()
+    public static function chatIdNotProvided(): self
     {
         return new static('Telegram notification chat ID was not provided. Please refer usage docs.');
     }

@@ -2,51 +2,35 @@
 
 namespace NotificationChannels\Telegram;
 
-class TelegramMessage
+use JsonSerializable;
+use NotificationChannels\Telegram\Traits\HasSharedLogic;
+
+/**
+ * Class TelegramMessage
+ */
+class TelegramMessage implements JsonSerializable
 {
-    /**
-     * @var array Params payload.
-     */
-    public $payload = [];
+    use HasSharedLogic;
 
     /**
-     * @var array Inline Keyboard Buttons.
-     */
-    protected $buttons = [];
-
-    /**
-     * @param string $content
+     * @param  string  $content
      *
-     * @return static
+     * @return self
      */
-    public static function create($content = '')
+    public static function create($content = ''): self
     {
-        return new static($content);
+        return new self($content);
     }
 
     /**
      * Message constructor.
      *
-     * @param string $content
+     * @param  string  $content
      */
     public function __construct($content = '')
     {
         $this->content($content);
         $this->payload['parse_mode'] = 'Markdown';
-    }
-
-    /**
-     * Recipient's Chat ID.
-     *
-     * @param $chatId
-     *
-     * @return $this
-     */
-    public function to($chatId)
-    {
-        $this->payload['chat_id'] = $chatId;
-
-        return $this;
     }
 
     /**
@@ -56,63 +40,10 @@ class TelegramMessage
      *
      * @return $this
      */
-    public function content($content)
+    public function content($content): self
     {
         $this->payload['text'] = $content;
 
         return $this;
-    }
-
-    /**
-     * Add an inline button.
-     *
-     * @param string $text
-     * @param string $url
-     * @param int   $columns
-     *
-     * @return $this
-     */
-    public function button($text, $url, $columns = 2)
-    {
-        $this->buttons[] = compact('text', 'url');
-
-        $replyMarkup['inline_keyboard'] = array_chunk($this->buttons, $columns);
-        $this->payload['reply_markup'] = json_encode($replyMarkup);
-
-        return $this;
-    }
-
-    /**
-     * Additional options to pass to sendMessage method.
-     *
-     * @param array $options
-     *
-     * @return $this
-     */
-    public function options(array $options)
-    {
-        $this->payload = array_merge($this->payload, $options);
-
-        return $this;
-    }
-
-    /**
-     * Determine if chat id is not given.
-     *
-     * @return bool
-     */
-    public function toNotGiven()
-    {
-        return !isset($this->payload['chat_id']);
-    }
-
-    /**
-     * Returns params payload.
-     *
-     * @return array
-     */
-    public function toArray()
-    {
-        return $this->payload;
     }
 }
