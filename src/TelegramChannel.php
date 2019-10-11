@@ -35,7 +35,7 @@ class TelegramChannel
      */
     public function send($notifiable, Notification $notification): void
     {
-        $message = $notification->toTelegram($notifiable);
+        $message = /** @scrutinizer ignore-call */ $notification->toTelegram($notifiable);
 
         if (is_string($message)) {
             $message = TelegramMessage::create($message);
