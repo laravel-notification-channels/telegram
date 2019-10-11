@@ -3,7 +3,7 @@
 namespace NotificationChannels\Telegram\Test;
 
 use Mockery;
-use Orchestra\Testbench\TestCase;
+use PHPUnit\Framework\TestCase;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\Telegram;
@@ -27,6 +27,12 @@ class ChannelTest extends TestCase
         parent::setUp();
         $this->telegram = Mockery::mock(Telegram::class);
         $this->channel = new TelegramChannel($this->telegram);
+    }
+
+    public function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 
     /** @test */
