@@ -65,13 +65,16 @@ class TelegramFile implements JsonSerializable
     {
         $this->type = $type;
 
-        $this->payload['file'] = [
-            'name'     => $type,
-            'contents' => (is_file($file) && is_readable($file)) ? fopen($file, 'rb') : $file,
-        ];
+        $isLocalFile = $this->isReadableFile($file);
 
-        if ($filename !== null) {
-            $this->payload['file']['filename'] = $filename;
+        if($filename !== null || $isLocalFile) {
+            $this->payload['file'] = [
+                'filename'  => $filename,
+                'name'     => $type,
+                'contents' => $isLocalFile ? fopen($file, 'rb') : $file,
+            ];
+        } else {
+            $this->payload[$type] = $file;
         }
 
         return $this;
@@ -82,14 +85,13 @@ class TelegramFile implements JsonSerializable
      *
      * Use this method to send photos.
      *
-     * @param string      $file
-     * @param string|null $filename
+     * @param string $file
      *
      * @return $this
      */
-    public function photo(string $file, string $filename = null): self
+    public function photo(string $file): self
     {
-        return $this->file($file, 'photo', $filename);
+        return $this->file($file, 'photo');
     }
 
     /**
@@ -98,14 +100,13 @@ class TelegramFile implements JsonSerializable
      * Use this method to send audio files, if you want Telegram clients to display them in the music player.
      * Your audio must be in the .mp3 format.
      *
-     * @param string      $file
-     * @param string|null $filename
+     * @param string $file
      *
      * @return $this
      */
-    public function audio(string $file, string $filename = null): self
+    public function audio(string $file): self
     {
-        return $this->file($file, 'audio', $filename);
+        return $this->file($file, 'audio');
     }
 
     /**
@@ -128,14 +129,13 @@ class TelegramFile implements JsonSerializable
      *
      * Use this method to send video files, Telegram clients support mp4 videos.
      *
-     * @param string      $file
-     * @param string|null $filename
+     * @param string $file
      *
      * @return $this
      */
-    public function video(string $file, string $filename = null): self
+    public function video(string $file): self
     {
-        return $this->file($file, 'video', $filename);
+        return $this->file($file, 'video');
     }
 
     /**
@@ -143,14 +143,13 @@ class TelegramFile implements JsonSerializable
      *
      * Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
      *
-     * @param string      $file
-     * @param string|null $filename
+     * @param string $file
      *
      * @return $this
      */
-    public function animation(string $file, string $filename = null): self
+    public function animation(string $file): self
     {
-        return $this->file($file, 'animation', $filename);
+        return $this->file($file, 'animation');
     }
 
     /**
@@ -159,14 +158,13 @@ class TelegramFile implements JsonSerializable
      * Use this method to send audio files, if you want Telegram clients to display the file as a playable voice
      * message. For this to work, your audio must be in an .ogg file encoded with OPUS.
      *
-     * @param string      $file
-     * @param string|null $filename
+     * @param string $file
      *
      * @return $this
      */
-    public function voice(string $file, string $filename = null): self
+    public function voice(string $file): self
     {
-        return $this->file($file, 'voice', $filename);
+        return $this->file($file, 'voice');
     }
 
     /**
@@ -175,14 +173,33 @@ class TelegramFile implements JsonSerializable
      * Telegram clients support rounded square mp4 videos of up to 1 minute long.
      * Use this method to send video messages.
      *
-     * @param string      $file
-     * @param string|null $filename
+     * @param string $file
      *
      * @return $this
      */
-    public function videoNote(string $file, string $filename = null): self
+    public function videoNote(string $file): self
     {
-        return $this->file($file, 'video_note', $filename);
+        return $this->file($file, 'video_note');
+    }
+
+    /**
+     * Determine there is a file.
+     *
+     * @return bool
+     */
+    public function hasFile(): bool
+    {
+        return isset($this->payload['file']);
+    }
+
+    /**
+     * Returns params payload.
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return $this->hasFile() ? $this->toMultipart() : $this->payload;
     }
 
     /**
@@ -198,5 +215,17 @@ class TelegramFile implements JsonSerializable
         }
 
         return $data;
+    }
+
+    /**
+     * Determine if it's a regular and readable file.
+     *
+     * @param string $file
+     *
+     * @return bool
+     */
+    protected function isReadableFile(string $file): bool
+    {
+        return is_file($file) && is_readable($file);
     }
 }

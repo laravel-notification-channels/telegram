@@ -103,7 +103,7 @@ public function toTelegram($notifiable)
         ->content('Awesome *bold* text and [inline URL](http://www.example.com/)')
         ->file('/storage/archive/6029014.jpg', 'photo'); // local photo
 
-        // OR using a helper method with remote file.
+        // OR using a helper method with or without a remote file.
         // ->photo('https://file-examples.com/wp-content/uploads/2017/10/file_example_JPG_1MB.jpg');
 }
 ```
@@ -220,13 +220,13 @@ public function routeNotificationForTelegram()
 - `to($chatId)`: (integer) Recipient's chat id.
 - `content('')`: (string) File caption, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
 - `file($file, $type, $filename = null)`: Local file path or remote URL, `$type` of the file (Ex:`photo`, `audio`, `document`, `video`, `animation`, `voice`, `video_note_`) and optionally filename with extension. Ex: `sample.pdf`. You can use helper methods instead of using this to make it easier to work with file attachment.
-- `photo($file, $filename = null)`: Helper method to attach a photo.
-- `audio($file, $filename = null)`: Helper method to attach an audio file (MP3 file).
+- `photo($file)`: Helper method to attach a photo.
+- `audio($file)`: Helper method to attach an audio file (MP3 file).
 - `document($file, $filename = null)`: Helper method to attach a document or any file as document.
-- `video($file, $filename = null)`: Helper method to attach a video file.
-- `animation($file, $filename = null)`: Helper method to attach an animated gif file.
-- `voice($file, $filename = null)`: Helper method to attach a voice note (`.ogg` file with OPUS encoded).
-- `videoNote($file, $filename = null)`: Helper method to attach a video note file (Upto 1 min long, rounded square video).
+- `video($file)`: Helper method to attach a video file.
+- `animation($file)`: Helper method to attach an animated gif file.
+- `voice($file)`: Helper method to attach a voice note (`.ogg` file with OPUS encoded).
+- `videoNote($file)`: Helper method to attach a video note file (Upto 1 min long, rounded square video).
 - `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want and they'll be placed 2 in a row.
 - `disableNotification()`: Send the message silently. Users will receive a notification with no sound.
 - `options([])`: (array) Allows you to add additional or override the payload.

@@ -56,7 +56,7 @@ class TelegramChannel
         } elseif ($message instanceof TelegramLocation) {
             $this->telegram->sendLocation($params);
         } elseif ($message instanceof TelegramFile) {
-            $this->telegram->sendFile($message->toMultipart(), $message->type, true);
+            $this->telegram->sendFile($params, $message->type, $message->hasFile());
         }
     }
 }
