@@ -17,7 +17,7 @@ class TelegramMessage implements JsonSerializable
      *
      * @return self
      */
-    public static function create($content = ''): self
+    public static function create(string $content = ''): self
     {
         return new self($content);
     }
@@ -27,7 +27,7 @@ class TelegramMessage implements JsonSerializable
      *
      * @param string $content
      */
-    public function __construct($content = '')
+    public function __construct(string $content = '')
     {
         $this->content($content);
         $this->payload['parse_mode'] = 'Markdown';
@@ -36,11 +36,11 @@ class TelegramMessage implements JsonSerializable
     /**
      * Notification message (Supports Markdown).
      *
-     * @param $content
+     * @param string $content
      *
      * @return $this
      */
-    public function content($content): self
+    public function content(string $content): self
     {
         $this->payload['text'] = $content;
 
