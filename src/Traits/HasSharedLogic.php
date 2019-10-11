@@ -40,8 +40,9 @@ trait HasSharedLogic
     {
         $this->buttons[] = compact('text', 'url');
 
-        $replyMarkup['inline_keyboard'] = array_chunk($this->buttons, $columns);
-        $this->payload['reply_markup'] = json_encode($replyMarkup);
+        $this->payload['reply_markup'] = json_encode([
+            'inline_keyboard' => array_chunk($this->buttons, $columns),
+        ]);
 
         return $this;
     }

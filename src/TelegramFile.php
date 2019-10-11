@@ -70,7 +70,7 @@ class TelegramFile implements JsonSerializable
             'contents' => (is_file($file) && is_readable($file)) ? fopen($file, 'rb') : $file,
         ];
 
-        if ($filename) {
+        if ($filename !== null) {
             $this->payload['file']['filename'] = $filename;
         }
 
