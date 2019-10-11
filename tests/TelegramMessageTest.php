@@ -2,8 +2,8 @@
 
 namespace NotificationChannels\Telegram\Test;
 
-use NotificationChannels\Telegram\TelegramMessage;
 use PHPUnit\Framework\TestCase;
+use NotificationChannels\Telegram\TelegramMessage;
 
 /**
  * Class TelegramMessageTest.

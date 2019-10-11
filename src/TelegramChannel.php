@@ -42,7 +42,7 @@ class TelegramChannel
         }
 
         if ($message->toNotGiven()) {
-            if (!$to = $notifiable->routeNotificationFor('telegram')) {
+            if (! $to = $notifiable->routeNotificationFor('telegram')) {
                 throw CouldNotSendNotification::chatIdNotProvided();
             }
 

@@ -2,14 +2,14 @@
 
 namespace NotificationChannels\Telegram\Test;
 
+use Mockery;
+use Orchestra\Testbench\TestCase;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
-use Mockery;
-use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Telegram\Telegram;
 use NotificationChannels\Telegram\TelegramChannel;
 use NotificationChannels\Telegram\TelegramMessage;
-use Orchestra\Testbench\TestCase;
+use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 
 /**
  * Class ChannelTest.

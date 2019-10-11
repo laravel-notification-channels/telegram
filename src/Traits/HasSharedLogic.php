@@ -80,7 +80,7 @@ trait HasSharedLogic
      */
     public function toNotGiven(): bool
     {
-        return !isset($this->payload['chat_id']);
+        return ! isset($this->payload['chat_id']);
     }
 
     /**
