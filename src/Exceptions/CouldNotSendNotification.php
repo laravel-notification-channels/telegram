@@ -6,14 +6,14 @@ use Exception;
 use GuzzleHttp\Exception\ClientException;
 
 /**
- * Class CouldNotSendNotification
+ * Class CouldNotSendNotification.
  */
 class CouldNotSendNotification extends Exception
 {
     /**
      * Thrown when there's a bad request and an error is responded.
      *
-     * @param  ClientException  $exception
+     * @param ClientException $exception
      *
      * @return static
      */
@@ -34,7 +34,7 @@ class CouldNotSendNotification extends Exception
     /**
      * Thrown when there's no bot token provided.
      *
-     * @param  string  $message
+     * @param string $message
      *
      * @return static
      */

@@ -30,9 +30,9 @@ trait HasSharedLogic
     /**
      * Add an inline button.
      *
-     * @param  string  $text
-     * @param  string  $url
-     * @param  int     $columns
+     * @param string $text
+     * @param string $url
+     * @param int    $columns
      *
      * @return $this
      */
@@ -62,7 +62,7 @@ trait HasSharedLogic
     /**
      * Additional options to pass to sendMessage method.
      *
-     * @param  array  $options
+     * @param array $options
      *
      * @return $this
      */
@@ -86,7 +86,7 @@ trait HasSharedLogic
     /**
      * Get payload value for given key.
      *
-     * @param  string  $key
+     * @param string $key
      *
      * @return mixed|null
      */

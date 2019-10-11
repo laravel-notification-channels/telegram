@@ -6,7 +6,7 @@ use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 
 /**
- * Class TelegramChannel
+ * Class TelegramChannel.
  */
 class TelegramChannel
 {
@@ -18,7 +18,7 @@ class TelegramChannel
     /**
      * Channel constructor.
      *
-     * @param  Telegram  $telegram
+     * @param Telegram $telegram
      */
     public function __construct(Telegram $telegram)
     {
@@ -28,8 +28,8 @@ class TelegramChannel
     /**
      * Send the given notification.
      *
-     * @param  mixed         $notifiable
-     * @param  Notification  $notification
+     * @param mixed        $notifiable
+     * @param Notification $notification
      *
      * @throws CouldNotSendNotification
      */

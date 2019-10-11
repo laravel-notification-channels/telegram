@@ -6,7 +6,7 @@ use GuzzleHttp\Client as HttpClient;
 use Illuminate\Support\ServiceProvider;
 
 /**
- * Class TelegramServiceProvider
+ * Class TelegramServiceProvider.
  */
 class TelegramServiceProvider extends ServiceProvider
 {
