@@ -2,17 +2,17 @@
 
 namespace NotificationChannels\Telegram\Test;
 
-use Mockery;
-use Orchestra\Testbench\TestCase;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
-use NotificationChannels\Telegram\Telegram;
-use NotificationChannels\Telegram\TelegramMessage;
-use NotificationChannels\Telegram\TelegramChannel;
+use Mockery;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
+use NotificationChannels\Telegram\Telegram;
+use NotificationChannels\Telegram\TelegramChannel;
+use NotificationChannels\Telegram\TelegramMessage;
+use Orchestra\Testbench\TestCase;
 
 /**
- * Class ChannelTest
+ * Class ChannelTest.
  */
 class ChannelTest extends TestCase
 {
@@ -46,11 +46,10 @@ class ChannelTest extends TestCase
         $this->expectException(CouldNotSendNotification::class);
         $this->channel->send(new TestNotifiable(), new TestNotificationNoChatId());
     }
-
 }
 
 /**
- * Class TestNotifiable
+ * Class TestNotifiable.
  */
 class TestNotifiable
 {
@@ -66,7 +65,7 @@ class TestNotifiable
 }
 
 /**
- * Class TestNotification
+ * Class TestNotification.
  */
 class TestNotification extends Notification
 {
@@ -82,7 +81,7 @@ class TestNotification extends Notification
 }
 
 /**
- * Class TestNotificationNoChatId
+ * Class TestNotificationNoChatId.
  */
 class TestNotificationNoChatId extends Notification
 {

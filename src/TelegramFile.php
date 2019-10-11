@@ -16,7 +16,7 @@ class TelegramFile implements JsonSerializable
     public $type = 'document';
 
     /**
-     * @param  string  $content
+     * @param string $content
      *
      * @return self
      */
@@ -28,7 +28,7 @@ class TelegramFile implements JsonSerializable
     /**
      * Message constructor.
      *
-     * @param  string  $content
+     * @param string $content
      */
     public function __construct($content = '')
     {
@@ -55,9 +55,9 @@ class TelegramFile implements JsonSerializable
      *
      * Generic method to attach files of any type based on API.
      *
-     * @param  string       $file
-     * @param  string       $type
-     * @param  string|null  $filename
+     * @param string      $file
+     * @param string      $type
+     * @param string|null $filename
      *
      * @return $this
      */
@@ -82,8 +82,8 @@ class TelegramFile implements JsonSerializable
      *
      * Use this method to send photos.
      *
-     * @param  string       $file
-     * @param  string|null  $filename
+     * @param string      $file
+     * @param string|null $filename
      *
      * @return $this
      */
@@ -98,8 +98,8 @@ class TelegramFile implements JsonSerializable
      * Use this method to send audio files, if you want Telegram clients to display them in the music player.
      * Your audio must be in the .mp3 format.
      *
-     * @param  string       $file
-     * @param  string|null  $filename
+     * @param string      $file
+     * @param string|null $filename
      *
      * @return $this
      */
@@ -113,8 +113,8 @@ class TelegramFile implements JsonSerializable
      *
      * Use this method to send general files.
      *
-     * @param  string       $file
-     * @param  string|null  $filename
+     * @param string      $file
+     * @param string|null $filename
      *
      * @return $this
      */
@@ -128,8 +128,8 @@ class TelegramFile implements JsonSerializable
      *
      * Use this method to send video files, Telegram clients support mp4 videos.
      *
-     * @param  string       $file
-     * @param  string|null  $filename
+     * @param string      $file
+     * @param string|null $filename
      *
      * @return $this
      */
@@ -143,8 +143,8 @@ class TelegramFile implements JsonSerializable
      *
      * Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
      *
-     * @param  string       $file
-     * @param  string|null  $filename
+     * @param string      $file
+     * @param string|null $filename
      *
      * @return $this
      */
@@ -159,8 +159,8 @@ class TelegramFile implements JsonSerializable
      * Use this method to send audio files, if you want Telegram clients to display the file as a playable voice
      * message. For this to work, your audio must be in an .ogg file encoded with OPUS.
      *
-     * @param  string       $file
-     * @param  string|null  $filename
+     * @param string      $file
+     * @param string|null $filename
      *
      * @return $this
      */
@@ -175,8 +175,8 @@ class TelegramFile implements JsonSerializable
      * Telegram clients support rounded square mp4 videos of up to 1 minute long.
      * Use this method to send video messages.
      *
-     * @param  string       $file
-     * @param  string|null  $filename
+     * @param string      $file
+     * @param string|null $filename
      *
      * @return $this
      */
@@ -186,10 +186,9 @@ class TelegramFile implements JsonSerializable
     }
 
     /**
-     * Create Multipart array
+     * Create Multipart array.
      *
      * @return array
-     *
      */
     public function toMultipart(): array
     {

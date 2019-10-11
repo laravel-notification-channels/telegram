@@ -3,14 +3,14 @@
 namespace NotificationChannels\Telegram;
 
 use Exception;
-use Illuminate\Support\Str;
 use GuzzleHttp\Client as HttpClient;
-use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Support\Str;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
+use Psr\Http\Message\ResponseInterface;
 
 /**
- * Class Telegram
+ * Class Telegram.
  */
 class Telegram
 {
@@ -21,8 +21,8 @@ class Telegram
     protected $token;
 
     /**
-     * @param  null             $token
-     * @param  HttpClient|null  $httpClient
+     * @param null            $token
+     * @param HttpClient|null $httpClient
      */
     public function __construct($token = null, HttpClient $httpClient = null)
     {
@@ -31,7 +31,7 @@ class Telegram
     }
 
     /**
-     * Token getter
+     * Token getter.
      *
      * @return string
      */
@@ -41,7 +41,7 @@ class Telegram
     }
 
     /**
-     * Token setter
+     * Token setter.
      *
      * @param  string
      */
@@ -77,9 +77,10 @@ class Telegram
      *
      * @link https://core.telegram.org/bots/api#sendmessage
      *
-     * @param  array  $params
+     * @param array $params
      *
      * @throws CouldNotSendNotification
+     *
      * @return ResponseInterface|null
      */
     public function sendMessage(array $params): ?ResponseInterface
@@ -88,13 +89,14 @@ class Telegram
     }
 
     /**
-     * Send File as Image or Document
+     * Send File as Image or Document.
      *
-     * @param  array   $params
-     * @param  string  $type
-     * @param  bool    $multipart
+     * @param array  $params
+     * @param string $type
+     * @param bool   $multipart
      *
      * @throws CouldNotSendNotification
+     *
      * @return ResponseInterface|null
      */
     public function sendFile(array $params, string $type, bool $multipart = false): ?ResponseInterface
@@ -103,11 +105,12 @@ class Telegram
     }
 
     /**
-     * Send a Location
+     * Send a Location.
      *
-     * @param  array  $params
+     * @param array $params
      *
      * @throws CouldNotSendNotification
+     *
      * @return ResponseInterface|null
      */
     public function sendLocation(array $params): ?ResponseInterface
@@ -118,11 +121,12 @@ class Telegram
     /**
      * Send an API request and return response.
      *
-     * @param  string  $endpoint
-     * @param  array   $params
-     * @param  bool    $multipart
+     * @param string $endpoint
+     * @param array  $params
+     * @param bool   $multipart
      *
      * @throws CouldNotSendNotification
+     *
      * @return ResponseInterface|null
      */
     protected function sendRequest(string $endpoint, array $params, bool $multipart = false): ?ResponseInterface
@@ -137,7 +141,6 @@ class Telegram
             return $this->httpClient()->post($endPointUrl, [
                 $multipart ? 'multipart' : 'form_params' => $params,
             ]);
-
         } catch (ClientException $exception) {
             throw CouldNotSendNotification::telegramRespondedWithAnError($exception);
         } catch (Exception $exception) {

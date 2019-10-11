@@ -6,14 +6,14 @@ use JsonSerializable;
 use NotificationChannels\Telegram\Traits\HasSharedLogic;
 
 /**
- * Class TelegramMessage
+ * Class TelegramMessage.
  */
 class TelegramMessage implements JsonSerializable
 {
     use HasSharedLogic;
 
     /**
-     * @param  string  $content
+     * @param string $content
      *
      * @return self
      */
@@ -25,7 +25,7 @@ class TelegramMessage implements JsonSerializable
     /**
      * Message constructor.
      *
-     * @param  string  $content
+     * @param string $content
      */
     public function __construct($content = '')
     {

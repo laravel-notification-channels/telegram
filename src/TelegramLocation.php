@@ -6,19 +6,19 @@ use JsonSerializable;
 use NotificationChannels\Telegram\Traits\HasSharedLogic;
 
 /**
- * Class TelegramLocation
+ * Class TelegramLocation.
  */
 class TelegramLocation implements JsonSerializable
 {
     use HasSharedLogic;
 
     /**
-     * @param  float|string|null  $latitude
-     * @param  float|string|null  $longitude
+     * @param float|string|null $latitude
+     * @param float|string|null $longitude
      *
      * @return static
      */
-    public static function create($latitude = null, $longitude = null): TelegramLocation
+    public static function create($latitude = null, $longitude = null): self
     {
         return new static($latitude, $longitude);
     }
@@ -26,8 +26,8 @@ class TelegramLocation implements JsonSerializable
     /**
      * Message constructor.
      *
-     * @param  float|string|null  $latitude
-     * @param  float|string|null  $longitude
+     * @param float|string|null $latitude
+     * @param float|string|null $longitude
      */
     public function __construct($latitude = null, $longitude = null)
     {
@@ -38,7 +38,7 @@ class TelegramLocation implements JsonSerializable
     /**
      * Location's latitude.
      *
-     * @param  float|string  $latitude
+     * @param float|string $latitude
      *
      * @return $this
      */
@@ -52,7 +52,7 @@ class TelegramLocation implements JsonSerializable
     /**
      * Location's latitude.
      *
-     * @param  float|string  $longitude
+     * @param float|string $longitude
      *
      * @return $this
      */
