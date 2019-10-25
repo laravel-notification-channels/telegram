@@ -1,10 +1,13 @@
 # Telegram Notifications Channel for Laravel
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/laravel-notification-channels/telegram.svg?style=flat-square)](https://packagist.org/packages/laravel-notification-channels/telegram)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![SensioLabsInsight](https://img.shields.io/sensiolabs/i/d28e31ec-55ce-4306-88a3-84d5d14ad3db.svg?style=flat-square)](https://insight.sensiolabs.com/projects/d28e31ec-55ce-4306-88a3-84d5d14ad3db)
-[![Quality Score](https://img.shields.io/scrutinizer/g/laravel-notification-channels/telegram.svg?style=flat-square)](https://scrutinizer-ci.com/g/laravel-notification-channels/telegram)
-[![Total Downloads](https://img.shields.io/packagist/dt/laravel-notification-channels/telegram.svg?style=flat-square)](https://packagist.org/packages/laravel-notification-channels/telegram)
+[![Join PHP Chat][ico-phpchat]][link-phpchat]
+[![Chat on Telegram][ico-telegram]][link-telegram]
+[![Laravel Package][ico-laravel]][link-repo]
+[![Latest Version on Packagist][ico-version]][link-packagist]
+[![Software License][ico-license]](LICENSE.md)
+[![SensioLabsInsight][ico-sensiolabs]][link-sensiolabs]
+[![Quality Score][ico-code-quality]][link-code-quality]
+[![Total Downloads][ico-downloads]][link-packagist]
 
 This package makes it easy to send Telegram notification using [Telegram Bot API](https://core.telegram.org/bots) with Laravel.
 
@@ -255,9 +258,31 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Credits
 
-- [Syed Irfaq R.](https://github.com/irazasyed)
-- [All Contributors](../../contributors)
+- [Syed Irfaq R.][link-author]
+- [All Contributors][link-contributors]
 
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+[ico-phpchat]: https://img.shields.io/badge/Slack-PHP%20Chat-5c6aaa.svg?style=flat-square&logo=slack&labelColor=4A154B
+[ico-telegram]: https://img.shields.io/badge/@PHPChatCo-2CA5E0.svg?style=flat-square&logo=telegram&label=Telegram
+[ico-laravel]: https://img.shields.io/badge/Laravel-5|6-FF2D20.svg?style=flat-square&logo=laravel&labelColor=black&logoColor=white
+[ico-version]: https://img.shields.io/packagist/v/laravel-notification-channels/telegram.svg?style=flat-square
+[ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/laravel-notification-channels/telegram/master.svg?style=flat-square
+[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/laravel-notification-channels/telegram.svg?style=flat-square
+[ico-code-quality]: https://img.shields.io/scrutinizer/g/laravel-notification-channels/telegram.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/laravel-notification-channels/telegram.svg?style=flat-square
+[ico-sensiolabs]: https://img.shields.io/sensiolabs/i/d28e31ec-55ce-4306-88a3-84d5d14ad3db.svg?style=flat-square
+
+[link-phpchat]: https://phpchat.co/?ref=laravel-channel-telegram
+[link-telegram]: https://t.me/PHPChatCo
+[link-repo]: https://github.com/laravel-notification-channels/telegram
+[link-packagist]: https://packagist.org/packages/laravel-notification-channels/telegram
+[link-travis]: https://travis-ci.org/laravel-notification-channels/telegram
+[link-scrutinizer]: https://scrutinizer-ci.com/g/laravel-notification-channels/telegram/code-structure
+[link-sensiolabs]: https://insight.sensiolabs.com/projects/d28e31ec-55ce-4306-88a3-84d5d14ad3db
+[link-code-quality]: https://scrutinizer-ci.com/g/laravel-notification-channels/telegram
+[link-author]: https://github.com/irazasyed
+[link-contributors]: ../../contributors
