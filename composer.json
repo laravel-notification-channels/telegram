@@ -12,14 +12,14 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Syed Irfaq R.",
+            "name": "Irfaq Syed",
             "email": "syed@lukonet.com",
             "homepage": "https://lukonet.com",
             "role": "Developer"
         }
     ],
     "require": {
-        "php": "^7.2",
+        "php": "^7.1",
         "guzzlehttp/guzzle": "^6.2",
         "illuminate/notifications": "^5.5 || ^6.0",
         "illuminate/support": "^5.5 || ^6.0"
