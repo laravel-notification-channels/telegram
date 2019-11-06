@@ -15,9 +15,7 @@ before_script:
     - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-source
 
 script:
-    - phpunit --version
-    - ./vendor/bin/phpunit --version
-    - phpunit --coverage-text --coverage-clover=coverage.clover
+    - composer test:coverage
 
 after_script:
     - wget https://scrutinizer-ci.com/ocular.phar
