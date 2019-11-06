@@ -3,11 +3,11 @@
 namespace NotificationChannels\Telegram;
 
 use Exception;
-use Illuminate\Support\Str;
 use GuzzleHttp\Client as HttpClient;
-use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Support\Str;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Telegram.
