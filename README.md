@@ -258,7 +258,7 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Credits
 
-- [Syed Irfaq R.][link-author]
+- [Irfaq Syed][link-author]
 - [All Contributors][link-contributors]
 
 ## License
