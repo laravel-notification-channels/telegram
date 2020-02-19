@@ -2,7 +2,6 @@
 
 [![Join PHP Chat][ico-phpchat]][link-phpchat]
 [![Chat on Telegram][ico-telegram]][link-telegram]
-[![Laravel Package][ico-laravel]][link-repo]
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
 [![SensioLabsInsight][ico-sensiolabs]][link-sensiolabs]
@@ -22,6 +21,8 @@ This package makes it easy to send Telegram notification using [Telegram Bot API
   - [Attach a Location](#attach-a-location)
   - [Attach a Video](#attach-a-video)
   - [Attach a Gif File](#attach-a-gif-file)
+  - [Routing a Message](#routing-a-message)
+  - [Handling Response](#handling-response)
   - [Available Message methods](#available-message-methods)
   - [Available Location methods](#available-location-methods)
   - [Available File methods](#available-file-methods)
@@ -183,7 +184,7 @@ Preview:
 
 ![Laravel Telegram Gif Notification Example](https://user-images.githubusercontent.com/1915268/66617071-109ed080-ebf1-11e9-989b-b237f2b9502d.jpg)
 
-### Routing a message
+### Routing a Message
 
 You can either send the notification by providing with the chat id of the recipient to the `to($chatId)` method like shown in the above example or add a `routeNotificationForTelegram()` method in your notifiable model:
 
@@ -200,6 +201,12 @@ public function routeNotificationForTelegram()
 }
 ...
 ```
+
+### Handling Response
+
+You can make use of the [notification events](https://laravel.com/docs/5.8/notifications#notification-events) to handle the response from Telegram. On success, your event listener will recieve a [Message](https://core.telegram.org/bots/api#message) object with various fields as appropriate to the notification type.
+
+For a complete list of response fields, please refer the Telegram Bot API's [Message object](https://core.telegram.org/bots/api#message) docs.
 
 ### Available Message methods
 
@@ -267,7 +274,6 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 
 [ico-phpchat]: https://img.shields.io/badge/Slack-PHP%20Chat-5c6aaa.svg?style=flat-square&logo=slack&labelColor=4A154B
 [ico-telegram]: https://img.shields.io/badge/@PHPChatCo-2CA5E0.svg?style=flat-square&logo=telegram&label=Telegram
-[ico-laravel]: https://img.shields.io/badge/Laravel-5|6-FF2D20.svg?style=flat-square&logo=laravel&labelColor=black&logoColor=white
 [ico-version]: https://img.shields.io/packagist/v/laravel-notification-channels/telegram.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
 [ico-travis]: https://img.shields.io/travis/laravel-notification-channels/telegram/master.svg?style=flat-square
