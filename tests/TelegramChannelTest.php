@@ -2,6 +2,7 @@
 
 namespace NotificationChannels\Telegram\Test;
 
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Mockery;
@@ -38,12 +39,18 @@ class ChannelTest extends TestCase
     /** @test */
     public function it_can_send_a_message(): void
     {
+        $expectedResponse = ['ok' => true, 'result' => ['message_id' => 123, 'chat' => ['id' => 12345]]];
+
         $this->telegram->shouldReceive('sendMessage')->once()->with([
-            'text'       => 'Laravel Notification Channels are awesome!',
+            'text' => 'Laravel Notification Channels are awesome!',
             'parse_mode' => 'Markdown',
-            'chat_id'    => 12345,
-        ]);
-        $this->channel->send(new TestNotifiable(), new TestNotification());
+            'chat_id' => 12345,
+        ])
+            ->andReturns(new Response(200, [], json_encode($expectedResponse)));
+
+        $actualResponse = $this->channel->send(new TestNotifiable(), new TestNotification());
+
+        self::assertSame($expectedResponse, $actualResponse);
     }
 
     /** @test */

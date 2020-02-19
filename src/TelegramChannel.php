@@ -31,9 +31,11 @@ class TelegramChannel
      * @param mixed        $notifiable
      * @param Notification $notification
      *
+     * @return null|array
+     *
      * @throws CouldNotSendNotification
      */
-    public function send($notifiable, Notification $notification): void
+    public function send($notifiable, Notification $notification): ?array
     {
         $message = $notification->toTelegram($notifiable);
 
@@ -52,11 +54,15 @@ class TelegramChannel
         $params = $message->toArray();
 
         if ($message instanceof TelegramMessage) {
-            $this->telegram->sendMessage($params);
+            $response = $this->telegram->sendMessage($params);
         } elseif ($message instanceof TelegramLocation) {
-            $this->telegram->sendLocation($params);
+            $response = $this->telegram->sendLocation($params);
         } elseif ($message instanceof TelegramFile) {
-            $this->telegram->sendFile($params, $message->type, $message->hasFile());
+            $response = $this->telegram->sendFile($params, $message->type, $message->hasFile());
+        } else {
+            return null;
         }
+
+        return json_decode($response->getBody()->getContents(), true);
     }
 }
