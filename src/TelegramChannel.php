@@ -59,6 +59,8 @@ class TelegramChannel
             $response = $this->telegram->sendLocation($params);
         } elseif ($message instanceof TelegramFile) {
             $response = $this->telegram->sendFile($params, $message->type, $message->hasFile());
+        } else {
+            return null;
         }
 
         return json_decode($response->getBody()->getContents(), true);
