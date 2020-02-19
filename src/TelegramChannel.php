@@ -61,6 +61,6 @@ class TelegramChannel
             $response = $this->telegram->sendFile($params, $message->type, $message->hasFile());
         }
 
-        return json_decode($response->getBody()->getContents());
+        return json_decode($response->getBody()->getContents(), true);
     }
 }
