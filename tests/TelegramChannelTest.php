@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class ChannelTest.
  */
-class ChannelTest extends TestCase
+class TelegramChannelTest extends TestCase
 {
     /** @var Mockery\Mock */
     protected $telegram;
