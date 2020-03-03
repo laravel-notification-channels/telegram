@@ -20,9 +20,10 @@ This package makes it easy to send Telegram notification using [Telegram Bot API
   - [Attach a Document](#attach-a-document)
   - [Attach a Location](#attach-a-location)
   - [Attach a Video](#attach-a-video)
-  - [Attach a Gif File](#attach-a-gif-file)
+  - [Attach a GIF File](#attach-a-gif-file)
   - [Routing a Message](#routing-a-message)
   - [Handling Response](#handling-response)
+  - [On-Demand Notifications](#on-demand-notifications)
   - [Available Message methods](#available-message-methods)
   - [Available Location methods](#available-location-methods)
   - [Available File methods](#available-file-methods)
@@ -100,10 +101,8 @@ Here's a screenshot preview of the above notification on Telegram Messenger:
 ```php
 public function toTelegram($notifiable)
 {
-    $url = url('/file/' . $this->file->id);
-
     return TelegramFile::create()
-        ->to($notifiable->telegram_user_id)
+        ->to($notifiable->telegram_user_id) // Optional
         ->content('Awesome *bold* text and [inline URL](http://www.example.com/)')
         ->file('/storage/archive/6029014.jpg', 'photo'); // local photo
 
@@ -121,10 +120,8 @@ Preview:
 ```php
 public function toTelegram($notifiable)
 {
-    $url = url('/file/' . $this->file->id);
-
     return TelegramFile::create()
-        ->to($notifiable->telegram_user_id)
+        ->to($notifiable->telegram_user_id) // Optional
         ->content('Did you know we can set a custom filename too?')
         ->document('https://file-examples.com/wp-content/uploads/2017/10/file-sample_150kB.pdf', 'sample.pdf');
 }
@@ -140,7 +137,6 @@ Preview:
 public function toTelegram($notifiable)
 {
     return TelegramLocation::create()
-        ->to($notifiable->telegram_user_id)
         ->latitude('40.6892494')
         ->longitude('-74.0466891');
 }
@@ -156,7 +152,6 @@ Preview:
 public function toTelegram($notifiable)
 {
     return TelegramFile::create()
-        ->to($notifiable->telegram_user_id)
         ->content('Sample *video* notification!')
         ->video('https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4');
 }
@@ -166,7 +161,7 @@ Preview:
 
 ![Laravel Telegram Video Notification Example](https://user-images.githubusercontent.com/1915268/66617038-ed742100-ebf0-11e9-865a-bf0245d2cbbb.jpg)
 
-### Attach a Gif File
+### Attach a GIF File
 
 ```php
 public function toTelegram($notifiable)
@@ -186,10 +181,9 @@ Preview:
 
 ### Routing a Message
 
-You can either send the notification by providing with the chat id of the recipient to the `to($chatId)` method like shown in the above example or add a `routeNotificationForTelegram()` method in your notifiable model:
+You can either send the notification by providing with the chat ID of the recipient to the `to($chatId)` method like shown in the previous examples or add a `routeNotificationForTelegram()` method in your notifiable model:
 
 ```php
-...
 /**
  * Route notifications for the Telegram channel.
  *
@@ -199,7 +193,6 @@ public function routeNotificationForTelegram()
 {
     return $this->telegram_user_id;
 }
-...
 ```
 
 ### Handling Response
@@ -207,6 +200,17 @@ public function routeNotificationForTelegram()
 You can make use of the [notification events](https://laravel.com/docs/5.8/notifications#notification-events) to handle the response from Telegram. On success, your event listener will recieve a [Message](https://core.telegram.org/bots/api#message) object with various fields as appropriate to the notification type.
 
 For a complete list of response fields, please refer the Telegram Bot API's [Message object](https://core.telegram.org/bots/api#message) docs.
+
+### On-Demand Notifications
+
+> Sometimes you may need to send a notification to someone who is not stored as a "user" of your application. Using the `Notification::route` method, you may specify ad-hoc notification routing information before sending the notification. For more details, you can check out the [on-demand notifications](https://laravel.com/docs/5.8/notifications#on-demand-notifications) docs.
+
+```php
+use NotificationChannels\Telegram\TelegramChannel;
+
+Notification::route(TelegramChannel::class, 'TELEGRAM_CHAT_ID')
+            ->notify(new InvoicePaid($invoice));
+```
 
 ### Available Message methods
 
