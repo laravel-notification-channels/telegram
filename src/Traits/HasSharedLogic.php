@@ -51,11 +51,12 @@ trait HasSharedLogic
      * Send the message silently.
      * Users will receive a notification with no sound.
      *
+     * @param bool $disableNotification
      * @return $this
      */
-    public function disableNotification(): self
+    public function disableNotification(bool $disableNotification = true): self
     {
-        $this->payload['disable_notification'] = true;
+        $this->payload['disable_notification'] = $disableNotification;
 
         return $this;
     }
