@@ -2,6 +2,10 @@
 
 All notable changes to `telegram` will be documented in this file
 
+## 0.3.0 - 2020-03-26
+
+- Add ability to set param in `disableNotification` method.
+
 ## 0.2.0 - 2020-02-19
 
 - Laravel 7 Support.
