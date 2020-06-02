@@ -52,13 +52,6 @@ class TelegramChannelTest extends TestCase
 
         self::assertSame($expectedResponse, $actualResponse);
     }
-
-    /** @test */
-    public function it_throws_an_exception_when_it_could_not_send_the_notification_because_no_chat_id_provided(): void
-    {
-        $this->expectException(CouldNotSendNotification::class);
-        $this->channel->send(new TestNotifiable(), new TestNotificationNoChatId());
-    }
 }
 
 /**

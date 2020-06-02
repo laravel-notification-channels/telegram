@@ -20,7 +20,8 @@ class TelegramServiceProvider extends ServiceProvider
             ->give(static function () {
                 return new Telegram(
                     config('services.telegram-bot-api.token'),
-                    new HttpClient()
+                    app(HttpClient::class),
+                    config('services.telegram-bot-api.base_uri')
                 );
             });
     }

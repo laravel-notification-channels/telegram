@@ -54,14 +54,4 @@ class CouldNotSendNotification extends Exception
     {
         return new static("The communication with Telegram failed. `{$message}`");
     }
-
-    /**
-     * Thrown when there is no chat id provided.
-     *
-     * @return static
-     */
-    public static function chatIdNotProvided(): self
-    {
-        return new static('Telegram notification chat ID was not provided. Please refer usage docs.');
-    }
 }

@@ -51,12 +51,16 @@ Then, configure your Telegram Bot API Token:
 
 ```php
 // config/services.php
-...
 'telegram-bot-api' => [
     'token' => env('TELEGRAM_BOT_TOKEN', 'YOUR BOT TOKEN HERE')
 ],
-...
 ```
+
+#### (Optional) Proxy or Bridge Support
+
+You may not be able to send notifications if Telegram Bot API is not accessible in your country, 
+you can either set a proxy by following the instructions [here](http://docs.guzzlephp.org/en/stable/quickstart.html#environment-variables) or 
+use a web bridge by setting the `base_uri` config above with the bridge uri.
 
 ## Usage
 

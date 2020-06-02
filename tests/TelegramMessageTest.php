@@ -41,7 +41,7 @@ class TelegramMessageTest extends TestCase
     }
 
     /** @test */
-    public function an_inline_button_can_be_added_to_the_messsage(): void
+    public function an_inline_button_can_be_added_to_the_message(): void
     {
         $message = new TelegramMessage();
         $message->button('Laravel', 'https://laravel.com');
