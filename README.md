@@ -208,7 +208,7 @@ For a complete list of response fields, please refer the Telegram Bot API's [Mes
 ```php
 use NotificationChannels\Telegram\TelegramChannel;
 
-Notification::route(TelegramChannel::class, 'TELEGRAM_CHAT_ID')
+Notification::route('telegram', 'TELEGRAM_CHAT_ID')
             ->notify(new InvoicePaid($invoice));
 ```
 
