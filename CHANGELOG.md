@@ -2,6 +2,15 @@
 
 All notable changes to `telegram` will be documented in this file
 
+## 0.4.0 - 2020-06-02
+
+- Add support to set custom api `base_uri` for web bridge.
+- Revise README with instructions for Proxy or Bridge support.
+- Revise on-demand notification instructions - Fixes [#72](https://github.com/laravel-notification-channels/telegram/issues/72).
+- Fix typo in test.
+- Remove redundant test.
+- Remove exception when chat id isn't provided - PR [#75](https://github.com/laravel-notification-channels/telegram/pull/75).
+
 ## 0.3.0 - 2020-03-26
 
 - Add ability to set param in `disableNotification` method.
