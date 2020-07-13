@@ -47,7 +47,7 @@ composer require laravel-notification-channels/telegram
 
 Talk to [@BotFather](https://core.telegram.org/bots#6-botfather) and generate a Bot API Token.
 
-Then, configure your Telegram Bot API Token:
+Then, configure your Telegram Bot API Token: (remove `bot` from the token)
 
 ```php
 // config/services.php
