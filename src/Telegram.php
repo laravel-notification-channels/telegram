@@ -94,6 +94,20 @@ class Telegram
     }
 
     /**
+     * Set HTTP Client.
+     *
+     * @param HttpClient $http
+     *
+     * @return $this
+     */
+    public function setHttpClient(HttpClient $http): self
+    {
+        $this->http = $http;
+
+        return $this;
+    }
+
+    /**
      * Send text message.
      *
      * <code>
@@ -134,7 +148,7 @@ class Telegram
      */
     public function sendFile(array $params, string $type, bool $multipart = false): ?ResponseInterface
     {
-        return $this->sendRequest('send'.Str::studly($type), $params, $multipart);
+        return $this->sendRequest('send' . Str::studly($type), $params, $multipart);
     }
 
     /**
