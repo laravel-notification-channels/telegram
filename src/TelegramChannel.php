@@ -31,9 +31,9 @@ class TelegramChannel
      * @param mixed        $notifiable
      * @param Notification $notification
      *
+     * @throws CouldNotSendNotification
      * @return null|array
      *
-     * @throws CouldNotSendNotification
      */
     public function send($notifiable, Notification $notification): ?array
     {
@@ -49,6 +49,10 @@ class TelegramChannel
             }
 
             $message->to($to);
+        }
+
+        if ($message->hasToken()) {
+            $this->telegram->setToken($message->token);
         }
 
         $params = $message->toArray();
