@@ -33,7 +33,6 @@ class TelegramChannel
      *
      * @throws CouldNotSendNotification
      * @return null|array
-     *
      */
     public function send($notifiable, Notification $notification): ?array
     {
