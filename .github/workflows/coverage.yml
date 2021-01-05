@@ -1,0 +1,32 @@
+name: Unit test coverage
+
+on:
+    - push
+    - pull_request
+
+jobs:
+    tests:
+        runs-on: ubuntu-latest
+        name: Unit test coverage
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 8.0
+                  tools: composer:v2
+                  coverage: pcov
+
+            - name: Install dependencies
+              run: composer update --prefer-stable --prefer-dist --no-interaction --no-progress
+
+            - name: Execute tests
+              run: vendor/bin/phpunit --verbose --coverage-text --coverage-clover=coverage.clover
+
+            - name: Send coverage to Scrutinizer
+              run: |
+                  wget https://scrutinizer-ci.com/ocular.phar
+                  php ocular.phar code-coverage:upload --format=php-clover coverage.clover
