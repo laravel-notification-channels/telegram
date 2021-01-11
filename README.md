@@ -115,7 +115,7 @@ public function toTelegram($notifiable)
         ->file('/storage/archive/6029014.jpg', 'photo'); // local photo
 
         // OR using a helper method with or without a remote file.
-        // ->photo('https://file-examples.com/wp-content/uploads/2017/10/file_example_JPG_1MB.jpg');
+        // ->photo('https://file-examples-com.github.io/uploads/2017/10/file_example_JPG_1MB.jpg');
 }
 ```
 
@@ -131,7 +131,7 @@ public function toTelegram($notifiable)
     return TelegramFile::create()
         ->to($notifiable->telegram_user_id) // Optional
         ->content('Did you know we can set a custom filename too?')
-        ->document('https://file-examples.com/wp-content/uploads/2017/10/file-sample_150kB.pdf', 'sample.pdf');
+        ->document('https://file-examples-com.github.io/uploads/2017/10/file-sample_150kB.pdf', 'sample.pdf');
 }
 ```
 
@@ -161,7 +161,7 @@ public function toTelegram($notifiable)
 {
     return TelegramFile::create()
         ->content('Sample *video* notification!')
-        ->video('https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4');
+        ->video('https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_480_1_5MG.mp4');
 }
 ```
 
