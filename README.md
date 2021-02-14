@@ -205,7 +205,7 @@ public function routeNotificationForTelegram()
 
 ### Handling Response
 
-You can make use of the [notification events](https://laravel.com/docs/5.8/notifications#notification-events) to handle the response from Telegram. On success, your event listener will recieve a [Message](https://core.telegram.org/bots/api#message) object with various fields as appropriate to the notification type.
+You can make use of the [notification events](https://laravel.com/docs/5.8/notifications#notification-events) to handle the response from Telegram. On success, your event listener will receive a [Message](https://core.telegram.org/bots/api#message) object with various fields as appropriate to the notification type.
 
 For a complete list of response fields, please refer the Telegram Bot API's [Message object](https://core.telegram.org/bots/api#message) docs.
 
