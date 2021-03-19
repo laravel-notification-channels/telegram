@@ -59,19 +59,17 @@ class TelegramFile implements JsonSerializable
      *
      * @param string|resource|StreamInterface $file
      * @param string                          $type
-     * @param string|null                     $filename
      *
      * @return $this
      */
-    public function file($file, string $type, string $filename = null): self
+    public function file($file, string $type): self
     {
         $this->type = $type;
 
         $isLocalFile = $this->isReadableFile($file);
 
-        if ($filename !== null || $isLocalFile) {
+        if ($isLocalFile) {
             $this->payload['file'] = [
-                'filename' => $filename,
                 'name'     => $type,
                 'contents' => $isLocalFile ? fopen($file, 'rb') : $file,
             ];
@@ -117,13 +115,12 @@ class TelegramFile implements JsonSerializable
      * Use this method to send general files.
      *
      * @param string      $file
-     * @param string|null $filename
      *
      * @return $this
      */
-    public function document(string $file, string $filename = null): self
+    public function document(string $file): self
     {
-        return $this->file($file, 'document', $filename);
+        return $this->file($file, 'document');
     }
 
     /**
