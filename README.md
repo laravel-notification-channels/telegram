@@ -69,7 +69,6 @@ You can now use the channel in your `via()` method inside the Notification class
 ### Text Notification
 
 ```php
-use NotificationChannels\Telegram\TelegramChannel;
 use NotificationChannels\Telegram\TelegramMessage;
 use Illuminate\Notifications\Notification;
 
@@ -77,7 +76,7 @@ class InvoicePaid extends Notification
 {
     public function via($notifiable)
     {
-        return [TelegramChannel::class];
+        return ["telegram"];
     }
 
     public function toTelegram($notifiable)
