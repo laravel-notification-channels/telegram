@@ -34,14 +34,14 @@ trait HasSharedLogic
      * Add an inline button.
      *
      * @param string $text
-     * @param string $url
+     * @param string $callback_data
      * @param int    $columns
      *
      * @return $this
      */
-    public function button(string $text, string $url, int $columns = 2): self
+    public function button(string $text, string $callback_data, int $columns = 2): self
     {
-        $this->buttons[] = compact('text', 'url');
+        $this->buttons[] = compact('text', '$callback_data');
 
         $this->payload['reply_markup'] = json_encode([
             'inline_keyboard' => array_chunk($this->buttons, $columns),
