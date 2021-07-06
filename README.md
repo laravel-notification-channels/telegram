@@ -94,7 +94,9 @@ class InvoicePaid extends Notification
             
             // (Optional) Inline Buttons
             ->button('View Invoice', $url)
-            ->button('Download Invoice', $url);
+            ->button('Download Invoice', $url)
+            // (Optional) Inline Button with callback. You can handle callback in your bot instance
+            ->buttonWithCallback('Confirm', 'confirm_invoice ' . $this->invoice->id);
     }
 }
 ```
@@ -226,6 +228,7 @@ Notification::route('telegram', 'TELEGRAM_CHAT_ID')
 - `content('')`: (string) Notification message, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
 - `view($view, $data = [], $mergeData = [])`: (string) Blade template name with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
 - `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row.
+- `buttonWithCallback($text, $callback_data)`: (string) Adds an inline button with callback. You can add as many as you want, and they'll be placed 2 in a row.
 - `disableNotification($disableNotification = true)`: (bool) Send the message silently.  Users will receive a notification with no sound.
 - `options([])`: (array) Allows you to add additional or override `sendMessage` payload (A Telegram Bot API method used to send message internally). For more information on supported parameters, check out these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage).
 
@@ -236,6 +239,7 @@ Notification::route('telegram', 'TELEGRAM_CHAT_ID')
 - `latitude($latitude)`: (float|string) Latitude of the location.
 - `longitude($longitude)`: (float|string) Longitude of the location.
 - `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row.
+- `buttonWithCallback($text, $callback_data)`: (string) Adds an inline button with callback. You can add as many as you want, and they'll be placed 2 in a row.
 - `disableNotification($disableNotification = true)`: (bool) Send the message silently. Users will receive a notification with no sound.
 - `options([])`: (array) Allows you to add additional or override the payload.
 
@@ -254,6 +258,7 @@ Notification::route('telegram', 'TELEGRAM_CHAT_ID')
 - `voice($file)`: Helper method to attach a voice note (`.ogg` file with OPUS encoded).
 - `videoNote($file)`: Helper method to attach a video note file (Upto 1 min long, rounded square video).
 - `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row.
+- `buttonWithCallback($text, $callback_data)`: (string) Adds an inline button with callback. You can add as many as you want, and they'll be placed 2 in a row.
 - `disableNotification($disableNotification = true)`: (bool) Send the message silently. Users will receive a notification with no sound.
 - `options([])`: (array) Allows you to add additional or override the payload.
 

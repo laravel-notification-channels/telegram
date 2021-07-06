@@ -51,6 +51,26 @@ trait HasSharedLogic
     }
 
     /**
+     * Add an inline button with callback_data.
+     *
+     * @param string $text
+     * @param string $callback_data
+     * @param int    $columns
+     *
+     * @return $this
+     */
+    public function buttonWithCallback(string $text, string $callback_data, int $columns = 2): self
+    {
+        $this->buttons[] = compact('text', 'callback_data');
+
+        $this->payload['reply_markup'] = json_encode([
+            'inline_keyboard' => array_chunk($this->buttons, $columns),
+        ]);
+
+        return $this;
+    }
+
+    /**
      * Send the message silently.
      * Users will receive a notification with no sound.
      *
