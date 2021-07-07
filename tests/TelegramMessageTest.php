@@ -50,6 +50,15 @@ class TelegramMessageTest extends TestCase
     }
 
     /** @test */
+    public function an_inline_button_with_callback_can_be_added_to_the_message(): void
+    {
+        $message = new TelegramMessage();
+        $message->buttonWithCallback('Laravel', 'laravel_callback');
+        $this->assertEquals('{"inline_keyboard":[[{"text":"Laravel","callback_data":"laravel_callback"}]]}',
+            $message->getPayloadValue('reply_markup'));
+    }
+
+    /** @test */
     public function additional_options_can_be_set_for_the_message(): void
     {
         $message = new TelegramMessage();
