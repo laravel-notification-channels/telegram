@@ -2,6 +2,15 @@
 
 All notable changes to `telegram` will be documented in this file
 
+## 0.6.0 - 2021-10-04
+
+- Add GitHub Actions workflows for tests and coverage. PR [#103](https://github.com/laravel-notification-channels/telegram/pull/103).
+- Add alternate method to resolve Telegram notification channel. PR [#110](https://github.com/laravel-notification-channels/telegram/pull/110).
+- Add `buttonWithCallback()` method. PR [#114](https://github.com/laravel-notification-channels/telegram/pull/114).
+- Revise file upload logic.
+- Add more info on proxy setting.
+- Remove dead badges.
+
 ## 0.5.1 - 2020-12-07
 
 - PHP 8 Support.
