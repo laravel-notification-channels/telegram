@@ -4,7 +4,6 @@
 [![Chat on Telegram][ico-telegram]][link-telegram]
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
-[![SensioLabsInsight][ico-sensiolabs]][link-sensiolabs]
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-packagist]
 
@@ -61,6 +60,8 @@ Then, configure your Telegram Bot API Token:
 You may not be able to send notifications if Telegram Bot API is not accessible in your country, 
 you can either set a proxy by following the instructions [here](http://docs.guzzlephp.org/en/stable/quickstart.html#environment-variables) or 
 use a web bridge by setting the `base_uri` config above with the bridge uri.
+
+You can set `HTTPS_PROXY` in your `.env` file.
 
 ## Usage
 
@@ -249,7 +250,7 @@ Notification::route('telegram', 'TELEGRAM_CHAT_ID')
 - `token($token)`: (string) Bot token if you wish to override the default token for a specific notification (optional).
 - `content('')`: (string) File caption, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
 - `view($view, $data = [], $mergeData = [])`: (string) Blade template name with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
-- `file($file, $type, $filename = null)`: Local file path or remote URL, `$type` of the file (Ex:`photo`, `audio`, `document`, `video`, `animation`, `voice`, `video_note_`) and optionally filename with extension. Ex: `sample.pdf`. You can use helper methods instead of using this to make it easier to work with file attachment.
+- `file(string|resource|StreamInterface $file, $type, $filename = null)`: Local file path or remote URL, `$type` of the file (Ex:`photo`, `audio`, `document`, `video`, `animation`, `voice`, `video_note_`) and optionally filename with extension. Ex: `sample.pdf`. You can use helper methods instead of using this to make it easier to work with file attachment.
 - `photo($file)`: Helper method to attach a photo.
 - `audio($file)`: Helper method to attach an audio file (MP3 file).
 - `document($file, $filename = null)`: Helper method to attach a document or any file as document.
@@ -297,19 +298,15 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [ico-telegram]: https://img.shields.io/badge/@PHPChatCo-2CA5E0.svg?style=flat-square&logo=telegram&label=Telegram
 [ico-version]: https://img.shields.io/packagist/v/laravel-notification-channels/telegram.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/laravel-notification-channels/telegram/master.svg?style=flat-square
 [ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/laravel-notification-channels/telegram.svg?style=flat-square
 [ico-code-quality]: https://img.shields.io/scrutinizer/g/laravel-notification-channels/telegram.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/laravel-notification-channels/telegram.svg?style=flat-square
-[ico-sensiolabs]: https://img.shields.io/sensiolabs/i/d28e31ec-55ce-4306-88a3-84d5d14ad3db.svg?style=flat-square
 
 [link-phpchat]: https://phpchat.co/?ref=laravel-channel-telegram
 [link-telegram]: https://t.me/PHPChatCo
 [link-repo]: https://github.com/laravel-notification-channels/telegram
 [link-packagist]: https://packagist.org/packages/laravel-notification-channels/telegram
-[link-travis]: https://travis-ci.org/laravel-notification-channels/telegram
 [link-scrutinizer]: https://scrutinizer-ci.com/g/laravel-notification-channels/telegram/code-structure
-[link-sensiolabs]: https://insight.sensiolabs.com/projects/d28e31ec-55ce-4306-88a3-84d5d14ad3db
 [link-code-quality]: https://scrutinizer-ci.com/g/laravel-notification-channels/telegram
 [link-author]: https://github.com/irazasyed
 [link-contributors]: ../../contributors
