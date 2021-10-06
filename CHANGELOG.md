@@ -2,6 +2,9 @@
 
 All notable changes to `telegram` will be documented in this file
 
+## Unreleased
+- dropped PHP 7.1 support
+
 ## 0.6.0 - 2021-10-04
 
 - Add GitHub Actions workflows for tests and coverage. PR [#103](https://github.com/laravel-notification-channels/telegram/pull/103).
