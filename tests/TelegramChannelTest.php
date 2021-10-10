@@ -3,9 +3,12 @@
 namespace NotificationChannels\Telegram\Test;
 
 use GuzzleHttp\Psr7\Response;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Mockery;
+use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Telegram\Telegram;
 use NotificationChannels\Telegram\TelegramChannel;
 use NotificationChannels\Telegram\TelegramMessage;
@@ -19,6 +22,9 @@ class TelegramChannelTest extends TestCase
     /** @var Mockery\Mock */
     protected $telegram;
 
+    /** @var \PHPUnit\Framework\MockObject\MockObject */
+    private $dispatcher;
+
     /** @var TelegramChannel */
     protected $channel;
 
@@ -26,7 +32,8 @@ class TelegramChannelTest extends TestCase
     {
         parent::setUp();
         $this->telegram = Mockery::mock(Telegram::class);
-        $this->channel = new TelegramChannel($this->telegram);
+        $this->dispatcher = $this->createMock(Dispatcher::class);
+        $this->channel = new TelegramChannel($this->telegram, $this->dispatcher);
     }
 
     public function tearDown(): void
@@ -50,6 +57,38 @@ class TelegramChannelTest extends TestCase
         $actualResponse = $this->channel->send(new TestNotifiable(), new TestNotification());
 
         self::assertSame($expectedResponse, $actualResponse);
+    }
+
+    /**
+     * @test
+     */
+    public function notification_failed_event(): void
+    {
+        self::expectException($exception_class = CouldNotSendNotification::class);
+        self::expectExceptionMessage($exception_message = 'Some exception');
+
+        $notifiable = new TestNotifiable();
+        $notification = new TestNotification();
+
+        $this->telegram
+            ->shouldReceive('sendMessage')
+            ->andThrow($exception_class , $exception_message)
+        ;
+
+        $this->dispatcher
+            ->expects($this->once())
+            ->method('dispatch')
+            ->with(
+                new NotificationFailed(
+                    $notifiable,
+                    $notification,
+                    'telegram',
+                    []
+                )
+            )
+        ;
+
+        $this->channel->send($notifiable, $notification);
     }
 }
 
