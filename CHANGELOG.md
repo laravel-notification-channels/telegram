@@ -3,7 +3,14 @@
 All notable changes to `telegram` will be documented in this file
 
 ## Unreleased
-- dropped PHP 7.1 support
+
+## 0.7.0 - 2021-10-28
+
+- Dropped PHP 7.1 support. PR [#118](https://github.com/laravel-notification-channels/telegram/pull/118).
+- Dispatch event `NotificationFailed` on exception. PR [#119](https://github.com/laravel-notification-channels/telegram/pull/119).
+- Test against PHP 8.1. PR [#120](https://github.com/laravel-notification-channels/telegram/pull/120).
+- Add support to use `TelegramChannel::class` in on-demand notification route. PR [#122](https://github.com/laravel-notification-channels/telegram/pull/122).
+- Refactor channel registration with the channel manager. PR [#122](https://github.com/laravel-notification-channels/telegram/pull/122).
 
 ## 0.6.0 - 2021-10-04
 
