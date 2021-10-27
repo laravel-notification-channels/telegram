@@ -213,7 +213,7 @@ For a complete list of response fields, please refer the Telegram Bot API's [Mes
 
 ### On-Demand Notifications
 
-> Sometimes you may need to send a notification to someone who is not stored as a "user" of your application. Using the `Notification::route` method, you may specify ad-hoc notification routing information before sending the notification. For more details, you can check out the [on-demand notifications](https://laravel.com/docs/8.x/notifications#mailables-and-on-demand-notifications) docs.
+> Sometimes you may need to send a notification to someone who is not stored as a "user" of your application. Using the `Notification::route` method, you may specify ad-hoc notification routing information before sending the notification. For more details, you can check out the [on-demand notifications][link-on-demand-notifications] docs.
 
 ```php
 Notification::route('telegram', 'TELEGRAM_CHAT_ID')
@@ -308,3 +308,4 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [link-code-quality]: https://scrutinizer-ci.com/g/laravel-notification-channels/telegram
 [link-author]: https://github.com/irazasyed
 [link-contributors]: ../../contributors
+[link-on-demand-notifications]: https://laravel.com/docs/8.x/notifications#on-demand-notifications
