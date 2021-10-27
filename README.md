@@ -57,8 +57,8 @@ Then, configure your Telegram Bot API Token:
 
 #### (Optional) Proxy or Bridge Support
 
-You may not be able to send notifications if Telegram Bot API is not accessible in your country, 
-you can either set a proxy by following the instructions [here](http://docs.guzzlephp.org/en/stable/quickstart.html#environment-variables) or 
+You may not be able to send notifications if Telegram Bot API is not accessible in your country,
+you can either set a proxy by following the instructions [here](http://docs.guzzlephp.org/en/stable/quickstart.html#environment-variables) or
 use a web bridge by setting the `base_uri` config above with the bridge uri.
 
 You can set `HTTPS_PROXY` in your `.env` file.
@@ -89,10 +89,10 @@ class InvoicePaid extends Notification
             ->to($notifiable->telegram_user_id)
             // Markdown supported.
             ->content("Hello there!\nYour invoice has been *PAID*")
-            
+
             // (Optional) Blade template for the content.
             // ->view('notification', ['url' => $url])
-            
+
             // (Optional) Inline Buttons
             ->button('View Invoice', $url)
             ->button('Download Invoice', $url)
@@ -213,11 +213,9 @@ For a complete list of response fields, please refer the Telegram Bot API's [Mes
 
 ### On-Demand Notifications
 
-> Sometimes you may need to send a notification to someone who is not stored as a "user" of your application. Using the `Notification::route` method, you may specify ad-hoc notification routing information before sending the notification. For more details, you can check out the [on-demand notifications](https://laravel.com/docs/5.8/notifications#on-demand-notifications) docs.
+> Sometimes you may need to send a notification to someone who is not stored as a "user" of your application. Using the `Notification::route` method, you may specify ad-hoc notification routing information before sending the notification. For more details, you can check out the [on-demand notifications](https://laravel.com/docs/8.x/notifications#mailables-and-on-demand-notifications) docs.
 
 ```php
-use NotificationChannels\Telegram\TelegramChannel;
-
 Notification::route('telegram', 'TELEGRAM_CHAT_ID')
             ->notify(new InvoicePaid($invoice));
 ```
