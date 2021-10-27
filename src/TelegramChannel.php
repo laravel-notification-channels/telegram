@@ -52,7 +52,10 @@ class TelegramChannel
         }
 
         if ($message->toNotGiven()) {
-            if (! $to = $notifiable->routeNotificationFor('telegram', $notification)) {
+            $to = $notifiable->routeNotificationFor('telegram', $notification)
+                ?? $notifiable->routeNotificationFor(self::class, $notification);
+
+            if (! $to) {
                 return null;
             }
 
