@@ -14,7 +14,7 @@ This package makes it easy to send Telegram notification using [Telegram Bot API
 - [Installation](#installation)
   - [Setting up your Telegram bot](#setting-up-your-telegram-bot)
   - [Using in Lumen](#using-in-lumen)
-  - [Proxy or Bridge Support](proxy-or-bridge-support)
+  - [Proxy or Bridge Support](#proxy-or-bridge-support)
 - [Usage](#usage)
   - [Text Notification](#text-notification)
   - [Attach a Photo](#attach-a-photo)
