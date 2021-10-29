@@ -60,7 +60,7 @@ Then, configure your Telegram Bot API Token:
 
 ## Using in Lumen
 
-If you're using this notification channel in your Lumen project, you will have to add the below code in your `bootstap/app.php` file.
+If you're using this notification channel in your Lumen project, you will have to add the below code in your `bootstrap/app.php` file.
 
 ```php
 # bootstrap/app.php
