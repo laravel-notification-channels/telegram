@@ -13,6 +13,8 @@ This package makes it easy to send Telegram notification using [Telegram Bot API
 
 - [Installation](#installation)
   - [Setting up your Telegram bot](#setting-up-your-telegram-bot)
+  - [Using in Lumen](#using-in-lumen)
+  - [Proxy or Bridge Support](#proxy-or-bridge-support)
 - [Usage](#usage)
   - [Text Notification](#text-notification)
   - [Attach a Photo](#attach-a-photo)
@@ -49,13 +51,29 @@ Talk to [@BotFather](https://core.telegram.org/bots#6-botfather) and generate a 
 Then, configure your Telegram Bot API Token:
 
 ```php
-// config/services.php
+# config/services.php
+
 'telegram-bot-api' => [
     'token' => env('TELEGRAM_BOT_TOKEN', 'YOUR BOT TOKEN HERE')
 ],
 ```
 
-#### (Optional) Proxy or Bridge Support
+## Using in Lumen
+
+If you're using this notification channel in your Lumen project, you will have to add the below code in your `bootstap/app.php` file.
+
+```php
+# bootstrap/app.php
+
+// Make sure to create a "config/services.php" file and add the config from the above step.
+$app->configure('services');
+
+# Register the notification service providers.
+$app->register(Illuminate\Notifications\NotificationServiceProvider::class);
+$app->register(NotificationChannels\Telegram\TelegramServiceProvider::class);
+```
+
+## Proxy or Bridge Support
 
 You may not be able to send notifications if Telegram Bot API is not accessible in your country,
 you can either set a proxy by following the instructions [here](http://docs.guzzlephp.org/en/stable/quickstart.html#environment-variables) or
