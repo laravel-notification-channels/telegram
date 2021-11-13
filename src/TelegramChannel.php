@@ -2,6 +2,7 @@
 
 namespace NotificationChannels\Telegram;
 
+use Illuminate\Support\Collection;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Notifications\Notification;
@@ -25,8 +26,8 @@ class TelegramChannel
     /**
      * Channel constructor.
      *
-     * @param Telegram $telegram
-     * @param Dispatcher $dispatcher
+     * @param  Telegram    $telegram
+     * @param  Dispatcher  $dispatcher
      */
     public function __construct(Telegram $telegram, Dispatcher $dispatcher)
     {
@@ -37,8 +38,8 @@ class TelegramChannel
     /**
      * Send the given notification.
      *
-     * @param mixed        $notifiable
-     * @param Notification $notification
+     * @param  mixed         $notifiable
+     * @param  Notification  $notification
      *
      * @throws CouldNotSendNotification
      * @return null|array
@@ -55,7 +56,7 @@ class TelegramChannel
             $to = $notifiable->routeNotificationFor('telegram', $notification)
                 ?? $notifiable->routeNotificationFor(self::class, $notification);
 
-            if (! $to) {
+            if (!$to) {
                 return null;
             }
 
@@ -68,8 +69,41 @@ class TelegramChannel
 
         $params = $message->toArray();
 
-        try{
+        try {
             if ($message instanceof TelegramMessage) {
+                if ($message->shouldChunk()) {
+                    $replyMarkup = $message->getPayloadValue('reply_markup');
+
+                    if ($replyMarkup) {
+                        unset($params['reply_markup']);
+                    }
+
+                    $messages = $this->chunk($message->getPayloadValue('text'), $message->chunkSize);
+
+                    $payloads = collect($messages)->filter()->map(function ($text) use ($params) {
+                        return array_merge($params, ['text' => $text]);
+                    });
+
+                    if ($replyMarkup) {
+                        $lastMessage = $payloads->pop();
+                        $lastMessage['reply_markup'] = $replyMarkup;
+                        $payloads->push($lastMessage);
+                    }
+
+                    return $payloads->map(function ($payload) {
+                        $response = $this->telegram->sendMessage($payload);
+
+                        // To avoid rate limit of one message per second.
+                        sleep(1);
+
+                        if ($response) {
+                            return json_decode($response->getBody()->getContents(), true);
+                        }
+
+                        return $response;
+                    })->toArray();
+                }
+
                 $response = $this->telegram->sendMessage($params);
             } elseif ($message instanceof TelegramLocation) {
                 $response = $this->telegram->sendLocation($params);
@@ -89,7 +123,34 @@ class TelegramChannel
             throw $exception;
         }
 
-
         return json_decode($response->getBody()->getContents(), true);
+    }
+
+    /**
+     * Chunk the given string into an array of strings.
+     *
+     * @param  string  $value
+     * @param  int     $limit
+     *
+     * @return array
+     */
+    public function chunk(string $value, int $limit = 4096): array
+    {
+        if (mb_strwidth($value, 'UTF-8') <= $limit) {
+            return [$value];
+        }
+
+        if ($limit >= 4097) {
+            $limit = 4096;
+        }
+
+        $output = explode("%#TGMSG#%", wordwrap($value, $limit, '%#TGMSG#%'));
+
+        // Fallback for when the string is too long and wordwrap doesn't cut it.
+        if (count($output) <= 1) {
+            $output = mb_str_split($value, $limit, 'UTF-8');
+        }
+
+        return $output;
     }
 }

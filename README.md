@@ -242,8 +242,9 @@ Notification::route('telegram', 'TELEGRAM_CHAT_ID')
 
 - `to($chatId)`: (integer) Recipient's chat id.
 - `token($token)`: (string) Bot token if you wish to override the default token for a specific notification (optional).
-- `content('')`: (string) Notification message, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
+- `content('', $limit = null)`: (string) Notification message, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
 - `view($view, $data = [], $mergeData = [])`: (string) Blade template name with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
+- `chunk($limit = 4096)`: (integer) Message chars chunk size to send in parts (For long messages). Note: Chunked messages will be rate limited to one message per second to comply with rate limitation requirements from Telegram.
 - `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row.
 - `buttonWithCallback($text, $callback_data)`: (string) Adds an inline button with callback. You can add as many as you want, and they'll be placed 2 in a row.
 - `disableNotification($disableNotification = true)`: (bool) Send the message silently.  Users will receive a notification with no sound.

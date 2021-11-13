@@ -13,8 +13,11 @@ class TelegramMessage implements JsonSerializable
 {
     use HasSharedLogic;
 
+    /** @var int Message Chunk Size */
+    public $chunkSize;
+
     /**
-     * @param string $content
+     * @param  string  $content
      *
      * @return self
      */
@@ -26,7 +29,7 @@ class TelegramMessage implements JsonSerializable
     /**
      * Message constructor.
      *
-     * @param string $content
+     * @param  string  $content
      */
     public function __construct(string $content = '')
     {
@@ -37,13 +40,18 @@ class TelegramMessage implements JsonSerializable
     /**
      * Notification message (Supports Markdown).
      *
-     * @param string $content
+     * @param  string    $content
+     * @param  int|null  $limit
      *
      * @return $this
      */
-    public function content(string $content): self
+    public function content(string $content, int $limit = null): self
     {
         $this->payload['text'] = $content;
+
+        if ($limit) {
+            $this->chunkSize = $limit;
+        }
 
         return $this;
     }
@@ -52,14 +60,38 @@ class TelegramMessage implements JsonSerializable
      * Attach a view file as the content for the notification.
      * Supports Laravel blade template.
      *
-     * @param string $view
-     * @param array  $data
-     * @param array  $mergeData
+     * @param  string  $view
+     * @param  array   $data
+     * @param  array   $mergeData
      *
      * @return $this
      */
     public function view(string $view, array $data = [], array $mergeData = []): self
     {
         return $this->content(View::make($view, $data, $mergeData)->render());
+    }
+
+    /**
+     * Chunk message to given size.
+     *
+     * @param  int  $limit
+     *
+     * @return $this
+     */
+    public function chunk(int $limit = 4096): self
+    {
+        $this->chunkSize = $limit;
+
+        return $this;
+    }
+
+    /**
+     * Should the message be chunked.
+     *
+     * @return bool
+     */
+    public function shouldChunk(): bool
+    {
+        return null !== $this->chunkSize;
     }
 }

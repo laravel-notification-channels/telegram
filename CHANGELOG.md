@@ -4,6 +4,8 @@ All notable changes to `telegram` will be documented in this file
 
 ## Unreleased
 
+- Add message chunking feature (`chunk($limit)`) in cases where the message is too long. Closes [#127](https://github.com/laravel-notification-channels/telegram/issues/127).
+
 ## 0.7.0 - 2021-10-28
 
 - Dropped PHP 7.1 support. PR [#118](https://github.com/laravel-notification-channels/telegram/pull/118).
