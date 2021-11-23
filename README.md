@@ -17,6 +17,7 @@ This package makes it easy to send Telegram notification using [Telegram Bot API
   - [Proxy or Bridge Support](#proxy-or-bridge-support)
 - [Usage](#usage)
   - [Text Notification](#text-notification)
+  - [Send a poll](#Send-a-poll)
   - [Attach a Photo](#attach-a-photo)
   - [Attach a Document](#attach-a-document)
   - [Attach a Location](#attach-a-location)
@@ -123,6 +124,22 @@ class InvoicePaid extends Notification
 Here's a screenshot preview of the above notification on Telegram Messenger:
 
 ![Laravel Telegram Notification Example](https://user-images.githubusercontent.com/1915268/66616627-39be6180-ebef-11e9-92cc-f2da81da047a.jpg)
+
+### Send a poll
+
+```php
+public function toTelegram($notifiable)
+{
+    return TelegramPoll::create()
+        ->to($notifiable)
+        ->question("Aren't Laravel Notification Channels awesome?")
+        ->choices(['Yes', 'YEs', 'YES']);
+}
+```
+
+Preview:
+
+![Laravel Telegram Poll Example](https://user-images.githubusercontent.com/60013703/143135248-1224a69b-3233-4686-8a59-d41517d8c722.png)
 
 ### Attach a Photo
 
