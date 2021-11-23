@@ -152,6 +152,20 @@ class Telegram
     }
 
     /**
+     * Send a Poll.
+     *
+     * @param array  $params
+     *
+     * @throws CouldNotSendNotification
+     *
+     * @return ResponseInterface|null
+     */
+    public function sendPoll(array $params): ?ResponseInterface
+    {
+        return $this->sendRequest('sendPoll', $params);
+    }
+
+    /**
      * Send a Location.
      *
      * @param array $params
