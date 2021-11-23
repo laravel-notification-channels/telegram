@@ -17,6 +17,7 @@ This package makes it easy to send Telegram notification using [Telegram Bot API
   - [Proxy or Bridge Support](#proxy-or-bridge-support)
 - [Usage](#usage)
   - [Text Notification](#text-notification)
+  - [Send a poll](#Send-a-poll)
   - [Attach a Photo](#attach-a-photo)
   - [Attach a Document](#attach-a-document)
   - [Attach a Location](#attach-a-location)
