@@ -47,15 +47,15 @@ class TelegramPoll implements JsonSerializable
     }
 
     /**
-     * Poll options.
+     * Poll choices.
      *
-     * @param  array  $options
+     * @param  array  $choices
      *
      * @return $this
      */
-    public function options(array $options): self
+    public function choices(array $choices): self
     {
-        $this->payload['options'] = json_encode($options);
+        $this->payload['options'] = json_encode($choices);
 
         return $this;
     }

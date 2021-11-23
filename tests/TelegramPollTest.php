@@ -37,7 +37,7 @@ class TelegramPollTest extends TestCase
     public function the_options_can_be_set_for_the_question(): void
     {
         $message = new TelegramPoll();
-        $message->options(['Yes', 'No']);
+        $message->choices(['Yes', 'No']);
         $this->assertEquals('["Yes","No"]', $message->getPayloadValue('options'));
     }
 
@@ -56,7 +56,7 @@ class TelegramPollTest extends TestCase
     {
         $message = new TelegramPoll("Aren't Laravel Notification Channels awesome?");
         $message->to(12345);
-        $message->options(['Yes', 'No']);
+        $message->choices(['Yes', 'No']);
         $expected = [
             'chat_id'   => 12345,
             'question'  => "Aren't Laravel Notification Channels awesome?",
