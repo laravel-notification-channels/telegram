@@ -137,6 +137,10 @@ public function toTelegram($notifiable)
 }
 ```
 
+Preview:
+
+![Laravel Telegram Poll Example](https://user-images.githubusercontent.com/60013703/143135248-1224a69b-3233-4686-8a59-d41517d8c722.png)
+
 ### Attach a Photo
 
 ```php
