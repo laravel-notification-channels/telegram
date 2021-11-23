@@ -186,7 +186,7 @@ class Telegram
 
         $apiUri = sprintf('%s/bot%s/%s', $this->apiBaseUri, $this->token, $endpoint);
 
-        foreach($restructureParams as $params){
+        foreach($restructureParams as $key => $params){
             try {
                 $response = $this->httpClient()->post($apiUri, [
                     $multipart ? 'multipart' : 'form_params' => $params,
@@ -195,6 +195,10 @@ class Telegram
                 throw CouldNotSendNotification::telegramRespondedWithAnError($exception);
             } catch (Exception $exception) {
                 throw CouldNotSendNotification::couldNotCommunicateWithTelegram($exception);
+            }
+
+            if($key !== array_key_last($restructureParams)){
+                sleep(1);
             }
         }
 
