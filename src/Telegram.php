@@ -182,16 +182,40 @@ class Telegram
             throw CouldNotSendNotification::telegramBotTokenNotProvided('You must provide your telegram bot token to make any API requests.');
         }
 
+        $restructureParams = $this->restructureParams($params);
+
         $apiUri = sprintf('%s/bot%s/%s', $this->apiBaseUri, $this->token, $endpoint);
 
-        try {
-            return $this->httpClient()->post($apiUri, [
-                $multipart ? 'multipart' : 'form_params' => $params,
-            ]);
-        } catch (ClientException $exception) {
-            throw CouldNotSendNotification::telegramRespondedWithAnError($exception);
-        } catch (Exception $exception) {
-            throw CouldNotSendNotification::couldNotCommunicateWithTelegram($exception);
+        foreach($restructureParams as $params){
+            try {
+                $response = $this->httpClient()->post($apiUri, [
+                    $multipart ? 'multipart' : 'form_params' => $params,
+                ]);
+            } catch (ClientException $exception) {
+                throw CouldNotSendNotification::telegramRespondedWithAnError($exception);
+            } catch (Exception $exception) {
+                throw CouldNotSendNotification::couldNotCommunicateWithTelegram($exception);
+            }
         }
+
+        return $response;
+    }
+
+    private function restructureParams(array $params): array
+    {
+        $restructureParams = [];
+
+        if (!is_array($params['chat_id'])) {
+            $restructureParams[] = $params;
+            return $restructureParams;
+        }
+
+        foreach($params['chat_id'] as $index => $chatId){
+            foreach($params as $key => $param){
+                $restructureParams[$index][$key] = is_array($param) ? $param[$index] : $param;
+            }
+        }
+
+        return $restructureParams;
     }
 }

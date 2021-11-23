@@ -27,6 +27,9 @@ class TelegramLocationTest extends TestCase
         $message = new TelegramLocation();
         $message->to(12345);
         $this->assertEquals(12345, $message->getPayloadValue('chat_id'));
+
+        $message->to(12345, 54321);
+        $this->assertEquals([12345, 54321], $message->getPayloadValue('chat_id'));
     }
 
     /** @test */
@@ -61,6 +64,9 @@ class TelegramLocationTest extends TestCase
 
         $message->to(12345);
         $this->assertFalse($message->toNotGiven());
+
+        $message->to(12345, 54321);
+        $this->assertFalse($message->toNotGiven());
     }
 
     /** @test */
@@ -71,6 +77,16 @@ class TelegramLocationTest extends TestCase
         $message->options(['foo' => 'bar']);
         $expected = [
             'chat_id'   => 12345,
+            'foo'       => 'bar',
+            'longitude' => self::TEST_LONG,
+            'latitude'  => self::TEST_LAT,
+        ];
+
+        $this->assertEquals($expected, $message->toArray());
+
+        $message->to(12345, 54321);
+        $expected = [
+            'chat_id'   => [12345, 54321],
             'foo'       => 'bar',
             'longitude' => self::TEST_LONG,
             'latitude'  => self::TEST_LAT,

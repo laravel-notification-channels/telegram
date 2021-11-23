@@ -30,6 +30,9 @@ class TelegramMessageTest extends TestCase
         $message = new TelegramMessage();
         $message->to(12345);
         $this->assertEquals(12345, $message->getPayloadValue('chat_id'));
+
+        $message->to(12345, 654321);
+        $this->assertEquals([12345, 654321], $message->getPayloadValue('chat_id'));
     }
 
     /** @test */
@@ -74,6 +77,9 @@ class TelegramMessageTest extends TestCase
 
         $message->to(12345);
         $this->assertFalse($message->toNotGiven());
+
+        $message->to(12345, 54321);
+        $this->assertFalse($message->toNotGiven());
     }
 
     /** @test */
@@ -87,6 +93,17 @@ class TelegramMessageTest extends TestCase
             'text'         => 'Laravel Notification Channels are awesome!',
             'parse_mode'   => 'Markdown',
             'chat_id'      => 12345,
+            'foo'          => 'bar',
+            'reply_markup' => '{"inline_keyboard":[[{"text":"Laravel","url":"https:\/\/laravel.com"}]]}',
+        ];
+
+        $this->assertEquals($expected, $message->toArray());
+
+        $message->to(12345, 54321);
+        $expected = [
+            'text'         => 'Laravel Notification Channels are awesome!',
+            'parse_mode'   => 'Markdown',
+            'chat_id'      => [12345, 54321],
             'foo'          => 'bar',
             'reply_markup' => '{"inline_keyboard":[[{"text":"Laravel","url":"https:\/\/laravel.com"}]]}',
         ];

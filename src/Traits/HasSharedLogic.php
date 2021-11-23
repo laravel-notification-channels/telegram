@@ -19,13 +19,13 @@ trait HasSharedLogic
     /**
      * Recipient's Chat ID.
      *
-     * @param string|int $chatId
+     * @param array $chatId
      *
      * @return $this
      */
-    public function to($chatId): self
+    public function to(...$chatId): self
     {
-        $this->payload['chat_id'] = $chatId;
+        $this->payload['chat_id'] = func_num_args() > 1 ? $chatId : $chatId[0];
 
         return $this;
     }
