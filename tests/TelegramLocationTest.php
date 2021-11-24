@@ -7,6 +7,9 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Class TelegramLocationTest.
+ *
+ * @internal
+ * @coversNothing
  */
 class TelegramLocationTest extends TestCase
 {
@@ -14,7 +17,7 @@ class TelegramLocationTest extends TestCase
     public const TEST_LAT = 38.8951;
 
     /** @test */
-    public function it_accepts_content_when_constructed(): void
+    public function itAcceptsContentWhenConstructed(): void
     {
         $message = new TelegramLocation(self::TEST_LAT, self::TEST_LONG);
         $this->assertEquals(self::TEST_LAT, $message->getPayloadValue('latitude'));
@@ -22,7 +25,7 @@ class TelegramLocationTest extends TestCase
     }
 
     /** @test */
-    public function the_recipients_chat_id_can_be_set(): void
+    public function theRecipientsChatIdCanBeSet(): void
     {
         $message = new TelegramLocation();
         $message->to(12345);
@@ -30,7 +33,7 @@ class TelegramLocationTest extends TestCase
     }
 
     /** @test */
-    public function the_notification_longitude_can_be_set(): void
+    public function theNotificationLongitudeCanBeSet(): void
     {
         $message = new TelegramLocation();
         $message->longitude(self::TEST_LONG);
@@ -38,7 +41,7 @@ class TelegramLocationTest extends TestCase
     }
 
     /** @test */
-    public function the_notification_latitude_can_be_set(): void
+    public function theNotificationLatitudeCanBeSet(): void
     {
         $message = new TelegramLocation();
         $message->latitude(self::TEST_LAT);
@@ -46,7 +49,7 @@ class TelegramLocationTest extends TestCase
     }
 
     /** @test */
-    public function additional_options_can_be_set_for_the_message(): void
+    public function additionalOptionsCanBeSetForTheMessage(): void
     {
         $message = new TelegramLocation();
         $message->options(['foo' => 'bar']);
@@ -54,7 +57,7 @@ class TelegramLocationTest extends TestCase
     }
 
     /** @test */
-    public function it_can_determine_if_the_recipient_chat_id_has_not_been_set(): void
+    public function itCanDetermineIfTheRecipientChatIdHasNotBeenSet(): void
     {
         $message = new TelegramLocation();
         $this->assertTrue($message->toNotGiven());
@@ -64,16 +67,16 @@ class TelegramLocationTest extends TestCase
     }
 
     /** @test */
-    public function it_can_return_the_payload_as_an_array(): void
+    public function itCanReturnThePayloadAsAnArray(): void
     {
         $message = new TelegramLocation(self::TEST_LAT, self::TEST_LONG);
         $message->to(12345);
         $message->options(['foo' => 'bar']);
         $expected = [
-            'chat_id'   => 12345,
-            'foo'       => 'bar',
+            'chat_id' => 12345,
+            'foo' => 'bar',
             'longitude' => self::TEST_LONG,
-            'latitude'  => self::TEST_LAT,
+            'latitude' => self::TEST_LAT,
         ];
 
         $this->assertEquals($expected, $message->toArray());

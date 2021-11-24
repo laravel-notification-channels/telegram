@@ -13,13 +13,11 @@ class CouldNotSendNotification extends Exception
     /**
      * Thrown when there's a bad request and an error is responded.
      *
-     * @param ClientException $exception
-     *
      * @return static
      */
     public static function telegramRespondedWithAnError(ClientException $exception): self
     {
-        if (! $exception->hasResponse()) {
+        if (!$exception->hasResponse()) {
             return new static('Telegram responded with an error but no response body found');
         }
 

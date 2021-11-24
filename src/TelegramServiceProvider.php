@@ -25,7 +25,8 @@ class TelegramServiceProvider extends ServiceProvider
                     app(HttpClient::class),
                     config('services.telegram-bot-api.base_uri')
                 );
-            });
+            })
+        ;
     }
 
     /**

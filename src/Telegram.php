@@ -17,16 +17,15 @@ class Telegram
     /** @var HttpClient HTTP Client */
     protected $http;
 
-    /** @var string|null Telegram Bot API Token. */
+    /** @var null|string Telegram Bot API Token. */
     protected $token;
 
     /** @var string Telegram Bot API Base URI */
     protected $apiBaseUri;
 
     /**
-     * @param string|null     $token
-     * @param HttpClient|null $httpClient
-     * @param string|null     $apiBaseUri
+     * @param null|string $token
+     * @param null|string $apiBaseUri
      */
     public function __construct($token = null, HttpClient $httpClient = null, $apiBaseUri = null)
     {
@@ -37,8 +36,6 @@ class Telegram
 
     /**
      * Token getter.
-     *
-     * @return string
      */
     public function getToken(): string
     {
@@ -47,8 +44,6 @@ class Telegram
 
     /**
      * Token setter.
-     *
-     * @param string $token
      *
      * @return $this
      */
@@ -61,8 +56,6 @@ class Telegram
 
     /**
      * API Base URI getter.
-     *
-     * @return string
      */
     public function getApiBaseUri(): string
     {
@@ -71,8 +64,6 @@ class Telegram
 
     /**
      * API Base URI setter.
-     *
-     * @param string $apiBaseUri
      *
      * @return $this
      */
@@ -84,19 +75,7 @@ class Telegram
     }
 
     /**
-     * Get HttpClient.
-     *
-     * @return HttpClient
-     */
-    protected function httpClient(): HttpClient
-    {
-        return $this->http;
-    }
-
-    /**
      * Set HTTP Client.
-     *
-     * @param HttpClient $http
      *
      * @return $this
      */
@@ -122,13 +101,9 @@ class Telegram
      * ];
      * </code>
      *
-     * @link https://core.telegram.org/bots/api#sendmessage
-     *
-     * @param array $params
+     * @see https://core.telegram.org/bots/api#sendmessage
      *
      * @throws CouldNotSendNotification
-     *
-     * @return ResponseInterface|null
      */
     public function sendMessage(array $params): ?ResponseInterface
     {
@@ -138,13 +113,7 @@ class Telegram
     /**
      * Send File as Image or Document.
      *
-     * @param array  $params
-     * @param string $type
-     * @param bool   $multipart
-     *
      * @throws CouldNotSendNotification
-     *
-     * @return ResponseInterface|null
      */
     public function sendFile(array $params, string $type, bool $multipart = false): ?ResponseInterface
     {
@@ -154,11 +123,7 @@ class Telegram
     /**
      * Send a Poll.
      *
-     * @param array  $params
-     *
      * @throws CouldNotSendNotification
-     *
-     * @return ResponseInterface|null
      */
     public function sendPoll(array $params): ?ResponseInterface
     {
@@ -168,11 +133,7 @@ class Telegram
     /**
      * Send a Location.
      *
-     * @param array $params
-     *
      * @throws CouldNotSendNotification
-     *
-     * @return ResponseInterface|null
      */
     public function sendLocation(array $params): ?ResponseInterface
     {
@@ -180,15 +141,17 @@ class Telegram
     }
 
     /**
+     * Get HttpClient.
+     */
+    protected function httpClient(): HttpClient
+    {
+        return $this->http;
+    }
+
+    /**
      * Send an API request and return response.
      *
-     * @param string $endpoint
-     * @param array  $params
-     * @param bool   $multipart
-     *
      * @throws CouldNotSendNotification
-     *
-     * @return ResponseInterface|null
      */
     protected function sendRequest(string $endpoint, array $params, bool $multipart = false): ?ResponseInterface
     {

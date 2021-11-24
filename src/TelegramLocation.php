@@ -13,26 +13,26 @@ class TelegramLocation implements JsonSerializable
     use HasSharedLogic;
 
     /**
-     * @param float|string|null $latitude
-     * @param float|string|null $longitude
+     * Message constructor.
+     *
+     * @param null|float|string $latitude
+     * @param null|float|string $longitude
+     */
+    public function __construct($latitude = null, $longitude = null)
+    {
+        $this->latitude($latitude);
+        $this->longitude($longitude);
+    }
+
+    /**
+     * @param null|float|string $latitude
+     * @param null|float|string $longitude
      *
      * @return static
      */
     public static function create($latitude = null, $longitude = null): self
     {
         return new static($latitude, $longitude);
-    }
-
-    /**
-     * Message constructor.
-     *
-     * @param float|string|null $latitude
-     * @param float|string|null $longitude
-     */
-    public function __construct($latitude = null, $longitude = null)
-    {
-        $this->latitude($latitude);
-        $this->longitude($longitude);
     }
 
     /**
