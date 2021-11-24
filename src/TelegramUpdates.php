@@ -29,13 +29,11 @@ class TelegramUpdates implements JsonSerializable
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function get(): array
     {
         $response = (new Telegram())->setToken(config('services.telegram-bot-api.token'))
-            ->getUpdates($this->payload);
+            ->getUpdates($this->payload)
+        ;
 
         return json_decode($response->getBody()->getContents(), true);
     }
