@@ -4,6 +4,11 @@ All notable changes to `telegram` will be documented in this file
 
 ## Unreleased
 
+## 0.9.0 - 2021-11-24
+
+- Add Poll Support. PR [130](https://github.com/laravel-notification-channels/telegram/pull/130).
+- Remove StyleCI in favor of GitHub Actions Workflow for Code Styling. PR [131](https://github.com/laravel-notification-channels/telegram/pull/131).
+
 ## 0.8.0 - 2021-11-14
 
 - Add message chunking feature (`chunk($limit)`) in cases where the message is too long. Closes [#127](https://github.com/laravel-notification-channels/telegram/issues/127).
