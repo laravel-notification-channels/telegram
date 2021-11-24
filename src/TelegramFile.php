@@ -2,10 +2,10 @@
 
 namespace NotificationChannels\Telegram;
 
-use JsonSerializable;
 use Illuminate\Support\Facades\View;
-use Psr\Http\Message\StreamInterface;
+use JsonSerializable;
 use NotificationChannels\Telegram\Traits\HasSharedLogic;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Class TelegramFile.
@@ -18,19 +18,7 @@ class TelegramFile implements JsonSerializable
     public $type = 'document';
 
     /**
-     * @param  string  $content
-     *
-     * @return self
-     */
-    public static function create(string $content = ''): self
-    {
-        return new self($content);
-    }
-
-    /**
      * Message constructor.
-     *
-     * @param  string  $content
      */
     public function __construct(string $content = '')
     {
@@ -38,10 +26,13 @@ class TelegramFile implements JsonSerializable
         $this->payload['parse_mode'] = 'Markdown';
     }
 
+    public static function create(string $content = ''): self
+    {
+        return new self($content);
+    }
+
     /**
      * Notification message (Supports Markdown).
-     *
-     * @param  string  $content
      *
      * @return $this
      */
@@ -57,9 +48,7 @@ class TelegramFile implements JsonSerializable
      *
      * Generic method to attach files of any type based on API.
      *
-     * @param  string|resource|StreamInterface  $file
-     * @param  string                           $type
-     * @param  string|null                      $filename
+     * @param resource|StreamInterface|string $file
      *
      * @return $this
      */
@@ -74,11 +63,11 @@ class TelegramFile implements JsonSerializable
         }
 
         $this->payload['file'] = [
-            'name'     => $type,
+            'name' => $type,
             'contents' => is_resource($file) ? $file : fopen($file, 'rb'),
         ];
 
-        if ($filename !== null) {
+        if (null !== $filename) {
             $this->payload['file']['filename'] = $filename;
         }
 
@@ -89,8 +78,6 @@ class TelegramFile implements JsonSerializable
      * Attach an image.
      *
      * Use this method to send photos.
-     *
-     * @param  string  $file
      *
      * @return $this
      */
@@ -105,8 +92,6 @@ class TelegramFile implements JsonSerializable
      * Use this method to send audio files, if you want Telegram clients to display them in the music player.
      * Your audio must be in the .mp3 format.
      *
-     * @param  string  $file
-     *
      * @return $this
      */
     public function audio(string $file): self
@@ -118,9 +103,6 @@ class TelegramFile implements JsonSerializable
      * Attach a document or any file as document.
      *
      * Use this method to send general files.
-     *
-     * @param  string       $file
-     * @param  string|null  $filename
      *
      * @return $this
      */
@@ -134,8 +116,6 @@ class TelegramFile implements JsonSerializable
      *
      * Use this method to send video files, Telegram clients support mp4 videos.
      *
-     * @param  string  $file
-     *
      * @return $this
      */
     public function video(string $file): self
@@ -147,8 +127,6 @@ class TelegramFile implements JsonSerializable
      * Attach an animation file.
      *
      * Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
-     *
-     * @param  string  $file
      *
      * @return $this
      */
@@ -163,8 +141,6 @@ class TelegramFile implements JsonSerializable
      * Use this method to send audio files, if you want Telegram clients to display the file as a playable voice
      * message. For this to work, your audio must be in an .ogg file encoded with OPUS.
      *
-     * @param  string  $file
-     *
      * @return $this
      */
     public function voice(string $file): self
@@ -178,8 +154,6 @@ class TelegramFile implements JsonSerializable
      * Telegram clients support rounded square mp4 videos of up to 1 minute long.
      * Use this method to send video messages.
      *
-     * @param  string  $file
-     *
      * @return $this
      */
     public function videoNote(string $file): self
@@ -191,10 +165,6 @@ class TelegramFile implements JsonSerializable
      * Attach a view file as the content for the notification.
      * Supports Laravel blade template.
      *
-     * @param  string  $view
-     * @param  array   $data
-     * @param  array   $mergeData
-     *
      * @return $this
      */
     public function view(string $view, array $data = [], array $mergeData = []): self
@@ -204,8 +174,6 @@ class TelegramFile implements JsonSerializable
 
     /**
      * Determine there is a file.
-     *
-     * @return bool
      */
     public function hasFile(): bool
     {
@@ -214,8 +182,6 @@ class TelegramFile implements JsonSerializable
 
     /**
      * Returns params payload.
-     *
-     * @return array
      */
     public function toArray(): array
     {
@@ -224,14 +190,12 @@ class TelegramFile implements JsonSerializable
 
     /**
      * Create Multipart array.
-     *
-     * @return array
      */
     public function toMultipart(): array
     {
         $data = [];
         foreach ($this->payload as $name => $contents) {
-            $data[] = ($name === 'file') ? $contents : compact('name', 'contents');
+            $data[] = ('file' === $name) ? $contents : compact('name', 'contents');
         }
 
         return $data;
@@ -239,10 +203,6 @@ class TelegramFile implements JsonSerializable
 
     /**
      * Determine if it's a regular and readable file.
-     *
-     * @param  string  $file
-     *
-     * @return bool
      */
     protected function isReadableFile(string $file): bool
     {

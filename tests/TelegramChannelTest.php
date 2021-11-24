@@ -16,17 +16,20 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Class ChannelTest.
+ *
+ * @internal
+ * @coversNothing
  */
 class TelegramChannelTest extends TestCase
 {
     /** @var Mockery\Mock */
     protected $telegram;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject */
-    private $dispatcher;
-
     /** @var TelegramChannel */
     protected $channel;
+
+    /** @var \PHPUnit\Framework\MockObject\MockObject */
+    private $dispatcher;
 
     public function setUp(): void
     {
@@ -43,7 +46,7 @@ class TelegramChannelTest extends TestCase
     }
 
     /** @test */
-    public function it_can_send_a_message(): void
+    public function itCanSendAMessage(): void
     {
         $expectedResponse = ['ok' => true, 'result' => ['message_id' => 123, 'chat' => ['id' => 12345]]];
 
@@ -52,7 +55,8 @@ class TelegramChannelTest extends TestCase
             'parse_mode' => 'Markdown',
             'chat_id' => 12345,
         ])
-            ->andReturns(new Response(200, [], json_encode($expectedResponse)));
+            ->andReturns(new Response(200, [], json_encode($expectedResponse)))
+        ;
 
         $actualResponse = $this->channel->send(new TestNotifiable(), new TestNotification());
 
@@ -62,7 +66,7 @@ class TelegramChannelTest extends TestCase
     /**
      * @test
      */
-    public function notification_failed_event(): void
+    public function notificationFailedEvent(): void
     {
         self::expectException($exception_class = CouldNotSendNotification::class);
         self::expectExceptionMessage($exception_message = 'Some exception');
@@ -72,7 +76,7 @@ class TelegramChannelTest extends TestCase
 
         $this->telegram
             ->shouldReceive('sendMessage')
-            ->andThrow($exception_class , $exception_message)
+            ->andThrow($exception_class, $exception_message)
         ;
 
         $this->dispatcher
@@ -99,9 +103,6 @@ class TestNotifiable
 {
     use Notifiable;
 
-    /**
-     * @return int
-     */
     public function routeNotificationForTelegram(): int
     {
         return false;
@@ -115,8 +116,6 @@ class TestNotification extends Notification
 {
     /**
      * @param $notifiable
-     *
-     * @return TelegramMessage
      */
     public function toTelegram($notifiable): TelegramMessage
     {
@@ -131,8 +130,6 @@ class TestNotificationNoChatId extends Notification
 {
     /**
      * @param $notifiable
-     *
-     * @return TelegramMessage
      */
     public function toTelegram($notifiable): TelegramMessage
     {

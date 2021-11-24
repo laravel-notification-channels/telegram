@@ -2,7 +2,6 @@
 
 namespace NotificationChannels\Telegram;
 
-use Illuminate\Support\Collection;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Notifications\Notification;
@@ -25,9 +24,6 @@ class TelegramChannel
 
     /**
      * Channel constructor.
-     *
-     * @param  Telegram    $telegram
-     * @param  Dispatcher  $dispatcher
      */
     public function __construct(Telegram $telegram, Dispatcher $dispatcher)
     {
@@ -38,11 +34,9 @@ class TelegramChannel
     /**
      * Send the given notification.
      *
-     * @param  mixed         $notifiable
-     * @param  Notification  $notification
+     * @param mixed $notifiable
      *
      * @throws CouldNotSendNotification
-     * @return null|array
      */
     public function send($notifiable, Notification $notification): ?array
     {
@@ -130,11 +124,6 @@ class TelegramChannel
 
     /**
      * Chunk the given string into an array of strings.
-     *
-     * @param  string  $value
-     * @param  int     $limit
-     *
-     * @return array
      */
     public function chunk(string $value, int $limit = 4096): array
     {
@@ -146,7 +135,7 @@ class TelegramChannel
             $limit = 4096;
         }
 
-        $output = explode("%#TGMSG#%", wordwrap($value, $limit, '%#TGMSG#%'));
+        $output = explode('%#TGMSG#%', wordwrap($value, $limit, '%#TGMSG#%'));
 
         // Fallback for when the string is too long and wordwrap doesn't cut it.
         if (count($output) <= 1) {

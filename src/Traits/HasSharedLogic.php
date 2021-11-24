@@ -7,19 +7,18 @@ namespace NotificationChannels\Telegram\Traits;
  */
 trait HasSharedLogic
 {
+    /** @var string Bot Token. */
+    public $token;
     /** @var array Params payload. */
     protected $payload = [];
 
     /** @var array Inline Keyboard Buttons. */
     protected $buttons = [];
 
-    /** @var string Bot Token. */
-    public $token;
-
     /**
      * Recipient's Chat ID.
      *
-     * @param string|int $chatId
+     * @param int|string $chatId
      *
      * @return $this
      */
@@ -32,10 +31,6 @@ trait HasSharedLogic
 
     /**
      * Add an inline button.
-     *
-     * @param string $text
-     * @param string $url
-     * @param int    $columns
      *
      * @return $this
      */
@@ -52,10 +47,6 @@ trait HasSharedLogic
 
     /**
      * Add an inline button with callback_data.
-     *
-     * @param string $text
-     * @param string $callback_data
-     * @param int    $columns
      *
      * @return $this
      */
@@ -74,8 +65,6 @@ trait HasSharedLogic
      * Send the message silently.
      * Users will receive a notification with no sound.
      *
-     * @param bool $disableNotification
-     *
      * @return $this
      */
     public function disableNotification(bool $disableNotification = true): self
@@ -89,8 +78,6 @@ trait HasSharedLogic
      * Bot Token.
      * Overrides default bot token with the given value for this notification.
      *
-     * @param string $token
-     *
      * @return $this
      */
     public function token(string $token): self
@@ -102,8 +89,6 @@ trait HasSharedLogic
 
     /**
      * Determine if bot token is given for this notification.
-     *
-     * @return bool
      */
     public function hasToken(): bool
     {
@@ -112,8 +97,6 @@ trait HasSharedLogic
 
     /**
      * Additional options to pass to sendMessage method.
-     *
-     * @param array $options
      *
      * @return $this
      */
@@ -126,20 +109,16 @@ trait HasSharedLogic
 
     /**
      * Determine if chat id is not given.
-     *
-     * @return bool
      */
     public function toNotGiven(): bool
     {
-        return ! isset($this->payload['chat_id']);
+        return !isset($this->payload['chat_id']);
     }
 
     /**
      * Get payload value for given key.
      *
-     * @param string $key
-     *
-     * @return mixed|null
+     * @return null|mixed
      */
     public function getPayloadValue(string $key)
     {
@@ -148,8 +127,6 @@ trait HasSharedLogic
 
     /**
      * Returns params payload.
-     *
-     * @return array
      */
     public function toArray(): array
     {

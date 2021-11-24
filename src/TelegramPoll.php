@@ -13,29 +13,20 @@ class TelegramPoll implements JsonSerializable
     use HasSharedLogic;
 
     /**
-     * @param  string  $question
-     *
-     * @return self
-     */
-    public static function create(string $question = ''): self
-    {
-        return new self($question);
-    }
-
-    /**
      * Message constructor.
-     *
-     * @param  string  $question
      */
     public function __construct(string $question = '')
     {
         $this->question($question);
     }
 
+    public static function create(string $question = ''): self
+    {
+        return new self($question);
+    }
+
     /**
      * Poll question.
-     *
-     * @param  string  $question
      *
      * @return $this
      */
@@ -48,8 +39,6 @@ class TelegramPoll implements JsonSerializable
 
     /**
      * Poll choices.
-     *
-     * @param  array  $choices
      *
      * @return $this
      */
