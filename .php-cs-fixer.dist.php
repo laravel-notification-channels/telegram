@@ -2,8 +2,8 @@
 
 $finder = PhpCsFixer\Finder::create()->in(__DIR__);
 
-return PhpCsFixer\Config::create()
-    ->setRiskyAllowed(true)
+$config = new PhpCsFixer\Config();
+$config->setRiskyAllowed(true)
     ->setRules([
         '@PSR2' => true,
         'array_syntax' => ['syntax' => 'short'],
@@ -37,3 +37,5 @@ return PhpCsFixer\Config::create()
         'single_trait_insert_per_statement' => true,
     ])
     ->setFinder($finder);
+
+return $config;
