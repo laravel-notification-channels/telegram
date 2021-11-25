@@ -7,6 +7,11 @@ namespace NotificationChannels\Telegram;
  */
 class TelegramUpdates
 {
+    /**
+     * @var array
+     */
+    private $payload = [];
+
     public static function create(): self
     {
         return new self();
