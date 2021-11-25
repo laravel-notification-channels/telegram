@@ -148,7 +148,7 @@ Preview:
 public function toTelegram($notifiable)
 {
     return TelegramFile::create()
-            ->to($notifiable->telegram_user_id) // Optional
+            ->to($notifiable->telegram_user_id)
             ->content('Audio') // Optional Caption
             ->audio('/path/to/audio.mp3');
 }
@@ -164,7 +164,7 @@ Preview:
 public function toTelegram($notifiable)
 {
     return TelegramFile::create()
-        ->to($notifiable->telegram_user_id) // Optional
+        ->to($notifiable->telegram_user_id)
         ->content('Awesome *bold* text and [inline URL](http://www.example.com/)')
         ->file('/storage/archive/6029014.jpg', 'photo'); // local photo
 
@@ -183,7 +183,7 @@ Preview:
 public function toTelegram($notifiable)
 {
     return TelegramFile::create()
-        ->to($notifiable->telegram_user_id) // Optional
+        ->to($notifiable->telegram_user_id)
         ->content('Did you know we can set a custom filename too?')
         ->document('https://file-examples-com.github.io/uploads/2017/10/file-sample_150kB.pdf', 'sample.pdf');
 }
@@ -199,6 +199,7 @@ Preview:
 public function toTelegram($notifiable)
 {
     return TelegramLocation::create()
+        ->to($notifiable->telegram_user_id)
         ->latitude('40.6892494')
         ->longitude('-74.0466891');
 }
@@ -214,6 +215,7 @@ Preview:
 public function toTelegram($notifiable)
 {
     return TelegramFile::create()
+        ->to($notifiable->telegram_user_id)
         ->content('Sample *video* notification!')
         ->video('https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_480_1_5MG.mp4');
 }
@@ -229,6 +231,7 @@ Preview:
 public function toTelegram($notifiable)
 {
     return TelegramFile::create()
+        ->to($notifiable->telegram_user_id)
         ->content('Woot! We can send animated gif notifications too!')
         ->animation('https://sample-videos.com/gif/2.gif');
 
