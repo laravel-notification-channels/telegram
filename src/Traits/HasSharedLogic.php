@@ -30,20 +30,6 @@ trait HasSharedLogic
     }
 
     /**
-     * Add a caption.
-     *
-     * @param string $caption
-     *
-     * @return $this
-     */
-    public function caption($caption): self
-    {
-        $this->payload['caption'] = $caption;
-
-        return $this;
-    }
-
-    /**
      * Add an inline button.
      *
      * @return $this

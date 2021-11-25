@@ -3,6 +3,7 @@
 namespace NotificationChannels\Telegram;
 
 use JsonSerializable;
+use NotificationChannels\Telegram\Traits\HasCaption;
 use NotificationChannels\Telegram\Traits\HasSharedLogic;
 
 /**
@@ -11,6 +12,7 @@ use NotificationChannels\Telegram\Traits\HasSharedLogic;
 class TelegramAudio implements JsonSerializable
 {
     use HasSharedLogic;
+    use HasCaption;
 
     /**
      * Message constructor.
