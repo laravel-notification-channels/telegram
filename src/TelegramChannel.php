@@ -63,6 +63,8 @@ class TelegramChannel
 
         $params = $message->toArray();
 
+        $sendMethod = str_replace('Telegram', 'send', array_reverse(explode('\\', get_class($message)))[0]);
+
         try {
             if ($message instanceof TelegramMessage) {
                 if ($message->shouldChunk()) {
@@ -99,14 +101,10 @@ class TelegramChannel
                 }
 
                 $response = $this->telegram->sendMessage($params);
-            } elseif ($message instanceof TelegramLocation) {
-                $response = $this->telegram->sendLocation($params);
             } elseif ($message instanceof TelegramFile) {
                 $response = $this->telegram->sendFile($params, $message->type, $message->hasFile());
-            } elseif ($message instanceof TelegramPoll) {
-                $response = $this->telegram->sendPoll($params);
-            } elseif ($message instanceof TelegramAudio) {
-                $response = $this->telegram->sendAudio($params);
+            } elseif (method_exists($this->telegram, $sendMethod)) {
+                $response = $this->telegram->{$sendMethod}($params);
             } else {
                 return null;
             }
