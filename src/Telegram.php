@@ -131,6 +131,16 @@ class Telegram
     }
 
     /**
+     * Send an Audio.
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function sendAudio(array $params): ?ResponseInterface
+    {
+        return $this->sendRequest('sendAudio', $params);
+    }
+
+    /**
      * Send a Location.
      *
      * @throws CouldNotSendNotification
