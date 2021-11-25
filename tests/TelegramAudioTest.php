@@ -16,8 +16,8 @@ class TelegramAudioTest extends TestCase
     /** @test */
     public function itAcceptsAudioWhenConstructed(): void
     {
-        $message = new TelegramAudio("audio.mp3");
-        $this->assertEquals("audio.mp3", $message->getPayloadValue('audio'));
+        $message = new TelegramAudio('audio.mp3');
+        $this->assertEquals('audio.mp3', $message->getPayloadValue('audio'));
     }
 
     /** @test */
@@ -32,8 +32,8 @@ class TelegramAudioTest extends TestCase
     public function theAudioMessageCanBeSet(): void
     {
         $message = new TelegramAudio();
-        $message->audio("audio.mp3");
-        $this->assertEquals("audio.mp3", $message->getPayloadValue('audio'));
+        $message->audio('audio.mp3');
+        $this->assertEquals('audio.mp3', $message->getPayloadValue('audio'));
     }
 
     /** @test */
@@ -59,7 +59,7 @@ class TelegramAudioTest extends TestCase
     {
         $message = new TelegramAudio('audio.mp3');
         $message->to(12345);
-        $message->caption("audio");
+        $message->caption('audio');
         $expected = [
             'chat_id' => 12345,
             'audio' => 'audio.mp3',
