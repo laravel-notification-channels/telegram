@@ -29,6 +29,18 @@ class TelegramUpdates
         return $this;
     }
 
+    /**
+     * Additional options.
+     *
+     * @return $this
+     */
+    public function options(array $options): self
+    {
+        $this->payload = array_merge($this->payload, $options);
+
+        return $this;
+    }
+
     public function get(): array
     {
         $response = (new Telegram())->setToken(config('services.telegram-bot-api.token'))->getUpdates($this->payload);
