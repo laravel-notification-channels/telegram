@@ -105,7 +105,6 @@ class InvoicePaid extends Notification
         $url = url('/invoice/' . $this->invoice->id);
 
         return TelegramMessage::create()
-            // Optional recipient user id.
             ->to($notifiable->telegram_user_id)
             // Markdown supported.
             ->content("Hello there!\nYour invoice has been *PAID*")
