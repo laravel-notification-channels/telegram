@@ -13,7 +13,7 @@ class TelegramLocation implements JsonSerializable
     use HasSharedLogic;
 
     /**
-     * Message constructor.
+     * Telegram Location constructor.
      *
      * @param null|float|string $latitude
      * @param null|float|string $longitude

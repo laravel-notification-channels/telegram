@@ -15,7 +15,7 @@ class TelegramServiceProvider extends ServiceProvider
     /**
      * Register the application services.
      */
-    public function register()
+    public function register(): void
     {
         $this->app->bind(Telegram::class, static function () {
             return new Telegram(

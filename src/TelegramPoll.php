@@ -12,9 +12,6 @@ class TelegramPoll implements JsonSerializable
 {
     use HasSharedLogic;
 
-    /**
-     * Message constructor.
-     */
     public function __construct(string $question = '')
     {
         $this->question($question);

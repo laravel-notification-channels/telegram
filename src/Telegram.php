@@ -24,10 +24,10 @@ class Telegram
     protected $apiBaseUri;
 
     /**
-     * @param null|string $token
-     * @param null|string $apiBaseUri
+     * @param  string|null  $token
+     * @param  string|null  $apiBaseUri
      */
-    public function __construct($token = null, HttpClient $httpClient = null, $apiBaseUri = null)
+    public function __construct(string $token = null, HttpClient $httpClient = null, string $apiBaseUri = null)
     {
         $this->token = $token;
         $this->http = $httpClient ?? new HttpClient();
@@ -37,7 +37,7 @@ class Telegram
     /**
      * Token getter.
      */
-    public function getToken(): string
+    public function getToken(): ?string
     {
         return $this->token;
     }
@@ -130,7 +130,7 @@ class Telegram
         return $this->sendRequest('sendPoll', $params);
     }
 
-    /*
+    /**
      * Get updates.
      *
      * @throws CouldNotSendNotification

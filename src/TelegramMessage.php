@@ -16,9 +16,6 @@ class TelegramMessage implements JsonSerializable
     /** @var int Message Chunk Size */
     public $chunkSize;
 
-    /**
-     * Message constructor.
-     */
     public function __construct(string $content = '')
     {
         $this->content($content);

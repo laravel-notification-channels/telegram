@@ -23,20 +23,20 @@ class CouldNotSendNotification extends Exception
 
         $statusCode = $exception->getResponse()->getStatusCode();
 
-        $result = json_decode($exception->getResponse()->getBody(), false);
+        $result = json_decode($exception->getResponse()->getBody()->getContents(), false);
         $description = $result->description ?? 'no description given';
 
-        return new static("Telegram responded with an error `{$statusCode} - {$description}`", 0, $exception);
+        return new static("Telegram responded with an error `$statusCode - $description`", 0, $exception);
     }
 
     /**
      * Thrown when there's no bot token provided.
      *
-     * @param string $message
+     * @param  string  $message
      *
      * @return static
      */
-    public static function telegramBotTokenNotProvided($message): self
+    public static function telegramBotTokenNotProvided(string $message): self
     {
         return new static($message);
     }
@@ -50,6 +50,6 @@ class CouldNotSendNotification extends Exception
      */
     public static function couldNotCommunicateWithTelegram($message): self
     {
-        return new static("The communication with Telegram failed. `{$message}`");
+        return new static("The communication with Telegram failed. `$message`");
     }
 }

@@ -16,10 +16,7 @@ class TelegramFile implements JsonSerializable
 
     /** @var string content type. */
     public $type = 'document';
-
-    /**
-     * Message constructor.
-     */
+    
     public function __construct(string $content = '')
     {
         $this->content($content);
