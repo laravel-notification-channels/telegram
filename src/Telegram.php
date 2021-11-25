@@ -130,16 +130,6 @@ class Telegram
         return $this->sendRequest('sendPoll', $params);
     }
 
-    /**
-     * Send an Audio.
-     *
-     * @throws CouldNotSendNotification
-     */
-    public function sendAudio(array $params): ?ResponseInterface
-    {
-        return $this->sendRequest('sendAudio', $params);
-    }
-
     /*
      * Get updates.
      *
