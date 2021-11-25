@@ -21,6 +21,13 @@ class TelegramAudioTest extends TestCase
     }
 
     /** @test */
+    public function theDefaultParseModeIsMarkdown(): void
+    {
+        $message = new TelegramAudio('audio.mp3');
+        $this->assertEquals('Markdown', $message->getPayloadValue('parse_mode'));
+    }
+
+    /** @test */
     public function theRecipientsChatIdCanBeSet(): void
     {
         $message = new TelegramAudio();
@@ -64,6 +71,7 @@ class TelegramAudioTest extends TestCase
             'chat_id' => 12345,
             'audio' => 'audio.mp3',
             'caption' => 'audio',
+            'parse_mode' => 'Markdown',
         ];
 
         $this->assertEquals($expected, $message->toArray());

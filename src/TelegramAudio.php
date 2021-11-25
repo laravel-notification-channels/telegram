@@ -18,6 +18,7 @@ class TelegramAudio implements JsonSerializable
     public function __construct(string $audio = '')
     {
         $this->audio($audio);
+        $this->payload['parse_mode'] = 'Markdown';
     }
 
     public static function create(string $audio = ''): self
