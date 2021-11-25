@@ -63,7 +63,7 @@ class TelegramChannel
 
         $params = $message->toArray();
 
-        $sendMethod = str_replace("Telegram", "send", array_reverse(explode('\\', get_class($message)))[0]);
+        $sendMethod = str_replace('Telegram', 'send', array_reverse(explode('\\', get_class($message)))[0]);
 
         try {
             if ($message instanceof TelegramMessage) {
@@ -104,7 +104,7 @@ class TelegramChannel
             } elseif ($message instanceof TelegramFile) {
                 $response = $this->telegram->sendFile($params, $message->type, $message->hasFile());
             } elseif (method_exists($this->telegram, $sendMethod)) {
-                $response = $this->telegram->$sendMethod($params);
+                $response = $this->telegram->{$sendMethod}($params);
             } else {
                 return null;
             }
