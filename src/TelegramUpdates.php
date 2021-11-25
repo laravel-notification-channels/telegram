@@ -43,7 +43,7 @@ class TelegramUpdates
 
     public function get(): array
     {
-        $response = (new Telegram())->setToken(config('services.telegram-bot-api.token'))->getUpdates($this->payload);
+        $response = app(Telegram::class)->getUpdates($this->payload);
 
         return json_decode($response->getBody()->getContents(), true);
     }
