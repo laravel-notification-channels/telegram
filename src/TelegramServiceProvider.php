@@ -24,7 +24,7 @@ class TelegramServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(Telegram::class, function () {
+        $this->app->bind(Telegram::class, static function () {
             return new Telegram(
                 config('services.telegram-bot-api.token'),
                 app(HttpClient::class),
