@@ -105,6 +105,8 @@ class TelegramChannel
                 $response = $this->telegram->sendFile($params, $message->type, $message->hasFile());
             } elseif ($message instanceof TelegramPoll) {
                 $response = $this->telegram->sendPoll($params);
+            } elseif ($message instanceof TelegramAudio) {
+                $response = $this->telegram->sendAudio($params);
             } else {
                 return null;
             }
