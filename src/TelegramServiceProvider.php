@@ -13,13 +13,6 @@ use Illuminate\Support\ServiceProvider;
 class TelegramServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap the application services.
-     */
-    public function boot(): void
-    {
-    }
-
-    /**
      * Register the application services.
      */
     public function register()
