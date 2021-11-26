@@ -3,7 +3,6 @@
 namespace NotificationChannels\Telegram\Test;
 
 use NotificationChannels\Telegram\TelegramContact;
-use NotificationChannels\Telegram\TelegramPoll;
 use PHPUnit\Framework\TestCase;
 
 /**
