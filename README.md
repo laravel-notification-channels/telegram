@@ -69,13 +69,13 @@ Then, configure your Telegram Bot API Token:
 
 ## Retrieving Chat ID
 
-In order for us to send notifications to your Telegram Bot user/channel or group, we need to know their Chat ID.
+For us to send notifications to your Telegram Bot user/channel or group, we need to know their Chat ID.
 
 This can be done by fetching the [updates][link-telegram-docs-update] for your Bot using the `getUpdates` method as per Telegram Bot API [docs][link-telegram-docs-getupdates].
 
 An [update][link-telegram-docs-update] is an object containing relevant fields based on the type of update it represents, some examples of an update object are `message`, `callback_query`, and `poll`. For a complete list of fields, see [Telegram Bot API docs][link-telegram-docs-update].
 
-To make things easier, the library comes with a handy method which can be used to get the updates from which you can parse the relevant Chat ID. 
+To make things easier, the library comes with a handy method that can be used to get the updates from which you can parse the relevant Chat ID.
 
 Please keep in mind the user has to first interact with your bot for you to be able to obtain their Chat ID which you can then store in your database for future interactions or notifications.
 
