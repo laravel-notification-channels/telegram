@@ -127,6 +127,16 @@ class Telegram
     }
 
     /**
+     * Send a Contact.
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function sendContact(array $params): ?ResponseInterface
+    {
+        return $this->sendRequest('sendContact', $params);
+    }
+
+    /**
      * Get updates.
      *
      * @throws CouldNotSendNotification
