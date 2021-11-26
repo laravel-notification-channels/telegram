@@ -5,16 +5,16 @@ All notable changes to `telegram` will be documented in this file
 ## Unreleased
 
 - Register Telegram instance to container. 
-- Add `TelegramUpdates` to retrieve bot updates. PR [133](https://github.com/laravel-notification-channels/telegram/pull/133).
-- Refactor TelegramChannel. PR [136](https://github.com/laravel-notification-channels/telegram/pull/136).
+- Add `TelegramUpdates` to retrieve bot updates. PR [#133](https://github.com/laravel-notification-channels/telegram/pull/133).
+- Refactor TelegramChannel. PR [#136](https://github.com/laravel-notification-channels/telegram/pull/136).
 - Add Retrieving Chat ID docs and improve docs.
 - Add missing type declaration and minor improvements to various methods.
-- Add Contact Support. PR [138](https://github.com/laravel-notification-channels/telegram/pull/138).
+- Add Contact Support. PR [#138](https://github.com/laravel-notification-channels/telegram/pull/138).
 
 ## 0.9.0 - 2021-11-24
 
-- Add Poll Support. PR [130](https://github.com/laravel-notification-channels/telegram/pull/130).
-- Remove StyleCI in favor of GitHub Actions Workflow for Code Styling. PR [131](https://github.com/laravel-notification-channels/telegram/pull/131).
+- Add Poll Support. PR [#130](https://github.com/laravel-notification-channels/telegram/pull/130).
+- Remove StyleCI in favor of GitHub Actions Workflow for Code Styling. PR [#131](https://github.com/laravel-notification-channels/telegram/pull/131).
 
 ## 0.8.0 - 2021-11-14
 
