@@ -59,7 +59,7 @@ class TelegramContact implements JsonSerializable
     }
 
     /**
-     * Contact vCard
+     * Contact vCard.
      *
      * @return $this
      */
