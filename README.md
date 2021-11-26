@@ -355,17 +355,17 @@ For more information on supported parameters, check out these [docs](https://tel
 - `voice(string $file)`: Helper method to attach a voice note (`.ogg` file with OPUS encoded).
 - `videoNote(string $file)`: Helper method to attach a video note file (Upto 1 min long, rounded square video).
 
-### Telegram Poll methods
-
-- `question(string $question)`: Poll question.
-- `choices(array $choices)`: Poll choices.
-
 ### Telegram Contact methods
 
 - `phoneNumber(string $phoneNumber)`: Contact phone number.
 - `firstName(string $firstName)`: Contact first name.
 - `lastName(string $lastName)`: (optional) Contact last name.
 - `vCard(string $vCard)`: (optional) Contact vcard.
+
+### Telegram Poll methods
+
+- `question(string $question)`: Poll question.
+- `choices(array $choices)`: Poll choices.
 
 ## Alternatives
 
