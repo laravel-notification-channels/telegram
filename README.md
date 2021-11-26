@@ -18,7 +18,7 @@ This package makes it easy to send Telegram notification using [Telegram Bot API
 - [Usage](#usage)
   - [Text Notification](#text-notification)
   - [Send a Poll](#send-a-poll)
-  - [Send a Contact](#send-a-contact)
+  - [Attach a Contact](#attach-a-contact)
   - [Attach an Audio](#attach-an-audio)
   - [Attach a Photo](#attach-a-photo)
   - [Attach a Document](#attach-a-document)
@@ -143,15 +143,15 @@ Preview:
 
 ![Laravel Telegram Poll Example](https://user-images.githubusercontent.com/60013703/143135248-1224a69b-3233-4686-8a59-d41517d8c722.png)
 
-### Send a Contact
+### Attach a Contact
 
 ```php
 public function toTelegram($notifiable)
 {
     return TelegramContact::create()
             ->to($notifiable->telegram_user_id) // Optional
-            ->firstName('Faissal')
-            ->lastName('Wahabali') // Optional
+            ->firstName('John')
+            ->lastName('Doe') // Optional
             ->phoneNumber('00000000');
 }
 ```
