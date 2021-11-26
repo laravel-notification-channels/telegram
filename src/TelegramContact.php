@@ -6,7 +6,7 @@ use JsonSerializable;
 use NotificationChannels\Telegram\Traits\HasSharedLogic;
 
 /**
- * Class TelegramPoll.
+ * Class TelegramContact.
  */
 class TelegramContact implements JsonSerializable
 {
