@@ -57,4 +57,16 @@ class TelegramContact implements JsonSerializable
 
         return $this;
     }
+
+    /**
+     * Contact vCard
+     *
+     * @return $this
+     */
+    public function vCard(string $vCard): self
+    {
+        $this->payload['vcard'] = $vCard;
+
+        return $this;
+    }
 }

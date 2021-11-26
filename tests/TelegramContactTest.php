@@ -53,6 +53,14 @@ class TelegramContactTest extends TestCase
     }
 
     /** @test */
+    public function thevCardCanBeSetForTheContact(): void
+    {
+        $message = new TelegramContact();
+        $message->vCard('vCard');
+        $this->assertEquals('vCard', $message->getPayloadValue('vcard'));
+    }
+
+    /** @test */
     public function itCanDetermineIfTheRecipientChatIdHasNotBeenSet(): void
     {
         $message = new TelegramContact();
@@ -69,11 +77,13 @@ class TelegramContactTest extends TestCase
         $message->to(12345);
         $message->firstName('Faissal');
         $message->lastName('Wahabali');
+        $message->vCard('vCard');
         $expected = [
             'chat_id' => 12345,
             'phone_number' => '00000000',
             'first_name' => 'Faissal',
             'last_name' => 'Wahabali',
+            'vcard' => 'vCard',
         ];
 
         $this->assertEquals($expected, $message->toArray());
