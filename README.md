@@ -12,7 +12,8 @@ This package makes it easy to send Telegram notification using [Telegram Bot API
 ## Contents
 
 - [Installation](#installation)
-  - [Setting up your Telegram bot](#setting-up-your-telegram-bot)
+  - [Setting up your Telegram Bot](#setting-up-your-telegram-bot)
+  - [Retrieving Chat ID](#retrieving-chat-id)
   - [Using in Lumen](#using-in-lumen)
   - [Proxy or Bridge Support](#proxy-or-bridge-support)
 - [Usage](#usage)
@@ -65,6 +66,47 @@ Then, configure your Telegram Bot API Token:
     'token' => env('TELEGRAM_BOT_TOKEN', 'YOUR BOT TOKEN HERE')
 ],
 ```
+
+## Retrieving Chat ID
+
+In order for us to send notifications to your Telegram Bot user/channel or group, we need to know their Chat ID.
+
+This can be done by fetching the [updates][link-telegram-docs-update] for your Bot using the `getUpdates` method as per Telegram Bot API [docs][link-telegram-docs-getupdates].
+
+An [update][link-telegram-docs-update] is an object containing relevant fields based on the type of update it represents, some examples of an update object are `message`, `callback_query`, and `poll`. For a complete list of fields, see [Telegram Bot API docs][link-telegram-docs-update].
+
+To make things easier, the library comes with a handy method which can be used to get the updates from which you can parse the relevant Chat ID. 
+
+Please keep in mind the user has to first interact with your bot for you to be able to obtain their Chat ID which you can then store in your database for future interactions or notifications.
+
+Here's an example of fetching an update:
+
+```php
+use NotificationChannels\Telegram\TelegramUpdates;
+
+// Response is an array of updates.
+$updates = TelegramUpdates::create()
+    // (Optional). Get's the latest update. NOTE: All previous updates will be forgotten using this method.
+    // ->latest()
+    
+    // (Optional). Limit to 2 updates (By default, updates starting with the earliest unconfirmed update are returned).
+    ->limit(2)
+    
+    // (Optional). Add more params to the request.
+    ->options([
+        'timeout' => 0,
+    ])
+    ->get();
+
+if($updates['ok']) {
+    // Chat ID
+    $chatId = $updates['result'][0]['message']['chat']['id'];
+}
+```
+
+_Note: This method will not work if an outgoing webhook is set up._
+
+For a complete list of available parameters for the `options`, see [Telegram Bot API docs][link-telegram-docs-getupdates].
 
 ## Using in Lumen
 
@@ -416,3 +458,5 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [link-contributors]: ../../contributors
 [link-notification-facade]: https://laravel.com/docs/8.x/notifications#using-the-notification-facade
 [link-on-demand-notifications]: https://laravel.com/docs/8.x/notifications#on-demand-notifications
+[link-telegram-docs-update]: https://core.telegram.org/bots/api#update
+[link-telegram-docs-getupdates]: https://core.telegram.org/bots/api#getupdates
