@@ -28,9 +28,14 @@ This package makes it easy to send Telegram notification using [Telegram Bot API
   - [Routing a Message](#routing-a-message)
   - [Handling Response](#handling-response)
   - [On-Demand Notifications](#on-demand-notifications)
-  - [Available Message methods](#available-message-methods)
-  - [Available Location methods](#available-location-methods)
-  - [Available File methods](#available-file-methods)
+  - [Sending to Multiple Recipients](#sending-to-multiple-recipients)
+- [Available Methods](#available-methods)
+  - [Shared Methods](#shared-methods)
+  - [Telegram Message methods](#telegram-message-methods)
+  - [Telegram Location methods](#telegram-location-methods)
+  - [Telegram File methods](#telegram-file-methods)
+  - [Telegram Contact methods](#telegram-contact-methods)
+  - [Telegram Poll methods](#telegram-poll-methods)
 - [Alternatives](#alternatives)
 - [Changelog](#changelog)
 - [Testing](#testing)
@@ -286,75 +291,81 @@ For a complete list of response fields, please refer the Telegram Bot API's [Mes
 > Sometimes you may need to send a notification to someone who is not stored as a "user" of your application. Using the `Notification::route` method, you may specify ad-hoc notification routing information before sending the notification. For more details, you can check out the [on-demand notifications][link-on-demand-notifications] docs.
 
 ```php
+use Illuminate\Support\Facades\Notification;
+
 Notification::route('telegram', 'TELEGRAM_CHAT_ID')
             ->notify(new InvoicePaid($invoice));
 ```
 
-### Available Message methods
+### Sending to Multiple Recipients
 
-- `to($chatId)`: (integer) Recipient's chat id.
-- `token($token)`: (string) Bot token if you wish to override the default token for a specific notification (optional).
-- `content('', $limit = null)`: (string) Notification message, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
-- `view($view, $data = [], $mergeData = [])`: (string) Blade template name with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
-- `chunk($limit = 4096)`: (integer) Message chars chunk size to send in parts (For long messages). Note: Chunked messages will be rate limited to one message per second to comply with rate limitation requirements from Telegram.
-- `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row.
-- `buttonWithCallback($text, $callback_data)`: (string) Adds an inline button with callback. You can add as many as you want, and they'll be placed 2 in a row.
-- `disableNotification($disableNotification = true)`: (bool) Send the message silently.  Users will receive a notification with no sound.
-- `options([])`: (array) Allows you to add additional or override `sendMessage` payload (A Telegram Bot API method used to send message internally). For more information on supported parameters, check out these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage).
+Using the [notification facade][link-notification-facade] you can send a notification to multiple recipients at once.
 
-### Available Location methods
+> If you're sending bulk notifications to multiple users, the Telegram Bot API will not allow more than 30 messages per second or so. 
+> Consider spreading out notifications over large intervals of 8—12 hours for best results.
+>
+> Also note that your bot will not be able to send more than 20 messages per minute to the same group. 
+>
+> If you go over the limit, you'll start getting `429` errors. For more details, refer Telegram Bots [FAQ](https://core.telegram.org/bots/faq#broadcasting-to-users).
 
-- `to($chatId)`: (integer) Recipient's chat id.
-- `token($token)`: (string) Bot token if you wish to override the default token for a specific notification (optional).
-- `latitude($latitude)`: (float|string) Latitude of the location.
-- `longitude($longitude)`: (float|string) Longitude of the location.
-- `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row.
-- `buttonWithCallback($text, $callback_data)`: (string) Adds an inline button with callback. You can add as many as you want, and they'll be placed 2 in a row.
-- `disableNotification($disableNotification = true)`: (bool) Send the message silently. Users will receive a notification with no sound.
-- `options([])`: (array) Allows you to add additional or override the payload.
+```php
+use Illuminate\Support\Facades\Notification;
 
-### Available File methods
+// Recipients can be an array of chat IDs or collection of notifiable entities.
+Notification::send($recipients, new InvoicePaid());
+```
 
-- `to($chatId)`: (integer) Recipient's chat id.
-- `token($token)`: (string) Bot token if you wish to override the default token for a specific notification (optional).
-- `content('')`: (string) File caption, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
-- `view($view, $data = [], $mergeData = [])`: (string) Blade template name with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
-- `file(string|resource|StreamInterface $file, $type, $filename = null)`: Local file path or remote URL, `$type` of the file (Ex:`photo`, `audio`, `document`, `video`, `animation`, `voice`, `video_note_`) and optionally filename with extension. Ex: `sample.pdf`. You can use helper methods instead of using this to make it easier to work with file attachment.
-- `photo($file)`: Helper method to attach a photo.
-- `audio($file)`: Helper method to attach an audio file (MP3 file).
-- `document($file, $filename = null)`: Helper method to attach a document or any file as document.
-- `video($file)`: Helper method to attach a video file.
-- `animation($file)`: Helper method to attach an animated gif file.
-- `voice($file)`: Helper method to attach a voice note (`.ogg` file with OPUS encoded).
-- `videoNote($file)`: Helper method to attach a video note file (Upto 1 min long, rounded square video).
-- `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row.
-- `buttonWithCallback($text, $callback_data)`: (string) Adds an inline button with callback. You can add as many as you want, and they'll be placed 2 in a row.
-- `disableNotification($disableNotification = true)`: (bool) Send the message silently. Users will receive a notification with no sound.
-- `options([])`: (array) Allows you to add additional or override the payload.
+## Available Methods
 
-### Available Poll methods
+### Shared Methods
 
-- `to($chatId)`: (integer) Recipient's chat id.
-- `token($token)`: (string) Bot token if you wish to override the default token for a specific notification (optional).
-- `question($question)`: (string) Poll question.
-- `choices($choices)`: (array) Poll choices.
-- `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row.
-- `buttonWithCallback($text, $callback_data)`: (string) Adds an inline button with callback. You can add as many as you want, and they'll be placed 2 in a row.
-- `disableNotification($disableNotification = true)`: (bool) Send the message silently. Users will receive a notification with no sound.
-- `options([])`: (array) Allows you to add additional or override the payload.
+> These methods are optional and shared across all the API methods.
 
-### Available Contact methods
+- `to(int|string $chatId)`: Recipient's chat id.
+- `token(string $token)`: Bot token if you wish to override the default token for a specific notification.
+- `button(string $text, string $url, int $columns = 2)`: Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row by default.
+- `buttonWithCallback(string $text, string $callback_data, int $columns = 2)`: Adds an inline button with the given callback data. You can add as many as you want, and they'll be placed 2 in a row by default.
+- `disableNotification(bool $disableNotification = true)`: Send the message silently. Users will receive a notification with no sound.
+- `options(array $options)`: Allows you to add additional params or override the payload.
+- `getPayloadValue(string $key)`: Get payload value for given key.
 
-- `to($chatId)`: (integer) Recipient's chat id.
-- `token($token)`: (string) Bot token if you wish to override the default token for a specific notification (optional).
-- `phoneNumber($phoneNumber)`: (string) Contact phone number.
-- `firstName($firstName)`: (string) Contact first name.
-- `lastName($lastName)`: (string). Contact last name (optional).
-- `vCard($vCard)`: (string). Contact vcard (optional).
-- `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row.
-- `buttonWithCallback($text, $callback_data)`: (string) Adds an inline button with callback. You can add as many as you want, and they'll be placed 2 in a row.
-- `disableNotification($disableNotification = true)`: (bool) Send the message silently. Users will receive a notification with no sound.
-- `options([])`: (array) Allows you to add additional or override the payload.
+### Telegram Message methods
+
+For more information on supported parameters, check out these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage).
+
+- `content(string $content, int $limit = null)`: Notification message, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
+- `view(string $view, array $data = [], array $mergeData = [])`: (optional) Blade template name with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
+- `chunk(int $limit = 4096)`: (optional) Message chars chunk size to send in parts (For long messages). Note: Chunked messages will be rate limited to one message per second to comply with rate limitation requirements from Telegram.
+
+### Telegram Location methods
+
+- `latitude(float|string $latitude)`: Latitude of the location.
+- `longitude(float|string $longitude)`: Longitude of the location.
+
+### Telegram File methods
+
+- `content(string $content)`: (optional) File caption, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
+- `view(string $view, array $data = [], array $mergeData = [])`: (optional) Blade template name with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
+- `file(string|resource|StreamInterface $file, string $type, string $filename = null)`: Local file path or remote URL, `$type` of the file (Ex:`photo`, `audio`, `document`, `video`, `animation`, `voice`, `video_note`) and optionally filename with extension. Ex: `sample.pdf`. You can use helper methods instead of using this to make it easier to work with file attachment.
+- `photo(string $file)`: Helper method to attach a photo.
+- `audio(string $file)`: Helper method to attach an audio file (MP3 file).
+- `document(string $file, string $filename = null)`: Helper method to attach a document or any file as document.
+- `video(string $file)`: Helper method to attach a video file.
+- `animation(string $file)`: Helper method to attach an animated gif file.
+- `voice(string $file)`: Helper method to attach a voice note (`.ogg` file with OPUS encoded).
+- `videoNote(string $file)`: Helper method to attach a video note file (Upto 1 min long, rounded square video).
+
+### Telegram Poll methods
+
+- `question(string $question)`: Poll question.
+- `choices(array $choices)`: Poll choices.
+
+### Telegram Contact methods
+
+- `phoneNumber(string $phoneNumber)`: Contact phone number.
+- `firstName(string $firstName)`: Contact first name.
+- `lastName(string $lastName)`: (optional) Contact last name.
+- `vCard(string $vCard)`: (optional) Contact vcard.
 
 ## Alternatives
 
@@ -403,4 +414,5 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [link-code-quality]: https://scrutinizer-ci.com/g/laravel-notification-channels/telegram
 [link-author]: https://github.com/irazasyed
 [link-contributors]: ../../contributors
+[link-notification-facade]: https://laravel.com/docs/8.x/notifications#using-the-notification-facade
 [link-on-demand-notifications]: https://laravel.com/docs/8.x/notifications#on-demand-notifications
