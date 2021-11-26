@@ -18,6 +18,7 @@ This package makes it easy to send Telegram notification using [Telegram Bot API
 - [Usage](#usage)
   - [Text Notification](#text-notification)
   - [Send a Poll](#send-a-poll)
+  - [Attach a Contact](#attach-a-contact)
   - [Attach an Audio](#attach-an-audio)
   - [Attach a Photo](#attach-a-photo)
   - [Attach a Document](#attach-a-document)
@@ -141,6 +142,23 @@ public function toTelegram($notifiable)
 Preview:
 
 ![Laravel Telegram Poll Example](https://user-images.githubusercontent.com/60013703/143135248-1224a69b-3233-4686-8a59-d41517d8c722.png)
+
+### Attach a Contact
+
+```php
+public function toTelegram($notifiable)
+{
+    return TelegramContact::create()
+            ->to($notifiable->telegram_user_id) // Optional
+            ->firstName('John')
+            ->lastName('Doe') // Optional
+            ->phoneNumber('00000000');
+}
+```
+
+Preview:
+
+![Laravel Telegram Contact Example](https://user-images.githubusercontent.com/60013703/143510191-1d0f8e08-bd9a-4be5-8978-e6561508b47a.png)
 
 ### Attach an Audio
 
@@ -309,6 +327,30 @@ Notification::route('telegram', 'TELEGRAM_CHAT_ID')
 - `animation($file)`: Helper method to attach an animated gif file.
 - `voice($file)`: Helper method to attach a voice note (`.ogg` file with OPUS encoded).
 - `videoNote($file)`: Helper method to attach a video note file (Upto 1 min long, rounded square video).
+- `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row.
+- `buttonWithCallback($text, $callback_data)`: (string) Adds an inline button with callback. You can add as many as you want, and they'll be placed 2 in a row.
+- `disableNotification($disableNotification = true)`: (bool) Send the message silently. Users will receive a notification with no sound.
+- `options([])`: (array) Allows you to add additional or override the payload.
+
+### Available Poll methods
+
+- `to($chatId)`: (integer) Recipient's chat id.
+- `token($token)`: (string) Bot token if you wish to override the default token for a specific notification (optional).
+- `question($question)`: (string) Poll question.
+- `choices($choices)`: (array) Poll choices.
+- `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row.
+- `buttonWithCallback($text, $callback_data)`: (string) Adds an inline button with callback. You can add as many as you want, and they'll be placed 2 in a row.
+- `disableNotification($disableNotification = true)`: (bool) Send the message silently. Users will receive a notification with no sound.
+- `options([])`: (array) Allows you to add additional or override the payload.
+
+### Available Contact methods
+
+- `to($chatId)`: (integer) Recipient's chat id.
+- `token($token)`: (string) Bot token if you wish to override the default token for a specific notification (optional).
+- `phoneNumber($phoneNumber)`: (string) Contact phone number.
+- `firstName($firstName)`: (string) Contact first name.
+- `lastName($lastName)`: (string). Contact last name (optional).
+- `vCard($vCard)`: (string). Contact vcard (optional).
 - `button($text, $url)`: (string) Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row.
 - `buttonWithCallback($text, $callback_data)`: (string) Adds an inline button with callback. You can add as many as you want, and they'll be placed 2 in a row.
 - `disableNotification($disableNotification = true)`: (bool) Send the message silently. Users will receive a notification with no sound.
