@@ -39,6 +39,13 @@ class TelegramUpdates
         return $this;
     }
 
+    public function latest(): self
+    {
+        $this->payload['offset'] = -1;
+
+        return $this;
+    }
+
     public function get(): array
     {
         $response = app(Telegram::class)->getUpdates($this->payload);
