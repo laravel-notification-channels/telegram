@@ -22,9 +22,9 @@
         "php": "^7.2 || ^8.0",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^6.2 || ^7.0",
-        "illuminate/contracts": "^5.5 || ^6.0 || ^7.0 || ^8.0",
-        "illuminate/notifications": "^5.5 || ^6.0 || ^7.0 || ^8.0",
-        "illuminate/support": "^5.5 || ^6.0 || ^7.0 || ^8.0"
+        "illuminate/contracts": "5.5 - 9",
+        "illuminate/notifications": "5.5 - 9",
+        "illuminate/support": "5.5 - 9"
     },
     "require-dev": {
         "mockery/mockery": "^1.3",

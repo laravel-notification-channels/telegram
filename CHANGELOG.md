@@ -4,6 +4,8 @@ All notable changes to `telegram` will be documented in this file
 
 ## Unreleased
 
+- Add Laravel 9 Support.
+
 ## 1.0.0 - 2021-12-11
 
 - Register Telegram instance to container. 
