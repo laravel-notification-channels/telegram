@@ -9,6 +9,7 @@ trait HasSharedLogic
 {
     /** @var string Bot Token. */
     public $token;
+
     /** @var array Params payload. */
     protected $payload = [];
 
