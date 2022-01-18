@@ -1,6 +1,7 @@
 <?php
 
 namespace NotificationChannels\Telegram\Traits;
+
 use Illuminate\Support\Traits\Conditionable;
 
 /**
