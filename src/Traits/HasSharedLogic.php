@@ -2,11 +2,15 @@
 
 namespace NotificationChannels\Telegram\Traits;
 
+use Illuminate\Support\Traits\Conditionable;
+
 /**
  * Trait HasSharedLogic.
  */
 trait HasSharedLogic
 {
+    use Conditionable;
+    
     /** @var string Bot Token. */
     public $token;
 
