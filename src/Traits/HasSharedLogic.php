@@ -10,7 +10,7 @@ use Illuminate\Support\Traits\Conditionable;
 trait HasSharedLogic
 {
     use Conditionable;
-    
+
     /** @var string Bot Token. */
     public $token;
 

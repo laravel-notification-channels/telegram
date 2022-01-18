@@ -100,21 +100,20 @@ class TelegramMessageTest extends TestCase
 
         $this->assertEquals($expected, $message->toArray());
     }
-    
-    
+
     /** @test */
     public function testLaravelConditionableTrait(): void
     {
         $message = new TelegramMessage();
         $message->button('Laravel', 'https://laravel.com');
-        $message->when(true, fn($tg) => $tg->button('Github', 'https://github.com'));
+        $message->when(true, fn ($tg) => $tg->button('Github', 'https://github.com'));
 
         $this->assertEquals(
             '{"inline_keyboard":[[{"text":"Laravel","url":"https:\/\/laravel.com"},{"text":"Github","url":"https:\/\/github.com"}]]}',
             $message->getPayloadValue('reply_markup')
         );
 
-        $message->when(false, fn($tg) => $tg->button('Google', 'https://google.com'));
+        $message->when(false, fn ($tg) => $tg->button('Google', 'https://google.com'));
 
         $this->assertEquals(
             '{"inline_keyboard":[[{"text":"Laravel","url":"https:\/\/laravel.com"},{"text":"Github","url":"https:\/\/github.com"}]]}',
