@@ -5,6 +5,8 @@ All notable changes to `telegram` will be documented in this file
 ## Unreleased
 
 - Add Laravel 9 Support.
+- Add Laravel conditional trait to payload builder to use `when` on methods chain. PR [#139](https://github.com/laravel-notification-channels/telegram/pull/139).
+- Drop support for older version of PHP `< 7.4` and Laravel `< 8`.
 
 ## 1.0.0 - 2021-12-11
 
