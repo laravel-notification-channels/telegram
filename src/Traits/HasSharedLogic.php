@@ -140,8 +140,6 @@ trait HasSharedLogic
 
     /**
      * Convert the object into something JSON serializable.
-     *
-     * @return array
      */
     public function jsonSerialize(): array
     {
