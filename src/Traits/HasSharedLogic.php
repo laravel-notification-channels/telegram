@@ -141,7 +141,7 @@ trait HasSharedLogic
     /**
      * Convert the object into something JSON serializable.
      */
-    public function jsonSerialize(): array
+    public function jsonSerialize(): mixed
     {
         return $this->toArray();
     }
