@@ -16,15 +16,27 @@ class TelegramMessage implements JsonSerializable
     /** @var int Message Chunk Size */
     public $chunkSize;
 
-    public function __construct(string $content = '')
+    public function __construct(string $content = '', string $parse_mode = 'Markdown')
     {
         $this->content($content);
-        $this->payload['parse_mode'] = 'Markdown';
+        $this->payload['parse_mode'] = $parse_mode;
     }
 
-    public static function create(string $content = ''): self
+    public static function create(string $content = '', string $parse_mode = 'Markdown'): self
     {
-        return new self($content);
+        return new self($content, $parse_mode);
+    }
+
+    /**
+     * Parse mode message.
+     *
+     * @return $this
+     */
+    public function parseMode(string $parse_mode = 'Markdown'): self
+    {
+        $this->payload['parse_mode'] = $parse_mode;
+
+        return $this;
     }
 
     /**
