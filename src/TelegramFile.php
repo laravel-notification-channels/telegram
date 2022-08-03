@@ -4,21 +4,29 @@ namespace NotificationChannels\Telegram;
 
 use Illuminate\Support\Facades\View;
 use JsonSerializable;
+use NotificationChannels\Telegram\Contracts\TelegramSender;
+use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Telegram\Traits\HasSharedLogic;
 use Psr\Http\Message\StreamInterface;
 
 /**
  * Class TelegramFile.
  */
-class TelegramFile implements JsonSerializable
+class TelegramFile implements JsonSerializable, TelegramSender
 {
     use HasSharedLogic;
 
     /** @var string content type. */
     public $type = 'document';
 
-    public function __construct(string $content = '')
+    /**
+     * @var Telegram
+     */
+    protected $telegram;
+
+    public function __construct(Telegram $telegram, string $content = '')
     {
+        $this->telegram = $telegram;
         $this->content($content);
         $this->payload['parse_mode'] = 'Markdown';
     }
@@ -204,5 +212,13 @@ class TelegramFile implements JsonSerializable
     protected function isReadableFile(string $file): bool
     {
         return is_file($file) && is_readable($file);
+    }
+
+    /**
+     * @throws CouldNotSendNotification
+     */
+    public function send()
+    {
+        return $this->telegram->sendFile($this->toArray(), $this->type, $this->hasFile());
     }
 }
