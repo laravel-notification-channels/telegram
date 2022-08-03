@@ -11,17 +11,12 @@ use NotificationChannels\Telegram\Traits\HasSharedLogic;
 /**
  * Class TelegramMessage.
  */
-class TelegramMessage implements JsonSerializable,TelegramSender
+class TelegramMessage implements JsonSerializable, TelegramSender
 {
     use HasSharedLogic;
 
     /** @var int Message Chunk Size */
     public $chunkSize;
-
-    /**
-     * @var Telegram
-     */
-    protected $telegram;
 
     public function __construct(Telegram $telegram, string $content = '')
     {

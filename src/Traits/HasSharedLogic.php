@@ -3,6 +3,7 @@
 namespace NotificationChannels\Telegram\Traits;
 
 use Illuminate\Support\Traits\Conditionable;
+use NotificationChannels\Telegram\Telegram;
 
 /**
  * Trait HasSharedLogic.
@@ -19,6 +20,9 @@ trait HasSharedLogic
 
     /** @var array Inline Keyboard Buttons. */
     protected $buttons = [];
+
+    /** @var Telegram Telegram Instance. */
+    protected $telegram;
 
     /**
      * Recipient's Chat ID.

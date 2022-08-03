@@ -3,17 +3,20 @@
 namespace NotificationChannels\Telegram;
 
 use JsonSerializable;
+use NotificationChannels\Telegram\Contracts\TelegramSender;
+use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Telegram\Traits\HasSharedLogic;
 
 /**
  * Class TelegramContact.
  */
-class TelegramContact implements JsonSerializable
+class TelegramContact implements JsonSerializable, TelegramSender
 {
     use HasSharedLogic;
 
-    public function __construct(string $phoneNumber = '')
+    public function __construct(Telegram $telegram, string $phoneNumber = '')
     {
+        $this->telegram = $telegram;
         $this->phoneNumber($phoneNumber);
     }
 
@@ -68,5 +71,13 @@ class TelegramContact implements JsonSerializable
         $this->payload['vcard'] = $vCard;
 
         return $this;
+    }
+
+    /**
+     * @throws CouldNotSendNotification
+     */
+    public function send()
+    {
+        return $this->telegram->sendContact($this->toArray());
     }
 }

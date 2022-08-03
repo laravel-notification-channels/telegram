@@ -13,11 +13,6 @@ use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 class TelegramChannel
 {
     /**
-     * @var Telegram
-     */
-    protected $telegram;
-
-    /**
      * @var Dispatcher
      */
     private $dispatcher;
@@ -25,9 +20,8 @@ class TelegramChannel
     /**
      * Channel constructor.
      */
-    public function __construct(Telegram $telegram, Dispatcher $dispatcher)
+    public function __construct(Dispatcher $dispatcher)
     {
-        $this->telegram = $telegram;
         $this->dispatcher = $dispatcher;
     }
 
@@ -58,7 +52,7 @@ class TelegramChannel
         }
 
         if ($message->hasToken()) {
-            $this->telegram->setToken($message->token);
+            $message->telegram->setToken($message->token);
         }
 
         try {
