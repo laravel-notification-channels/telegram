@@ -158,6 +158,12 @@ class InvoicePaid extends Notification
             // Markdown supported.
             ->content("Hello there!\nYour invoice has been *PAID*")
 
+            // If you need to send a simple text, without Markdown support
+            ->text("It's just text")
+            
+            // (Optional) Or you can call this method to set "parse_mode = HTML" and use any method.
+            ->htmlParseMode()
+            
             // (Optional) Blade template for the content.
             // ->view('notification', ['url' => $url])
 
@@ -378,6 +384,9 @@ For more information on supported parameters, check out these [docs](https://tel
 - `content(string $content, int $limit = null)`: Notification message, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
 - `view(string $view, array $data = [], array $mergeData = [])`: (optional) Blade template name with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
 - `chunk(int $limit = 4096)`: (optional) Message chars chunk size to send in parts (For long messages). Note: Chunked messages will be rate limited to one message per second to comply with rate limitation requirements from Telegram.
+- `text(string $content, int $limit = null)`: Notification simple message without markdown.
+- `viewHtml(string $view, array $data = [], array $mergeData = [])`: (optional) Blade template name with Telegram supported only HTML syntax content if you wish to use a view file instead of the `content()` or `text()` methods.
+- `htmlParseMode()`: You can still use any of the methods - `content()`, `view()`, but if you need to install the `parse_mode = HTML`, just call this method.
 
 ### Telegram Location methods
 

@@ -21,10 +21,27 @@ class TelegramMessageTest extends TestCase
     }
 
     /** @test */
+    public function itAcceptsHtmlWhenConstructed(): void
+    {
+        $message = new TelegramMessage('Laravel Notification Channels are awesome!');
+        $message->htmlParseMode();
+        $this->assertEquals('Laravel Notification Channels are awesome!', $message->getPayloadValue('text'));
+        $this->assertEquals('HTML', $message->getPayloadValue('parse_mode'));
+    }
+
+    /** @test */
     public function theDefaultParseModeIsMarkdown(): void
     {
         $message = new TelegramMessage();
         $this->assertEquals('Markdown', $message->getPayloadValue('parse_mode'));
+    }
+
+    /** @test */
+    public function theAddedParseModeIsHtml(): void
+    {
+        $message = new TelegramMessage();
+        $message->text('Laravel Notification Channels are awesome');
+        $this->assertEquals('HTML', $message->getPayloadValue('parse_mode'));
     }
 
     /** @test */
@@ -40,6 +57,14 @@ class TelegramMessageTest extends TestCase
     {
         $message = new TelegramMessage();
         $message->content('Laravel Notification Channels are awesome!');
+        $this->assertEquals('Laravel Notification Channels are awesome!', $message->getPayloadValue('text'));
+    }
+
+    /** @test */
+    public function theNotificationTextCanBeSet(): void
+    {
+        $message = new TelegramMessage();
+        $message->text('Laravel Notification Channels are awesome!');
         $this->assertEquals('Laravel Notification Channels are awesome!', $message->getPayloadValue('text'));
     }
 

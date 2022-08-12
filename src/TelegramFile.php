@@ -20,12 +20,24 @@ class TelegramFile implements JsonSerializable
     public function __construct(string $content = '')
     {
         $this->content($content);
-        $this->payload['parse_mode'] = 'Markdown';
+        $this->payload['parse_mode'] = Telegram::MARKDOWN_PARSE_MODE;
     }
 
     public static function create(string $content = ''): self
     {
         return new self($content);
+    }
+
+    /**
+     * Notification simple message (Without Markdown support).
+     *
+     * @param string $content
+     *
+     * @return $this
+     */
+    public function text(string $content): self
+    {
+        return $this->content($content)->htmlParseMode();
     }
 
     /**
@@ -156,6 +168,22 @@ class TelegramFile implements JsonSerializable
     public function videoNote(string $file): self
     {
         return $this->file($file, 'video_note');
+    }
+
+    /**
+     * Attach a view file as the content for the notification.
+     * Supports Laravel blade template.
+     * Only html, without Markdown.
+     *
+     * @param string $view
+     * @param array  $data
+     * @param array  $mergeData
+     *
+     * @return $this
+     */
+    public function viewHtml(string $view, array $data = [], array $mergeData = []): self
+    {
+        return $this->view($view, $data, $mergeData)->htmlParseMode();
     }
 
     /**

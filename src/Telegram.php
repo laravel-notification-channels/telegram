@@ -14,6 +14,16 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Telegram
 {
+    /**
+     * parse_mode = Markdown
+     */
+    public const MARKDOWN_PARSE_MODE = 'Markdown';
+
+    /**
+     * parse_mode = HTML
+     */
+    public const HTML_PARSE_MODE = 'HTML';
+
     /** @var HttpClient HTTP Client */
     protected $http;
 

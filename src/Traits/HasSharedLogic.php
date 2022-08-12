@@ -3,6 +3,7 @@
 namespace NotificationChannels\Telegram\Traits;
 
 use Illuminate\Support\Traits\Conditionable;
+use NotificationChannels\Telegram\Telegram;
 
 /**
  * Trait HasSharedLogic.
@@ -19,6 +20,17 @@ trait HasSharedLogic
 
     /** @var array Inline Keyboard Buttons. */
     protected $buttons = [];
+
+    /**
+     * Set parse_mode = HTML.
+     *
+     * @return $this
+     */
+    public function htmlParseMode(): self
+    {
+        $this->payload['parse_mode'] = Telegram::HTML_PARSE_MODE;
+        return $this;
+    }
 
     /**
      * Recipient's Chat ID.
