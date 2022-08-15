@@ -12,7 +12,7 @@ use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Telegram\Telegram;
 use NotificationChannels\Telegram\TelegramChannel;
 use NotificationChannels\Telegram\TelegramMessage;
-use PHPUnit\Framework\TestCase;
+use Orchestra\Testbench\TestCase;
 
 /**
  * Class ChannelTest.
@@ -34,9 +34,15 @@ class TelegramChannelTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->telegram = Mockery::mock(Telegram::class);
+
+        $this->app->singleton(Telegram::class, function () {
+            return (new Mockery())->mock(Telegram::class);
+        });
+
+        $this->telegram   = app(Telegram::class);
+
         $this->dispatcher = $this->createMock(Dispatcher::class);
-        $this->channel = new TelegramChannel($this->telegram, $this->dispatcher);
+        $this->channel    = new TelegramChannel($this->dispatcher);
     }
 
     public function tearDown(): void
