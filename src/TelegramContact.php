@@ -2,19 +2,18 @@
 
 namespace NotificationChannels\Telegram;
 
-use JsonSerializable;
 use NotificationChannels\Telegram\Contracts\TelegramSender;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
-use NotificationChannels\Telegram\Traits\HasSharedLogic;
 
 /**
  * Class TelegramContact.
  */
-class TelegramContact implements TelegramSender
+class TelegramContact extends TelegramBase implements TelegramSender
 {
 
     public function __construct(string $phoneNumber = '')
     {
+        parent::__construct();
         $this->phoneNumber($phoneNumber);
     }
 

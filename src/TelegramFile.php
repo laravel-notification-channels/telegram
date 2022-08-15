@@ -3,16 +3,14 @@
 namespace NotificationChannels\Telegram;
 
 use Illuminate\Support\Facades\View;
-use JsonSerializable;
 use NotificationChannels\Telegram\Contracts\TelegramSender;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
-use NotificationChannels\Telegram\Traits\HasSharedLogic;
 use Psr\Http\Message\StreamInterface;
 
 /**
  * Class TelegramFile.
  */
-class TelegramFile implements TelegramSender
+class TelegramFile extends TelegramBase implements TelegramSender
 {
 
     /** @var string content type. */
@@ -20,6 +18,7 @@ class TelegramFile implements TelegramSender
 
     public function __construct(string $content = '')
     {
+        parent::__construct();
         $this->content($content);
         $this->payload['parse_mode'] = 'Markdown';
     }

@@ -2,16 +2,13 @@
 
 namespace NotificationChannels\Telegram;
 
-use JsonSerializable;
-use NotificationChannels\Telegram\Contracts\Core;
 use NotificationChannels\Telegram\Contracts\TelegramSender;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
-use NotificationChannels\Telegram\Traits\HasSharedLogic;
 
 /**
  * Class TelegramLocation.
  */
-class TelegramLocation implements TelegramSender
+class TelegramLocation extends TelegramBase implements TelegramSender
 {
 
     /**
@@ -22,6 +19,7 @@ class TelegramLocation implements TelegramSender
      */
     public function __construct($latitude = null, $longitude = null)
     {
+        parent::__construct();
         $this->latitude($latitude);
         $this->longitude($longitude);
     }

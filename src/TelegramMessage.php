@@ -3,16 +3,13 @@
 namespace NotificationChannels\Telegram;
 
 use Illuminate\Support\Facades\View;
-use JsonSerializable;
-use NotificationChannels\Telegram\Contracts\Core;
 use NotificationChannels\Telegram\Contracts\TelegramSender;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
-use NotificationChannels\Telegram\Traits\HasSharedLogic;
 
 /**
  * Class TelegramMessage.
  */
-class TelegramMessage implements TelegramSender
+class TelegramMessage extends TelegramBase implements TelegramSender
 {
 
     /** @var int Message Chunk Size */
@@ -20,6 +17,7 @@ class TelegramMessage implements TelegramSender
 
     public function __construct(string $content = '')
     {
+        parent::__construct();
         $this->content($content);
         $this->payload['parse_mode'] = 'Markdown';
     }

@@ -22,7 +22,7 @@ trait HasSharedLogic
     protected $buttons = [];
 
     /** @var Telegram Telegram Instance. */
-    protected $telegram;
+    public $telegram;
 
     /**
      * Recipient's Chat ID.
