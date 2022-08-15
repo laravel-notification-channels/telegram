@@ -14,9 +14,8 @@ class TelegramContact implements JsonSerializable, TelegramSender
 {
     use HasSharedLogic;
 
-    public function __construct(Telegram $telegram, string $phoneNumber = '')
+    public function __construct(string $phoneNumber = '')
     {
-        $this->telegram = $telegram;
         $this->phoneNumber($phoneNumber);
     }
 
