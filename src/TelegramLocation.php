@@ -3,6 +3,7 @@
 namespace NotificationChannels\Telegram;
 
 use JsonSerializable;
+use NotificationChannels\Telegram\Contracts\Core;
 use NotificationChannels\Telegram\Contracts\TelegramSender;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Telegram\Traits\HasSharedLogic;
@@ -20,9 +21,8 @@ class TelegramLocation implements JsonSerializable, TelegramSender
      * @param null|float|string $latitude
      * @param null|float|string $longitude
      */
-    public function __construct(Telegram $telegram, $latitude = null, $longitude = null)
+    public function __construct($latitude = null, $longitude = null)
     {
-        $this->telegram = $telegram;
         $this->latitude($latitude);
         $this->longitude($longitude);
     }

@@ -10,13 +10,12 @@ use NotificationChannels\Telegram\Traits\HasSharedLogic;
 /**
  * Class TelegramPoll.
  */
-class TelegramPoll implements JsonSerializable, TelegramSender
+class TelegramPoll extends TelegramBase implements JsonSerializable, TelegramSender
 {
     use HasSharedLogic;
 
-    public function __construct(Telegram $telegram, string $question = '')
+    public function __construct(string $question = '')
     {
-        $this->telegram = $telegram;
         $this->question($question);
     }
 

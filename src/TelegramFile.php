@@ -19,9 +19,8 @@ class TelegramFile implements JsonSerializable, TelegramSender
     /** @var string content type. */
     public $type = 'document';
 
-    public function __construct(Telegram $telegram, string $content = '')
+    public function __construct(string $content = '')
     {
-        $this->telegram = $telegram;
         $this->content($content);
         $this->payload['parse_mode'] = 'Markdown';
     }
