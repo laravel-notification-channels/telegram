@@ -11,9 +11,8 @@ use NotificationChannels\Telegram\Traits\HasSharedLogic;
 /**
  * Class TelegramLocation.
  */
-class TelegramLocation implements JsonSerializable, TelegramSender
+class TelegramLocation implements TelegramSender
 {
-    use HasSharedLogic;
 
     /**
      * Telegram Location constructor.

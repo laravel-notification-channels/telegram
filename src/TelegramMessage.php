@@ -12,9 +12,8 @@ use NotificationChannels\Telegram\Traits\HasSharedLogic;
 /**
  * Class TelegramMessage.
  */
-class TelegramMessage implements JsonSerializable, TelegramSender
+class TelegramMessage implements TelegramSender
 {
-    use HasSharedLogic;
 
     /** @var int Message Chunk Size */
     public $chunkSize;

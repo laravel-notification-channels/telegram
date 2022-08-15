@@ -10,9 +10,8 @@ use NotificationChannels\Telegram\Traits\HasSharedLogic;
 /**
  * Class TelegramPoll.
  */
-class TelegramPoll extends TelegramBase implements JsonSerializable, TelegramSender
+class TelegramPoll extends TelegramBase implements TelegramSender
 {
-    use HasSharedLogic;
 
     public function __construct(string $question = '')
     {

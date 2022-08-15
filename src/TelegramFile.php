@@ -12,9 +12,8 @@ use Psr\Http\Message\StreamInterface;
 /**
  * Class TelegramFile.
  */
-class TelegramFile implements JsonSerializable, TelegramSender
+class TelegramFile implements TelegramSender
 {
-    use HasSharedLogic;
 
     /** @var string content type. */
     public $type = 'document';

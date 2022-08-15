@@ -10,9 +10,8 @@ use NotificationChannels\Telegram\Traits\HasSharedLogic;
 /**
  * Class TelegramContact.
  */
-class TelegramContact implements JsonSerializable, TelegramSender
+class TelegramContact implements TelegramSender
 {
-    use HasSharedLogic;
 
     public function __construct(string $phoneNumber = '')
     {
