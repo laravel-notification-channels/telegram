@@ -12,7 +12,6 @@ use Psr\Http\Message\StreamInterface;
  */
 class TelegramFile extends TelegramBase implements TelegramSender
 {
-
     /** @var string content type. */
     public $type = 'document';
 
@@ -199,18 +198,18 @@ class TelegramFile extends TelegramBase implements TelegramSender
     }
 
     /**
-     * Determine if it's a regular and readable file.
-     */
-    protected function isReadableFile(string $file): bool
-    {
-        return is_file($file) && is_readable($file);
-    }
-
-    /**
      * @throws CouldNotSendNotification
      */
     public function send()
     {
         return $this->telegram->sendFile($this->toArray(), $this->type, $this->hasFile());
+    }
+
+    /**
+     * Determine if it's a regular and readable file.
+     */
+    protected function isReadableFile(string $file): bool
+    {
+        return is_file($file) && is_readable($file);
     }
 }

@@ -57,7 +57,6 @@ class TelegramChannel
 
         try {
             $response = $message->send();
-
         } catch (CouldNotSendNotification $exception) {
             $this->dispatcher->dispatch(new NotificationFailed(
                 $notifiable,

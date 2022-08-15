@@ -10,7 +10,6 @@ use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
  */
 class TelegramLocation extends TelegramBase implements TelegramSender
 {
-
     /**
      * Telegram Location constructor.
      *

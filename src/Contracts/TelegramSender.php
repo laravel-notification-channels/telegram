@@ -9,9 +9,9 @@ interface TelegramSender
     /**
      * Send the given message.
      *
-     * @return mixed
-     *
      * @throws CouldNotSendNotification
+     *
+     * @return mixed
      */
     public function send();
 }

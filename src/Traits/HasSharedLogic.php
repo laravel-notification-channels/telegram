@@ -15,14 +15,14 @@ trait HasSharedLogic
     /** @var string Bot Token. */
     public $token;
 
+    /** @var Telegram Telegram Instance. */
+    public $telegram;
+
     /** @var array Params payload. */
     protected $payload = [];
 
     /** @var array Inline Keyboard Buttons. */
     protected $buttons = [];
-
-    /** @var Telegram Telegram Instance. */
-    public $telegram;
 
     /**
      * Recipient's Chat ID.

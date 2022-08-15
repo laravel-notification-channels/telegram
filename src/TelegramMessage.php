@@ -11,7 +11,6 @@ use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
  */
 class TelegramMessage extends TelegramBase implements TelegramSender
 {
-
     /** @var int Message Chunk Size */
     public $chunkSize;
 
@@ -116,7 +115,6 @@ class TelegramMessage extends TelegramBase implements TelegramSender
 
         return $this->telegram->sendMessage($params);
     }
-
 
     /**
      * Chunk the given string into an array of strings.

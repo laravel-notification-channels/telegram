@@ -10,7 +10,6 @@ use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
  */
 class TelegramPoll extends TelegramBase implements TelegramSender
 {
-
     public function __construct(string $question = '')
     {
         parent::__construct();

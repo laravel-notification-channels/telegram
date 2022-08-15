@@ -39,10 +39,10 @@ class TelegramChannelTest extends TestCase
             return (new Mockery())->mock(Telegram::class);
         });
 
-        $this->telegram   = app(Telegram::class);
+        $this->telegram = app(Telegram::class);
 
         $this->dispatcher = $this->createMock(Dispatcher::class);
-        $this->channel    = new TelegramChannel($this->dispatcher);
+        $this->channel = new TelegramChannel($this->dispatcher);
     }
 
     public function tearDown(): void

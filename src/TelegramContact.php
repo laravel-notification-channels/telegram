@@ -10,7 +10,6 @@ use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
  */
 class TelegramContact extends TelegramBase implements TelegramSender
 {
-
     public function __construct(string $phoneNumber = '')
     {
         parent::__construct();
