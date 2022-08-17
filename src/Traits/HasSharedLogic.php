@@ -3,6 +3,7 @@
 namespace NotificationChannels\Telegram\Traits;
 
 use Illuminate\Support\Traits\Conditionable;
+use NotificationChannels\Telegram\Telegram;
 
 /**
  * Trait HasSharedLogic.
@@ -13,6 +14,9 @@ trait HasSharedLogic
 
     /** @var string Bot Token. */
     public $token;
+
+    /** @var Telegram Telegram Instance. */
+    public $telegram;
 
     /** @var array Params payload. */
     protected $payload = [];

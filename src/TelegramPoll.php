@@ -2,18 +2,17 @@
 
 namespace NotificationChannels\Telegram;
 
-use JsonSerializable;
-use NotificationChannels\Telegram\Traits\HasSharedLogic;
+use NotificationChannels\Telegram\Contracts\TelegramSender;
+use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 
 /**
  * Class TelegramPoll.
  */
-class TelegramPoll implements JsonSerializable
+class TelegramPoll extends TelegramBase implements TelegramSender
 {
-    use HasSharedLogic;
-
     public function __construct(string $question = '')
     {
+        parent::__construct();
         $this->question($question);
     }
 
@@ -44,5 +43,13 @@ class TelegramPoll implements JsonSerializable
         $this->payload['options'] = json_encode($choices);
 
         return $this;
+    }
+
+    /**
+     * @throws CouldNotSendNotification
+     */
+    public function send()
+    {
+        return $this->telegram->sendPoll($this->toArray());
     }
 }

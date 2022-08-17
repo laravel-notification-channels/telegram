@@ -2,16 +2,14 @@
 
 namespace NotificationChannels\Telegram;
 
-use JsonSerializable;
-use NotificationChannels\Telegram\Traits\HasSharedLogic;
+use NotificationChannels\Telegram\Contracts\TelegramSender;
+use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 
 /**
  * Class TelegramLocation.
  */
-class TelegramLocation implements JsonSerializable
+class TelegramLocation extends TelegramBase implements TelegramSender
 {
-    use HasSharedLogic;
-
     /**
      * Telegram Location constructor.
      *
@@ -20,6 +18,7 @@ class TelegramLocation implements JsonSerializable
      */
     public function __construct($latitude = null, $longitude = null)
     {
+        parent::__construct();
         $this->latitude($latitude);
         $this->longitude($longitude);
     }
@@ -61,5 +60,13 @@ class TelegramLocation implements JsonSerializable
         $this->payload['longitude'] = $longitude;
 
         return $this;
+    }
+
+    /**
+     * @throws CouldNotSendNotification
+     */
+    public function send()
+    {
+        return $this->telegram->sendLocation($this->toArray());
     }
 }
