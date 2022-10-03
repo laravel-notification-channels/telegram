@@ -42,6 +42,13 @@ class TelegramMessage extends TelegramBase implements TelegramSender
         return $this;
     }
 
+    public function line(string $content): self
+    {
+        $this->payload['text'] .= $content."\n";
+
+        return $this;
+    }
+
     /**
      * Attach a view file as the content for the notification.
      * Supports Laravel blade template.

@@ -156,7 +156,9 @@ class InvoicePaid extends Notification
             // Optional recipient user id.
             ->to($notifiable->telegram_user_id)
             // Markdown supported.
-            ->content("Hello there!\nYour invoice has been *PAID*")
+            ->content("Hello there!")
+            ->line("Your invoice has been *PAID*")
+            ->line("Thank you!")
 
             // (Optional) Blade template for the content.
             // ->view('notification', ['url' => $url])
