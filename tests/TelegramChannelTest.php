@@ -18,6 +18,7 @@ use Orchestra\Testbench\TestCase;
  * Class ChannelTest.
  *
  * @internal
+ *
  * @coversNothing
  */
 class TelegramChannelTest extends TestCase
