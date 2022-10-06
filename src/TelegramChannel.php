@@ -28,7 +28,7 @@ class TelegramChannel
     /**
      * Send the given notification.
      *
-     * @param mixed $notifiable
+     * @param  mixed  $notifiable
      *
      * @throws CouldNotSendNotification
      */
@@ -44,7 +44,7 @@ class TelegramChannel
             $to = $notifiable->routeNotificationFor('telegram', $notification)
                 ?? $notifiable->routeNotificationFor(self::class, $notification);
 
-            if (!$to) {
+            if (! $to) {
                 return null;
             }
 

@@ -44,15 +44,14 @@ class TelegramFile extends TelegramBase implements TelegramSender
      *
      * Generic method to attach files of any type based on API.
      *
-     * @param resource|StreamInterface|string $file
-     *
+     * @param  resource|StreamInterface|string  $file
      * @return $this
      */
     public function file($file, string $type, string $filename = null): self
     {
         $this->type = $type;
 
-        if (is_string($file) && !$this->isReadableFile($file)) {
+        if (is_string($file) && ! $this->isReadableFile($file)) {
             $this->payload[$type] = $file;
 
             return $this;

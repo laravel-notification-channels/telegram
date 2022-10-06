@@ -62,8 +62,7 @@ class TelegramChannelTest extends TestCase
             'parse_mode' => 'Markdown',
             'chat_id' => 12345,
         ])
-            ->andReturns(new Response(200, [], json_encode($expectedResponse)))
-        ;
+            ->andReturns(new Response(200, [], json_encode($expectedResponse)));
 
         $actualResponse = $this->channel->send(new TestNotifiable(), new TestNotification());
 
@@ -83,8 +82,7 @@ class TelegramChannelTest extends TestCase
 
         $this->telegram
             ->shouldReceive('sendMessage')
-            ->andThrow($exception_class, $exception_message)
-        ;
+            ->andThrow($exception_class, $exception_message);
 
         $this->dispatcher
             ->expects($this->once())
@@ -96,8 +94,7 @@ class TelegramChannelTest extends TestCase
                     'telegram',
                     []
                 )
-            )
-        ;
+            );
 
         $this->channel->send($notifiable, $notification);
     }
