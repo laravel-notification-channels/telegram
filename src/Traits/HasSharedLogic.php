@@ -27,8 +27,7 @@ trait HasSharedLogic
     /**
      * Recipient's Chat ID.
      *
-     * @param int|string $chatId
-     *
+     * @param  int|string  $chatId
      * @return $this
      */
     public function to($chatId): self
@@ -121,7 +120,7 @@ trait HasSharedLogic
      */
     public function toNotGiven(): bool
     {
-        return !isset($this->payload['chat_id']);
+        return ! isset($this->payload['chat_id']);
     }
 
     /**

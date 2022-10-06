@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 class TelegramLocationTest extends TestCase
 {
     public const TEST_LONG = -77.0364;
+
     public const TEST_LAT = 38.8951;
 
     /** @test */
