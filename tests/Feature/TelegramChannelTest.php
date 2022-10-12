@@ -13,9 +13,9 @@ it('can send a message', function () {
         ->shouldReceive('sendMessage')
         ->once()
         ->with([
-            'text'       => 'Laravel Notification Channels are awesome!',
+            'text' => 'Laravel Notification Channels are awesome!',
             'parse_mode' => 'Markdown',
-            'chat_id'    => 12345,
+            'chat_id' => 12345,
         ])
         ->andReturns(new Response(200, [], json_encode($expectedResponse)));
 
