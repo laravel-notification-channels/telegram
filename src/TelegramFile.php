@@ -3,17 +3,18 @@
 namespace NotificationChannels\Telegram;
 
 use Illuminate\Support\Facades\View;
-use NotificationChannels\Telegram\Contracts\TelegramSender;
+use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
  * Class TelegramFile.
  */
-class TelegramFile extends TelegramBase implements TelegramSender
+class TelegramFile extends TelegramBase implements TelegramSenderContract
 {
     /** @var string content type. */
-    public $type = 'document';
+    public string $type = 'document';
 
     public function __construct(string $content = '')
     {
@@ -45,9 +46,11 @@ class TelegramFile extends TelegramBase implements TelegramSender
      * Generic method to attach files of any type based on API.
      *
      * @param  resource|StreamInterface|string  $file
+     * @param  string  $type
+     * @param  string|null  $filename
      * @return $this
      */
-    public function file($file, string $type, string $filename = null): self
+    public function file(mixed $file, string $type, string $filename = null): self
     {
         $this->type = $type;
 
@@ -197,9 +200,11 @@ class TelegramFile extends TelegramBase implements TelegramSender
     }
 
     /**
+     * @return ResponseInterface|null
+     *
      * @throws CouldNotSendNotification
      */
-    public function send()
+    public function send(): ?ResponseInterface
     {
         return $this->telegram->sendFile($this->toArray(), $this->type, $this->hasFile());
     }

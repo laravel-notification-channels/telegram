@@ -2,8 +2,6 @@
 
 All notable changes to `telegram` will be documented in this file
 
-## Unreleased
-
 ## 2.0.0 - 2022-02-11
 
 - Add Laravel 9 Support.
@@ -12,7 +10,7 @@ All notable changes to `telegram` will be documented in this file
 
 ## 1.0.0 - 2021-12-11
 
-- Register Telegram instance to container. 
+- Register Telegram instance to container.
 - Add `TelegramUpdates` to retrieve bot updates. PR [#133](https://github.com/laravel-notification-channels/telegram/pull/133).
 - Refactor TelegramChannel. PR [#136](https://github.com/laravel-notification-channels/telegram/pull/136).
 - Add Retrieving Chat ID docs and improve docs.

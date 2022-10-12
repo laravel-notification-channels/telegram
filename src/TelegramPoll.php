@@ -2,13 +2,14 @@
 
 namespace NotificationChannels\Telegram;
 
-use NotificationChannels\Telegram\Contracts\TelegramSender;
+use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class TelegramPoll.
  */
-class TelegramPoll extends TelegramBase implements TelegramSender
+class TelegramPoll extends TelegramBase implements TelegramSenderContract
 {
     public function __construct(string $question = '')
     {
@@ -40,15 +41,17 @@ class TelegramPoll extends TelegramBase implements TelegramSender
      */
     public function choices(array $choices): self
     {
-        $this->payload['options'] = json_encode($choices);
+        $this->payload['options'] = json_encode($choices, JSON_THROW_ON_ERROR);
 
         return $this;
     }
 
     /**
+     * @return ResponseInterface|null
+     *
      * @throws CouldNotSendNotification
      */
-    public function send()
+    public function send(): ?ResponseInterface
     {
         return $this->telegram->sendPoll($this->toArray());
     }

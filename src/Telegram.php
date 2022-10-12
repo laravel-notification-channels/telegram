@@ -15,13 +15,13 @@ use Psr\Http\Message\ResponseInterface;
 class Telegram
 {
     /** @var HttpClient HTTP Client */
-    protected $http;
+    protected HttpClient $http;
 
     /** @var null|string Telegram Bot API Token. */
-    protected $token;
+    protected ?string $token;
 
     /** @var string Telegram Bot API Base URI */
-    protected $apiBaseUri;
+    protected string $apiBaseUri;
 
     public function __construct(string $token = null, HttpClient $httpClient = null, string $apiBaseUri = null)
     {
@@ -99,6 +99,9 @@ class Telegram
      *
      * @see https://core.telegram.org/bots/api#sendmessage
      *
+     * @param  array  $params
+     * @return ResponseInterface|null
+     *
      * @throws CouldNotSendNotification
      */
     public function sendMessage(array $params): ?ResponseInterface
@@ -108,6 +111,11 @@ class Telegram
 
     /**
      * Send File as Image or Document.
+     *
+     * @param  array  $params
+     * @param  string  $type
+     * @param  bool  $multipart
+     * @return ResponseInterface|null
      *
      * @throws CouldNotSendNotification
      */
@@ -119,6 +127,9 @@ class Telegram
     /**
      * Send a Poll.
      *
+     * @param  array  $params
+     * @return ResponseInterface|null
+     *
      * @throws CouldNotSendNotification
      */
     public function sendPoll(array $params): ?ResponseInterface
@@ -128,6 +139,9 @@ class Telegram
 
     /**
      * Send a Contact.
+     *
+     * @param  array  $params
+     * @return ResponseInterface|null
      *
      * @throws CouldNotSendNotification
      */
@@ -139,6 +153,9 @@ class Telegram
     /**
      * Get updates.
      *
+     * @param  array  $params
+     * @return ResponseInterface|null
+     *
      * @throws CouldNotSendNotification
      */
     public function getUpdates(array $params): ?ResponseInterface
@@ -148,6 +165,9 @@ class Telegram
 
     /**
      * Send a Location.
+     *
+     * @param  array  $params
+     * @return ResponseInterface|null
      *
      * @throws CouldNotSendNotification
      */
@@ -166,6 +186,11 @@ class Telegram
 
     /**
      * Send an API request and return response.
+     *
+     * @param  string  $endpoint
+     * @param  array  $params
+     * @param  bool  $multipart
+     * @return ResponseInterface|null
      *
      * @throws CouldNotSendNotification
      */

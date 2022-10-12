@@ -4,49 +4,54 @@ namespace NotificationChannels\Telegram\Exceptions;
 
 use Exception;
 use GuzzleHttp\Exception\ClientException;
+use JsonException;
 
 /**
  * Class CouldNotSendNotification.
  */
-class CouldNotSendNotification extends Exception
+final class CouldNotSendNotification extends Exception
 {
     /**
      * Thrown when there's a bad request and an error is responded.
      *
-     * @return static
+     * @param  ClientException  $exception
+     * @return self
+     *
+     * @throws JsonException
      */
     public static function telegramRespondedWithAnError(ClientException $exception): self
     {
         if (! $exception->hasResponse()) {
-            return new static('Telegram responded with an error but no response body found');
+            return new self('Telegram responded with an error but no response body found');
         }
 
         $statusCode = $exception->getResponse()->getStatusCode();
 
-        $result = json_decode($exception->getResponse()->getBody()->getContents(), false);
+        $result = json_decode($exception->getResponse()->getBody()->getContents(), false, 512, JSON_THROW_ON_ERROR);
         $description = $result->description ?? 'no description given';
 
-        return new static("Telegram responded with an error `{$statusCode} - {$description}`", 0, $exception);
+        return new self("Telegram responded with an error `{$statusCode} - {$description}`", 0, $exception);
     }
 
     /**
      * Thrown when there's no bot token provided.
      *
-     * @return static
+     * @param  string  $message
+     * @return self
      */
     public static function telegramBotTokenNotProvided(string $message): self
     {
-        return new static($message);
+        return new self($message);
     }
 
     /**
      * Thrown when we're unable to communicate with Telegram.
      *
-     * @param $message
-     * @return static
+     * @param  string  $message
+     * @return self
      */
-    public static function couldNotCommunicateWithTelegram($message): self
+    public static function couldNotCommunicateWithTelegram(string $message): self
     {
-        return new static("The communication with Telegram failed. `{$message}`");
+        return new self("The communication with Telegram failed. `{$message}`");
     }
 }

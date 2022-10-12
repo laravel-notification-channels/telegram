@@ -17,18 +17,14 @@ class TelegramServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(Telegram::class, static function () {
-            return new Telegram(
-                config('services.telegram-bot-api.token'),
-                app(HttpClient::class),
-                config('services.telegram-bot-api.base_uri')
-            );
-        });
+        $this->app->bind(Telegram::class, static fn () => new Telegram(
+            config('services.telegram-bot-api.token'),
+            app(HttpClient::class),
+            config('services.telegram-bot-api.base_uri')
+        ));
 
         Notification::resolved(static function (ChannelManager $service) {
-            $service->extend('telegram', static function ($app) {
-                return $app->make(TelegramChannel::class);
-            });
+            $service->extend('telegram', static fn ($app) => $app->make(TelegramChannel::class));
         });
     }
 }

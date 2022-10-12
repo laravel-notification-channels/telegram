@@ -1,35 +1,48 @@
 name: PHPUnit tests
 
 on:
-    - push
-    - pull_request
+  - push
+  - pull_request
 
 jobs:
-    tests:
-        if: "!contains(github.event.head_commit.message, 'skip ci')"
-        runs-on: ubuntu-latest
-        continue-on-error: ${{ matrix.experimental }}
-        strategy:
-            fail-fast: true
-            matrix:
-                php: [7.4, 8.0, 8.1]
-                stability: [prefer-lowest, prefer-stable]
-                experimental: [false]
-        name: Tests on PHP ${{ matrix.php }} - ${{ matrix.stability }}
+  tests:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [8.0, 8.1]
+        dependencies: [lowest, highest]
+        experimental: [false]
 
-            - name: Setup PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: ${{ matrix.php }}
-                  tools: composer:v2
-                  coverage: none
+    name: PHP ${{ matrix.php }} (${{ matrix.dependencies }})
 
-            - name: Install dependencies
-              run: composer update --${{ matrix.stability }} --prefer-source --no-interaction --no-progress
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-            - name: Execute tests
-              run: vendor/bin/phpunit --verbose
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+          coverage: none
+
+      - name: Setup problem matchers
+        run: |
+          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+          composer-options: "--prefer-dist ${{ matrix.composer-options }}"
+
+      - name: List Installed Dependencies
+        run: composer show -D
+
+      - name: Execute tests
+        run: ./vendor/bin/pest

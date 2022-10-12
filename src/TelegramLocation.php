@@ -2,21 +2,22 @@
 
 namespace NotificationChannels\Telegram;
 
-use NotificationChannels\Telegram\Contracts\TelegramSender;
+use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class TelegramLocation.
  */
-class TelegramLocation extends TelegramBase implements TelegramSender
+class TelegramLocation extends TelegramBase implements TelegramSenderContract
 {
     /**
      * Telegram Location constructor.
      *
-     * @param  null|float|string  $latitude
-     * @param  null|float|string  $longitude
+     * @param  float|string  $latitude
+     * @param  float|string  $longitude
      */
-    public function __construct($latitude = null, $longitude = null)
+    public function __construct(float|string $latitude = '', float|string $longitude = '')
     {
         parent::__construct();
         $this->latitude($latitude);
@@ -24,13 +25,13 @@ class TelegramLocation extends TelegramBase implements TelegramSender
     }
 
     /**
-     * @param  null|float|string  $latitude
-     * @param  null|float|string  $longitude
-     * @return static
+     * @param  float|string  $latitude
+     * @param  float|string  $longitude
+     * @return self
      */
-    public static function create($latitude = null, $longitude = null): self
+    public static function create(float|string $latitude = '', float|string $longitude = ''): self
     {
-        return new static($latitude, $longitude);
+        return new self($latitude, $longitude);
     }
 
     /**
@@ -39,7 +40,7 @@ class TelegramLocation extends TelegramBase implements TelegramSender
      * @param  float|string  $latitude
      * @return $this
      */
-    public function latitude($latitude): self
+    public function latitude(float|string $latitude): self
     {
         $this->payload['latitude'] = $latitude;
 
@@ -47,12 +48,12 @@ class TelegramLocation extends TelegramBase implements TelegramSender
     }
 
     /**
-     * Location's latitude.
+     * Location's longitude.
      *
      * @param  float|string  $longitude
      * @return $this
      */
-    public function longitude($longitude): self
+    public function longitude(float|string $longitude): self
     {
         $this->payload['longitude'] = $longitude;
 
@@ -60,9 +61,11 @@ class TelegramLocation extends TelegramBase implements TelegramSender
     }
 
     /**
+     * @return ResponseInterface|null
+     *
      * @throws CouldNotSendNotification
      */
-    public function send()
+    public function send(): ?ResponseInterface
     {
         return $this->telegram->sendLocation($this->toArray());
     }

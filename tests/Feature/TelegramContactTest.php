@@ -1,0 +1,68 @@
+<?php
+
+use NotificationChannels\Telegram\TelegramContact;
+
+it('accepts phone number when constructed', function () {
+    $message = new TelegramContact('00000000');
+    expect($message->getPayloadValue('phone_number'))->toEqual('00000000');
+});
+
+it('accepts phone number when created', function () {
+    $message = TelegramContact::create('00000000');
+    expect($message->getPayloadValue('phone_number'))->toEqual('00000000');
+});
+
+test('the recipients chat id can be set', function () {
+    $message = new TelegramContact();
+    $message->to(12345);
+    expect($message->getPayloadValue('chat_id'))->toEqual(12345);
+});
+
+test('the phone number can be set', function () {
+    $message = new TelegramContact();
+    $message->phoneNumber('00000000');
+    expect($message->getPayloadValue('phone_number'))->toEqual('00000000');
+});
+
+test('the first name can be set for the contact', function () {
+    $message = new TelegramContact();
+    $message->firstName('Faissal');
+    expect($message->getPayloadValue('first_name'))->toEqual('Faissal');
+});
+
+test('the last name can be set for the contact', function () {
+    $message = new TelegramContact();
+    $message->lastName('Wahabali');
+    expect($message->getPayloadValue('last_name'))->toEqual('Wahabali');
+});
+
+test('the card can be set for the contact', function () {
+    $message = new TelegramContact();
+    $message->vCard('vCard');
+    expect($message->getPayloadValue('vcard'))->toEqual('vCard');
+});
+
+it('can determine if the recipient chat id has not been set', function () {
+    $message = new TelegramContact();
+    expect($message->toNotGiven())->toBeTrue();
+
+    $message->to(12345);
+    expect($message->toNotGiven())->toBeFalse();
+});
+
+it('can return the payload as an array', function () {
+    $message = new TelegramContact('00000000');
+    $message->to(12345);
+    $message->firstName('Faissal');
+    $message->lastName('Wahabali');
+    $message->vCard('vCard');
+    $expected = [
+        'chat_id' => 12345,
+        'phone_number' => '00000000',
+        'first_name' => 'Faissal',
+        'last_name' => 'Wahabali',
+        'vcard' => 'vCard',
+    ];
+
+    expect($message->toArray())->toEqual($expected);
+});
