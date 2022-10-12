@@ -6,7 +6,7 @@ on:
 
 jobs:
   coverage:
-    if: (github.repository == 'laravel-notification-channels/telegram') && "!contains(github.event.head_commit.message, 'skip ci')"
+    if: (github.repository == 'laravel-notification-channels/telegram') && !contains(github.event.head_commit.message, 'skip ci')
 
     runs-on: ubuntu-latest
 
