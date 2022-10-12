@@ -2,13 +2,14 @@
 
 namespace NotificationChannels\Telegram;
 
-use NotificationChannels\Telegram\Contracts\TelegramSender;
+use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class TelegramContact.
  */
-class TelegramContact extends TelegramBase implements TelegramSender
+class TelegramContact extends TelegramBase implements TelegramSenderContract
 {
     public function __construct(string $phoneNumber = '')
     {
@@ -70,9 +71,11 @@ class TelegramContact extends TelegramBase implements TelegramSender
     }
 
     /**
+     * @return ResponseInterface|null
+     *
      * @throws CouldNotSendNotification
      */
-    public function send()
+    public function send(): ?ResponseInterface
     {
         return $this->telegram->sendContact($this->toArray());
     }

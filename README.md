@@ -4,7 +4,6 @@
 [![Chat on Telegram][ico-telegram]][link-telegram]
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
-[![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-packagist]
 
 This package makes it easy to send Telegram notification using [Telegram Bot API](https://core.telegram.org/bots) with Laravel.
@@ -378,6 +377,7 @@ Notification::send($recipients, new InvoicePaid());
 For more information on supported parameters, check out these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage).
 
 - `content(string $content, int $limit = null)`: Notification message, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
+- `line(string $content)`: Adds a message in a new line.
 - `view(string $view, array $data = [], array $mergeData = [])`: (optional) Blade template name with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
 - `chunk(int $limit = 4096)`: (optional) Message chars chunk size to send in parts (For long messages). Note: Chunked messages will be rate limited to one message per second to comply with rate limitation requirements from Telegram.
 
@@ -446,19 +446,15 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [ico-telegram]: https://img.shields.io/badge/@PHPChatCo-2CA5E0.svg?style=flat-square&logo=telegram&label=Telegram
 [ico-version]: https://img.shields.io/packagist/v/laravel-notification-channels/telegram.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
-[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/laravel-notification-channels/telegram.svg?style=flat-square
-[ico-code-quality]: https://img.shields.io/scrutinizer/g/laravel-notification-channels/telegram.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/laravel-notification-channels/telegram.svg?style=flat-square
 
 [link-phpchat]: https://phpchat.co/?ref=laravel-channel-telegram
 [link-telegram]: https://t.me/PHPChatCo
 [link-repo]: https://github.com/laravel-notification-channels/telegram
 [link-packagist]: https://packagist.org/packages/laravel-notification-channels/telegram
-[link-scrutinizer]: https://scrutinizer-ci.com/g/laravel-notification-channels/telegram/code-structure
-[link-code-quality]: https://scrutinizer-ci.com/g/laravel-notification-channels/telegram
 [link-author]: https://github.com/irazasyed
 [link-contributors]: ../../contributors
-[link-notification-facade]: https://laravel.com/docs/8.x/notifications#using-the-notification-facade
-[link-on-demand-notifications]: https://laravel.com/docs/8.x/notifications#on-demand-notifications
+[link-notification-facade]: https://laravel.com/docs/9.x/notifications#using-the-notification-facade
+[link-on-demand-notifications]: https://laravel.com/docs/9.x/notifications#on-demand-notifications
 [link-telegram-docs-update]: https://core.telegram.org/bots/api#update
 [link-telegram-docs-getupdates]: https://core.telegram.org/bots/api#getupdates

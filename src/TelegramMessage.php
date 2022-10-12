@@ -3,16 +3,18 @@
 namespace NotificationChannels\Telegram;
 
 use Illuminate\Support\Facades\View;
-use NotificationChannels\Telegram\Contracts\TelegramSender;
+use JsonException;
+use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class TelegramMessage.
  */
-class TelegramMessage extends TelegramBase implements TelegramSender
+class TelegramMessage extends TelegramBase implements TelegramSenderContract
 {
     /** @var int Message Chunk Size */
-    public $chunkSize;
+    public int $chunkSize = 0;
 
     public function __construct(string $content = '')
     {
@@ -63,6 +65,7 @@ class TelegramMessage extends TelegramBase implements TelegramSender
     /**
      * Chunk message to given size.
      *
+     * @param  int  $limit
      * @return $this
      */
     public function chunk(int $limit = 4096): self
@@ -77,54 +80,73 @@ class TelegramMessage extends TelegramBase implements TelegramSender
      */
     public function shouldChunk(): bool
     {
-        return null !== $this->chunkSize;
+        return $this->chunkSize > 0;
     }
 
     /**
+     * @return ResponseInterface|array|null
+     *
      * @throws CouldNotSendNotification
+     * @throws JsonException
      */
-    public function send()
+    public function send(): ResponseInterface|array|null
     {
         $params = $this->toArray();
 
         if ($this->shouldChunk()) {
-            $replyMarkup = $this->getPayloadValue('reply_markup');
-
-            if ($replyMarkup) {
-                unset($params['reply_markup']);
-            }
-
-            $messages = $this->chunkStrings($this->getPayloadValue('text'), $this->chunkSize);
-
-            $payloads = collect($messages)->filter()->map(function ($text) use ($params) {
-                return array_merge($params, ['text' => $text]);
-            });
-
-            if ($replyMarkup) {
-                $lastMessage = $payloads->pop();
-                $lastMessage['reply_markup'] = $replyMarkup;
-                $payloads->push($lastMessage);
-            }
-
-            return $payloads->map(function ($payload) {
-                $response = $this->telegram->sendMessage($payload);
-
-                // To avoid rate limit of one message per second.
-                sleep(1);
-
-                if ($response) {
-                    return json_decode($response->getBody()->getContents(), true);
-                }
-
-                return $response;
-            })->toArray();
+            return $this->sendChunkedMessage($params);
         }
 
         return $this->telegram->sendMessage($params);
     }
 
     /**
+     * @param  array  $params
+     * @return array
+     *
+     * @throws CouldNotSendNotification
+     * @throws JsonException
+     */
+    private function sendChunkedMessage(array $params): array
+    {
+        $replyMarkup = $this->getPayloadValue('reply_markup');
+
+        if ($replyMarkup) {
+            unset($params['reply_markup']);
+        }
+
+        $messages = $this->chunkStrings($this->getPayloadValue('text'), $this->chunkSize);
+
+        $payloads = collect($messages)
+            ->filter()
+            ->map(fn ($text) => array_merge($params, ['text' => $text]));
+
+        if ($replyMarkup) {
+            $lastMessage = $payloads->pop()->toArray();
+            $lastMessage['reply_markup'] = $replyMarkup;
+            $payloads->push($lastMessage);
+        }
+
+        return $payloads->map(function ($payload) {
+            $response = $this->telegram->sendMessage($payload);
+
+            // To avoid rate limit of one message per second.
+            sleep(1);
+
+            if ($response) {
+                return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            }
+
+            return $response;
+        })->toArray();
+    }
+
+    /**
      * Chunk the given string into an array of strings.
+     *
+     * @param  string  $value
+     * @param  int  $limit
+     * @return array
      */
     private function chunkStrings(string $value, int $limit = 4096): array
     {
@@ -132,7 +154,7 @@ class TelegramMessage extends TelegramBase implements TelegramSender
             return [$value];
         }
 
-        if ($limit >= 4097) {
+        if ($limit > 4096) {
             $limit = 4096;
         }
 

@@ -15,7 +15,7 @@ class TelegramChannel
     /**
      * @var Dispatcher
      */
-    private $dispatcher;
+    private Dispatcher $dispatcher;
 
     /**
      * Channel constructor.
@@ -29,11 +29,14 @@ class TelegramChannel
      * Send the given notification.
      *
      * @param  mixed  $notifiable
+     * @param  Notification  $notification
+     * @return array|null
      *
-     * @throws CouldNotSendNotification
+     * @throws CouldNotSendNotification|\JsonException
      */
-    public function send($notifiable, Notification $notification): ?array
+    public function send(mixed $notifiable, Notification $notification): ?array
     {
+        // @phpstan-ignore-next-line
         $message = $notification->toTelegram($notifiable);
 
         if (is_string($message)) {
@@ -68,6 +71,6 @@ class TelegramChannel
             throw $exception;
         }
 
-        return json_decode($response->getBody()->getContents(), true);
+        return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
     }
 }

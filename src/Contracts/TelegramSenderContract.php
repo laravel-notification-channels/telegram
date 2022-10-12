@@ -3,15 +3,16 @@
 namespace NotificationChannels\Telegram\Contracts;
 
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
+use Psr\Http\Message\ResponseInterface;
 
-interface TelegramSender
+interface TelegramSenderContract
 {
     /**
-     * Send the given message.
+     * Send the message.
      *
-     * @return mixed
+     * @return ResponseInterface|array|null
      *
      * @throws CouldNotSendNotification
      */
-    public function send();
+    public function send(): ResponseInterface|array|null;
 }
