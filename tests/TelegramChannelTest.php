@@ -18,6 +18,7 @@ use PHPUnit\Framework\TestCase;
  * Class ChannelTest.
  *
  * @internal
+ *
  * @coversNothing
  */
 class TelegramChannelTest extends TestCase
@@ -114,9 +115,6 @@ class TestNotifiable
  */
 class TestNotification extends Notification
 {
-    /**
-     * @param $notifiable
-     */
     public function toTelegram($notifiable): TelegramMessage
     {
         return TelegramMessage::create('Laravel Notification Channels are awesome!')->to(12345);
@@ -128,9 +126,6 @@ class TestNotification extends Notification
  */
 class TestNotificationNoChatId extends Notification
 {
-    /**
-     * @param $notifiable
-     */
     public function toTelegram($notifiable): TelegramMessage
     {
         return TelegramMessage::create();

@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
  * Class TelegramContactTest.
  *
  * @internal
+ *
  * @coversNothing
  */
 class TelegramContactTest extends TestCase
