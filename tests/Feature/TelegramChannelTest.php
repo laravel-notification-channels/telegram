@@ -31,6 +31,8 @@ test('notification failed event', function () {
     $notifiable = new TestNotifiable();
     $notification = new TestNotification();
 
+    $payload = $notification->toTelegram($notifiable)->toArray();
+
     $this->telegram
         ->shouldReceive('sendMessage')
         ->andThrow($exception_class, $exception_message);
@@ -43,7 +45,11 @@ test('notification failed event', function () {
                 $notifiable,
                 $notification,
                 'telegram',
-                []
+                [
+                    'to' => $payload['chat_id'],
+                    'request' => $payload,
+                    'exception' => new $exception_class($exception_message),
+                ]
             )
         );
 

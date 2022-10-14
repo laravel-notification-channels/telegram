@@ -61,12 +61,11 @@ class TelegramChannel
         try {
             $response = $message->send();
         } catch (CouldNotSendNotification $exception) {
-            $this->dispatcher->dispatch(new NotificationFailed(
-                $notifiable,
-                $notification,
-                'telegram',
-                []
-            ));
+            $this->dispatcher->dispatch(new NotificationFailed($notifiable, $notification, 'telegram', [
+                'to' => $message->getPayloadValue('chat_id'),
+                'request' => $message->toArray(),
+                'exception' => $exception,
+            ]));
 
             throw $exception;
         }
