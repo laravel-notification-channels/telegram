@@ -1,6 +1,8 @@
 <?php
 
 use NotificationChannels\Telegram\TelegramPoll;
+use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;
+use NotificationChannels\Telegram\Tests\TestSupport\TestPollNotification;
 
 it('accepts question when constructed', function () {
     $message = new TelegramPoll("Aren't Laravel Notification Channels awesome?");
@@ -49,4 +51,35 @@ it('can return the payload as an array', function () {
     ];
 
     expect($message->toArray())->toEqual($expected);
+});
+
+it('can send a poll', function () {
+    $notifiable = new TestNotifiable();
+    $notification = new TestPollNotification();
+
+    $expectedResponse = $this->makeMockResponse([
+        'poll' => [
+            'id' => '1234567890101112',
+            'question' => "Isn't Telegram Notification Channel Awesome?",
+            'options' => [
+                [
+                    'text' => 'Yes',
+                    'voter_count' => 0,
+                ],
+                [
+                    'text' => 'No',
+                    'voter_count' => 0,
+                ],
+            ],
+            'total_voter_count' => 0,
+            'is_closed' => false,
+            'is_anonymous' => true,
+            'type' => 'regular',
+            'allows_multiple_answers' => false,
+        ],
+    ]);
+
+    $actualResponse = $this->sendMockNotification('sendPoll', $notifiable, $notification, $expectedResponse);
+
+    expect($actualResponse)->toBe($expectedResponse);
 });
