@@ -111,3 +111,22 @@ test('laravel conditionable trait', function () {
 
     expect($message->getPayloadValue('reply_markup'))->toEqual('{"inline_keyboard":[[{"text":"Laravel","url":"https:\/\/laravel.com"},{"text":"Github","url":"https:\/\/github.com"}]]}');
 });
+
+it('can set token', function () {
+    $message = TelegramMessage::create()->token('12345');
+
+    expect($message->hasToken())
+        ->toBeTrue()
+        ->and($message->token)
+        ->toEqual('12345');
+});
+
+it('can set the parse mode', function () {
+    $message = TelegramMessage::create()->options(['parse_mode' => 'HTML']);
+    expect($message->getPayloadValue('parse_mode'))->toEqual('HTML');
+});
+
+it('can set the disable web page preview', function () {
+    $message = TelegramMessage::create()->options(['disable_web_page_preview' => true]);
+    expect($message->getPayloadValue('disable_web_page_preview'))->toBeTrue();
+});

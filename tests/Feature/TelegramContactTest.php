@@ -1,6 +1,8 @@
 <?php
 
 use NotificationChannels\Telegram\TelegramContact;
+use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;
+use NotificationChannels\Telegram\Tests\TestSupport\TestContactNotification;
 
 it('accepts phone number when constructed', function () {
     $message = new TelegramContact('00000000');
@@ -26,14 +28,14 @@ test('the phone number can be set', function () {
 
 test('the first name can be set for the contact', function () {
     $message = new TelegramContact();
-    $message->firstName('Faissal');
-    expect($message->getPayloadValue('first_name'))->toEqual('Faissal');
+    $message->firstName('John');
+    expect($message->getPayloadValue('first_name'))->toEqual('John');
 });
 
 test('the last name can be set for the contact', function () {
     $message = new TelegramContact();
-    $message->lastName('Wahabali');
-    expect($message->getPayloadValue('last_name'))->toEqual('Wahabali');
+    $message->lastName('Doe');
+    expect($message->getPayloadValue('last_name'))->toEqual('Doe');
 });
 
 test('the card can be set for the contact', function () {
@@ -53,16 +55,29 @@ it('can determine if the recipient chat id has not been set', function () {
 it('can return the payload as an array', function () {
     $message = new TelegramContact('00000000');
     $message->to(12345);
-    $message->firstName('Faissal');
-    $message->lastName('Wahabali');
+    $message->firstName('John');
+    $message->lastName('Doe');
     $message->vCard('vCard');
     $expected = [
         'chat_id' => 12345,
         'phone_number' => '00000000',
-        'first_name' => 'Faissal',
-        'last_name' => 'Wahabali',
+        'first_name' => 'John',
+        'last_name' => 'Doe',
         'vcard' => 'vCard',
     ];
 
     expect($message->toArray())->toEqual($expected);
+});
+
+it('can send a contact', function () {
+    $notifiable = new TestNotifiable();
+    $notification = new TestContactNotification();
+
+    $expectedResponse = $this->makeMockResponse([
+        "contact" => collect($notification->toTelegram($notifiable)->toArray())->except('chat_id')->toArray(),
+    ]);
+
+    $actualResponse = $this->sendMockNotification('sendContact', $notifiable, $notification, $expectedResponse);
+
+    expect($actualResponse)->toBe($expectedResponse);
 });
