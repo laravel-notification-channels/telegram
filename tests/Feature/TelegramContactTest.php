@@ -1,8 +1,8 @@
 <?php
 
 use NotificationChannels\Telegram\TelegramContact;
-use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;
 use NotificationChannels\Telegram\Tests\TestSupport\TestContactNotification;
+use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;
 
 it('accepts phone number when constructed', function () {
     $message = new TelegramContact('00000000');
@@ -74,7 +74,7 @@ it('can send a contact', function () {
     $notification = new TestContactNotification();
 
     $expectedResponse = $this->makeMockResponse([
-        "contact" => collect($notification->toTelegram($notifiable)->toArray())->except('chat_id')->toArray(),
+        'contact' => collect($notification->toTelegram($notifiable)->toArray())->except('chat_id')->toArray(),
     ]);
 
     $actualResponse = $this->sendMockNotification('sendContact', $notifiable, $notification, $expectedResponse);

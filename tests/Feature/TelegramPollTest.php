@@ -1,6 +1,5 @@
 <?php
 
-use GuzzleHttp\Psr7\Response;
 use NotificationChannels\Telegram\TelegramPoll;
 use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;
 use NotificationChannels\Telegram\Tests\TestSupport\TestPollNotification;
@@ -46,9 +45,9 @@ it('can return the payload as an array', function () {
     $message->to(12345);
     $message->choices(['Yes', 'No']);
     $expected = [
-        'chat_id'  => 12345,
+        'chat_id' => 12345,
         'question' => "Aren't Laravel Notification Channels awesome?",
-        'options'  => '["Yes","No"]',
+        'options' => '["Yes","No"]',
     ];
 
     expect($message->toArray())->toEqual($expected);
@@ -59,30 +58,28 @@ it('can send a poll', function () {
     $notification = new TestPollNotification();
 
     $expectedResponse = $this->makeMockResponse([
-        "poll"       => [
-            "id"                      => "1234567890101112",
-            "question"                => "Isn't Telegram Notification Channel Awesome?",
-            "options"                 => [
+        'poll' => [
+            'id' => '1234567890101112',
+            'question' => "Isn't Telegram Notification Channel Awesome?",
+            'options' => [
                 [
-                    "text"        => "Yes",
-                    "voter_count" => 0,
+                    'text' => 'Yes',
+                    'voter_count' => 0,
                 ],
                 [
-                    "text"        => "No",
-                    "voter_count" => 0,
+                    'text' => 'No',
+                    'voter_count' => 0,
                 ],
             ],
-            "total_voter_count"       => 0,
-            "is_closed"               => false,
-            "is_anonymous"            => true,
-            "type"                    => "regular",
-            "allows_multiple_answers" => false,
-        ]
+            'total_voter_count' => 0,
+            'is_closed' => false,
+            'is_anonymous' => true,
+            'type' => 'regular',
+            'allows_multiple_answers' => false,
+        ],
     ]);
 
     $actualResponse = $this->sendMockNotification('sendPoll', $notifiable, $notification, $expectedResponse);
 
     expect($actualResponse)->toBe($expectedResponse);
 });
-
-

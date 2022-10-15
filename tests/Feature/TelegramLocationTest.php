@@ -1,8 +1,8 @@
 <?php
 
 use NotificationChannels\Telegram\TelegramLocation;
-use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;
 use NotificationChannels\Telegram\Tests\TestSupport\TestLocationNotification;
+use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;
 
 const TEST_LAT = 38.8951;
 const TEST_LONG = -77.0364;
@@ -56,7 +56,7 @@ it('can determine if the recipient chat id has not been set', function () {
 });
 
 it('can return the payload as an array', function () {
-    $message = new TelegramLocation(TEST_LAT,TEST_LONG);
+    $message = new TelegramLocation(TEST_LAT, TEST_LONG);
     $message->to(12345);
     $message->options(['foo' => 'bar']);
     $expected = [
@@ -74,7 +74,7 @@ it('can send a location', function () {
     $notification = new TestLocationNotification(TEST_LAT, TEST_LONG);
 
     $expectedResponse = $this->makeMockResponse([
-        "location" => collect($notification->toTelegram($notifiable)->toArray())->except('chat_id')->toArray(),
+        'location' => collect($notification->toTelegram($notifiable)->toArray())->except('chat_id')->toArray(),
     ]);
 
     $actualResponse = $this->sendMockNotification('sendLocation', $notifiable, $notification, $expectedResponse);

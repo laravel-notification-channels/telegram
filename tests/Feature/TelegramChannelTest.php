@@ -1,6 +1,5 @@
 <?php
 
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Notifications\Events\NotificationFailed;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;
