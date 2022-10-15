@@ -3,8 +3,8 @@
 namespace NotificationChannels\Telegram\Tests;
 
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Notifications\Notification;
 use Mockery;
 use NotificationChannels\Telegram\Telegram;
 use NotificationChannels\Telegram\TelegramChannel;
@@ -51,28 +51,28 @@ class TestCase extends Orchestra
     protected function makeMockResponse(array $result)
     {
         $payload = [
-            "ok"     => true,
-            "result" => [
-                "message_id" => 9090,
-                "from"       => [
-                    "id"         => 12345678,
-                    "is_bot"     => true,
-                    "first_name" => "MyBot",
-                    "username"   => "MyBot",
+            'ok' => true,
+            'result' => [
+                'message_id' => 9090,
+                'from' => [
+                    'id' => 12345678,
+                    'is_bot' => true,
+                    'first_name' => 'MyBot',
+                    'username' => 'MyBot',
                 ],
-                "chat"       => [
-                    "id"         => 90909090,
-                    "first_name" => "John",
-                    "last_name"  => "Doe",
-                    "username"   => "testuser",
-                    "type"       => "private",
+                'chat' => [
+                    'id' => 90909090,
+                    'first_name' => 'John',
+                    'last_name' => 'Doe',
+                    'username' => 'testuser',
+                    'type' => 'private',
                 ],
-                "date"       => 1600000000,
+                'date' => 1600000000,
             ],
         ];
 
         $payload['result'] = array_merge($payload['result'], $result);
-        
+
         return $payload;
     }
 
