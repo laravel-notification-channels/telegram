@@ -2,6 +2,38 @@
 
 All notable changes to `telegram` will be documented in this file
 
+## 3.0 - 2022-11-19
+
+### What's Changed
+
+- Send logic moved to drivers by @llabbasmkhll in ### https://github.com/laravel-notification-channels/telegram/pull/146
+- Drop support for Laravel < 9.
+- Convert tests to Pest and improve coverage in https://github.com/laravel-notification-channels/telegram/pull/151.
+- Add TelegramUpdatesTests.
+- Add PHPStan for static analysis using GitHub Action.
+- Add Changelog updater workflow.
+- Add Codecov for code coverage workflow.
+- Improve GitHub action workflows.
+- Clean and improve code.
+- Remove the scrutinizer.
+- Add `line()` method (adapted from a PR) by @llabbasmkhll in https://github.com/laravel-notification-channels/telegram/pull/149.
+- Upgrade required and dev packages.
+- Normalize composer JSON file.
+- Add type hints and return types were supported.
+- Rename `TelegramSender` contract to `TelegramSenderContract`
+- Harden error handling for JSON encode and decode methods.
+- Improve doc blocks.
+- Add `toArray()` method to TelegramUpdates to retrieve payload.
+- Restructure the tests directory.
+- Add data to notification failed event in https://github.com/laravel-notification-channels/telegram/pull/156
+- Add More Tests in https://github.com/laravel-notification-channels/telegram/pull/157
+
+### New Contributors
+
+- @llabbasmkhll made their first contribution in https://github.com/laravel-notification-channels/telegram/pull/146
+
+**Full Changelog**: https://github.com/laravel-notification-channels/telegram/compare/2.1.0...3.0.0
+
 ## 2.0.0 - 2022-02-11
 
 - Add Laravel 9 Support.
