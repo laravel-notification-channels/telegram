@@ -31,7 +31,7 @@ it('can escape special markdown characters per line', function () {
         ->line('Telegram Notification Channel is fantastic :)');
 
 
-    expect($message->getPayloadValue('text'))->toEqual("Laravel Notification\_Channels are awesome!\nTelegram Notification Channel is fantastic :)\n");
+    expect($message->getPayloadValue('text'))->toEqual("Laravel Notification\_Channels are awesome\!\nTelegram Notification Channel is fantastic :)\n");
 });
 
 it('can attach a view as the content', function () {
