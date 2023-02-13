@@ -25,6 +25,15 @@ it('can add one message per line', function () {
     expect($message->getPayloadValue('text'))->toEqual("Laravel Notification Channels are awesome!\nTelegram Notification Channel is fantastic :)\n");
 });
 
+it('can escape special markdown characters per line', function () {
+    $message = TelegramMessage::create()
+        ->escapedLine('Laravel Notification_Channels are awesome!')
+        ->line('Telegram Notification Channel is fantastic :)');
+
+
+    expect($message->getPayloadValue('text'))->toEqual("Laravel Notification\_Channels are awesome\!\nTelegram Notification Channel is fantastic :)\n");
+});
+
 it('can attach a view as the content', function () {
     View::addLocation(__DIR__.'/../TestSupport');
 
