@@ -30,7 +30,6 @@ it('can escape special markdown characters per line', function () {
         ->escapedLine('Laravel Notification_Channels are awesome!')
         ->line('Telegram Notification Channel is fantastic :)');
 
-
     expect($message->getPayloadValue('text'))->toEqual("Laravel Notification\_Channels are awesome\!\nTelegram Notification Channel is fantastic :)\n");
 });
 

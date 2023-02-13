@@ -56,8 +56,8 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
         // code taken from public gist https://gist.github.com/vijinho/3d66fab3270fc377b8485387ce7e7455
         $content = str_replace([
             '\\', '-', '#', '*', '+', '`', '.', '[', ']', '(', ')', '!', '&', '<', '>', '_', '{', '}', ], [
-            '\\\\', '\-', '\#', '\*', '\+', '\`', '\.', '\[', '\]', '\(', '\)', '\!', '\&', '\<', '\>', '\_', '\{', '\}',
-          ], $content);
+                '\\\\', '\-', '\#', '\*', '\+', '\`', '\.', '\[', '\]', '\(', '\)', '\!', '\&', '\<', '\>', '\_', '\{', '\}',
+            ], $content);
 
         return $this->line($content);
     }
