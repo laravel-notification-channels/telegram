@@ -378,6 +378,7 @@ For more information on supported parameters, check out these [docs](https://tel
 
 - `content(string $content, int $limit = null)`: Notification message, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
 - `line(string $content)`: Adds a message in a new line.
+- `escapedLine(string $content)`: Adds a message in a new line while escaping special characters (For Markdown).
 - `view(string $view, array $data = [], array $mergeData = [])`: (optional) Blade template name with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
 - `chunk(int $limit = 4096)`: (optional) Message chars chunk size to send in parts (For long messages). Note: Chunked messages will be rate limited to one message per second to comply with rate limitation requirements from Telegram.
 
