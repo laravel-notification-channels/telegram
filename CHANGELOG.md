@@ -2,6 +2,22 @@
 
 All notable changes to `telegram` will be documented in this file
 
+## 4.0.0 - 2023-02-14
+
+### What's Changed
+
+- Fix Chunk method error by @faissaloux in https://github.com/laravel-notification-channels/telegram/pull/163
+- Add escapedLine() method to TelegramMessage by @ziming in https://github.com/laravel-notification-channels/telegram/pull/168
+- Laravel 10.x Compatibility by @laravel-shift in https://github.com/laravel-notification-channels/telegram/pull/167
+- Drop support for PHP `< 8.1`.
+
+### New Contributors
+
+- @ziming made their first contribution in https://github.com/laravel-notification-channels/telegram/pull/168
+- @laravel-shift made their first contribution in https://github.com/laravel-notification-channels/telegram/pull/167
+
+**Full Changelog**: https://github.com/laravel-notification-channels/telegram/compare/3.0.0...4.0.0
+
 ## 3.0 - 2022-11-19
 
 ### What's Changed
