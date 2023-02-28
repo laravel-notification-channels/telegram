@@ -53,6 +53,31 @@ trait HasSharedLogic
 
         return $this;
     }
+    
+    /**
+     * Add an raw inline buttons.
+     * 
+     * Exemple:
+     * ->rawButtons([
+     *           [['text' => 'btn1', 'callback_data' => 'btn:btn1'], ['text' => 'btn2', 'callback_data' => 'btn:btn2']],
+     *           [['text' => 'btn3', 'callback_data' => 'btn:btn3']],
+     *           [['text' => 'btn4', 'callback_data' => 'btn:btn4']],
+     *           [['text' => 'btn5', 'callback_data' => 'btn:btn5'], ['text' => 'btn6', 'callback_data' => 'btn:btn6'], ['text' => 'btn7', 'callback_data' => 'btn:btn7']],
+     *           
+     *   ])
+     *
+     * @param  array  $buttons
+     *
+     * @throws \JsonException
+     */
+    public function rawButtons(array $buttons): self
+    {
+        $this->payload['reply_markup'] = json_encode([
+            'inline_keyboard' => $buttons,
+        ], JSON_THROW_ON_ERROR);
+
+        return $this;
+    }
 
     /**
      * Add an inline button with callback_data.
