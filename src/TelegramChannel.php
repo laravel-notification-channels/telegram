@@ -6,6 +6,7 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
+use GuzzleHttp\Psr7\Response;
 
 /**
  * Class TelegramChannel.
