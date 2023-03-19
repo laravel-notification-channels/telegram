@@ -133,7 +133,7 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
             ->map(fn ($text) => array_merge($params, ['text' => $text]));
 
         if ($replyMarkup) {
-            $lastMessage = $payloads->pop()->toArray();
+            $lastMessage = $payloads->pop();
             $lastMessage['reply_markup'] = $replyMarkup;
             $payloads->push($lastMessage);
         }
