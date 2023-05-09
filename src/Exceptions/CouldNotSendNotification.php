@@ -14,8 +14,6 @@ final class CouldNotSendNotification extends Exception
     /**
      * Thrown when there's a bad request and an error is responded.
      *
-     * @param  ClientException  $exception
-     * @return self
      *
      * @throws JsonException
      */
@@ -35,9 +33,6 @@ final class CouldNotSendNotification extends Exception
 
     /**
      * Thrown when there's no bot token provided.
-     *
-     * @param  string  $message
-     * @return self
      */
     public static function telegramBotTokenNotProvided(string $message): self
     {
@@ -46,9 +41,6 @@ final class CouldNotSendNotification extends Exception
 
     /**
      * Thrown when we're unable to communicate with Telegram.
-     *
-     * @param  string  $message
-     * @return self
      */
     public static function couldNotCommunicateWithTelegram(string $message): self
     {

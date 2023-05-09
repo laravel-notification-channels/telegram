@@ -13,9 +13,6 @@ class TelegramLocation extends TelegramBase implements TelegramSenderContract
 {
     /**
      * Telegram Location constructor.
-     *
-     * @param  float|string  $latitude
-     * @param  float|string  $longitude
      */
     public function __construct(float|string $latitude = '', float|string $longitude = '')
     {
@@ -24,11 +21,6 @@ class TelegramLocation extends TelegramBase implements TelegramSenderContract
         $this->longitude($longitude);
     }
 
-    /**
-     * @param  float|string  $latitude
-     * @param  float|string  $longitude
-     * @return self
-     */
     public static function create(float|string $latitude = '', float|string $longitude = ''): self
     {
         return new self($latitude, $longitude);
@@ -37,7 +29,6 @@ class TelegramLocation extends TelegramBase implements TelegramSenderContract
     /**
      * Location's latitude.
      *
-     * @param  float|string  $latitude
      * @return $this
      */
     public function latitude(float|string $latitude): self
@@ -50,7 +41,6 @@ class TelegramLocation extends TelegramBase implements TelegramSenderContract
     /**
      * Location's longitude.
      *
-     * @param  float|string  $longitude
      * @return $this
      */
     public function longitude(float|string $longitude): self
@@ -61,8 +51,6 @@ class TelegramLocation extends TelegramBase implements TelegramSenderContract
     }
 
     /**
-     * @return ResponseInterface|null
-     *
      * @throws CouldNotSendNotification
      */
     public function send(): ?ResponseInterface

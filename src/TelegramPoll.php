@@ -47,8 +47,6 @@ class TelegramPoll extends TelegramBase implements TelegramSenderContract
     }
 
     /**
-     * @return ResponseInterface|null
-     *
      * @throws CouldNotSendNotification
      */
     public function send(): ?ResponseInterface

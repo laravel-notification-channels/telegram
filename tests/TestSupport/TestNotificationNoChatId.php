@@ -10,10 +10,6 @@ use NotificationChannels\Telegram\TelegramMessage;
  */
 class TestNotificationNoChatId extends Notification
 {
-    /**
-     * @param $notifiable
-     * @return TelegramMessage
-     */
     public function toTelegram($notifiable): TelegramMessage
     {
         return TelegramMessage::create();

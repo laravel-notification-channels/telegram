@@ -76,7 +76,6 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
     /**
      * Chunk message to given size.
      *
-     * @param  int  $limit
      * @return $this
      */
     public function chunk(int $limit = 4096): self
@@ -95,8 +94,6 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
     }
 
     /**
-     * @return ResponseInterface|array|null
-     *
      * @throws CouldNotSendNotification
      * @throws JsonException
      */
@@ -112,9 +109,6 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
     }
 
     /**
-     * @param  array  $params
-     * @return array
-     *
      * @throws CouldNotSendNotification
      * @throws JsonException
      */
@@ -154,10 +148,6 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
 
     /**
      * Chunk the given string into an array of strings.
-     *
-     * @param  string  $value
-     * @param  int  $limit
-     * @return array
      */
     private function chunkStrings(string $value, int $limit = 4096): array
     {

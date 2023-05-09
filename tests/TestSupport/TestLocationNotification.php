@@ -16,10 +16,6 @@ class TestLocationNotification extends Notification
     ) {
     }
 
-    /**
-     * @param $notifiable
-     * @return TelegramLocation
-     */
     public function toTelegram($notifiable): TelegramLocation
     {
         return TelegramLocation::create()

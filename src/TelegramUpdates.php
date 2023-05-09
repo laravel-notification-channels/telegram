@@ -18,7 +18,6 @@ class TelegramUpdates
     /**
      * Telegram updates limit.
      *
-     * @param  int  $limit
      * @return $this
      */
     public function limit(int $limit): self
@@ -31,7 +30,6 @@ class TelegramUpdates
     /**
      * Additional options.
      *
-     * @param  array  $options
      * @return $this
      */
     public function options(array $options): self

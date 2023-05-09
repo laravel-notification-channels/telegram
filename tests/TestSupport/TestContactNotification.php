@@ -10,10 +10,6 @@ use NotificationChannels\Telegram\TelegramContact;
  */
 class TestContactNotification extends Notification
 {
-    /**
-     * @param $notifiable
-     * @return TelegramContact
-     */
     public function toTelegram($notifiable): TelegramContact
     {
         return TelegramContact::create()

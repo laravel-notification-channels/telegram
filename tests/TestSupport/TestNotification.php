@@ -10,10 +10,6 @@ use NotificationChannels\Telegram\TelegramMessage;
  */
 class TestNotification extends Notification
 {
-    /**
-     * @param $notifiable
-     * @return TelegramMessage
-     */
     public function toTelegram($notifiable): TelegramMessage
     {
         return TelegramMessage::create('Laravel Notification Channels are awesome!')->to(12345);

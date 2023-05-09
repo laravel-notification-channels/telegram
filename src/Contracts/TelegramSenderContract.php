@@ -10,7 +10,6 @@ interface TelegramSenderContract
     /**
      * Send the message.
      *
-     * @return ResponseInterface|array|null
      *
      * @throws CouldNotSendNotification
      */

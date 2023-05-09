@@ -10,10 +10,6 @@ use NotificationChannels\Telegram\TelegramPoll;
  */
 class TestPollNotification extends Notification
 {
-    /**
-     * @param $notifiable
-     * @return TelegramPoll
-     */
     public function toTelegram($notifiable): TelegramPoll
     {
         return TelegramPoll::create()

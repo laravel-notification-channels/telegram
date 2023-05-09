@@ -23,7 +23,6 @@ trait HasSharedLogic
     /**
      * Recipient's Chat ID.
      *
-     * @param  int|string  $chatId
      * @return static
      */
     public function to(int|string $chatId): self
@@ -36,9 +35,6 @@ trait HasSharedLogic
     /**
      * Add an inline button.
      *
-     * @param  string  $text
-     * @param  string  $url
-     * @param  int  $columns
      * @return static
      *
      * @throws \JsonException
@@ -57,9 +53,6 @@ trait HasSharedLogic
     /**
      * Add an inline button with callback_data.
      *
-     * @param  string  $text
-     * @param  string  $callback_data
-     * @param  int  $columns
      * @return static
      *
      * @throws \JsonException
@@ -79,7 +72,6 @@ trait HasSharedLogic
      * Send the message silently.
      * Users will receive a notification with no sound.
      *
-     * @param  bool  $disableNotification
      * @return static
      */
     public function disableNotification(bool $disableNotification = true): self
@@ -93,7 +85,6 @@ trait HasSharedLogic
      * Bot Token.
      * Overrides default bot token with the given value for this notification.
      *
-     * @param  string  $token
      * @return static
      */
     public function token(string $token): self
@@ -114,7 +105,6 @@ trait HasSharedLogic
     /**
      * Additional options to pass to sendMessage method.
      *
-     * @param  array  $options
      * @return static
      */
     public function options(array $options): self

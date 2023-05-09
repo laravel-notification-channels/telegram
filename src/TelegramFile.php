@@ -46,8 +46,6 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
      * Generic method to attach files of any type based on API.
      *
      * @param  resource|StreamInterface|string  $file
-     * @param  string  $type
-     * @param  string|null  $filename
      * @return $this
      */
     public function file(mixed $file, string $type, string $filename = null): self
@@ -200,8 +198,6 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
     }
 
     /**
-     * @return ResponseInterface|null
-     *
      * @throws CouldNotSendNotification
      */
     public function send(): ?ResponseInterface

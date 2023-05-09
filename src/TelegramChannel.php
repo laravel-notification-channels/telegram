@@ -13,9 +13,6 @@ use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
  */
 class TelegramChannel
 {
-    /**
-     * @var Dispatcher
-     */
     private Dispatcher $dispatcher;
 
     /**
@@ -29,9 +26,6 @@ class TelegramChannel
     /**
      * Send the given notification.
      *
-     * @param  mixed  $notifiable
-     * @param  Notification  $notification
-     * @return array|null
      *
      * @throws CouldNotSendNotification|\JsonException
      */
