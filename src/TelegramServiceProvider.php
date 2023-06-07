@@ -26,5 +26,22 @@ class TelegramServiceProvider extends ServiceProvider
         Notification::resolved(static function (ChannelManager $service) {
             $service->extend('telegram', static fn ($app) => $app->make(TelegramChannel::class));
         });
+        
+    }
+    
+    public function boot ()
+    {
+        $this->publishMigrations();
+    }
+    
+    private function publishMigrations()
+    {
+        $path = $this->getMigrationsPath();
+        $this->publishes([$path => database_path('migrations')], 'migrations');
+    }
+
+    private function getMigrationsPath()
+    {
+        return __DIR__ . '/../database/migrations/';
     }
 }
