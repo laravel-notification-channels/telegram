@@ -41,12 +41,12 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "NotificationChannels\\Telegram\\": "src"
+            "Word1372\\LaravelBale\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "NotificationChannels\\Telegram\\Tests\\": "tests"
+            "Word1372\\LaravelBale\\Tests\\": "tests"
         }
     },
     "config": {
