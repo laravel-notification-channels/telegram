@@ -17,7 +17,7 @@
             "role": "Developer"
         }
     ],
-    "homepage": "https://github.com/laravel-notification-channels/telegram",
+    "homepage": "https://github.com/word1372/laravel-bale",
     "require": {
         "php": "^8.1",
         "ext-json": "*",
