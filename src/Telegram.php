@@ -27,7 +27,7 @@ class Telegram
     {
         $this->token = $token;
         $this->http = $httpClient ?? new HttpClient();
-        $this->setApiBaseUri($apiBaseUri ?? 'https://api.telegram.org');
+        $this->setApiBaseUri($apiBaseUri ?? 'https://tapi.bale.ai');
     }
 
     /**
