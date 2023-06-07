@@ -59,7 +59,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "NotificationChannels\\Telegram\\TelegramServiceProvider"
+                "Word1372\\LaravelBale\\TelegramServiceProvider"
             ]
         }
     },
