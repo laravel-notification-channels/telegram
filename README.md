@@ -325,7 +325,7 @@ public function routeNotificationForTelegram()
 
 ### Handling Response
 
-You can make use of the [notification events](https://laravel.com/docs/5.8/notifications#notification-events) to handle the response from Telegram. On success, your event listener will receive a [Message](https://core.telegram.org/bots/api#message) object with various fields as appropriate to the notification type.
+You can make use of the [notification events](https://laravel.com/docs/10.x/notifications#notification-events) to handle the response from Telegram. On success, your event listener will receive a [Message](https://core.telegram.org/bots/api#message) object with various fields as appropriate to the notification type.
 
 For a complete list of response fields, please refer the Telegram Bot API's [Message object](https://core.telegram.org/bots/api#message) docs.
 
@@ -374,9 +374,9 @@ Notification::send($recipients, new InvoicePaid());
 
 ### Telegram Message methods
 
-For more information on supported parameters, check out these [docs](https://telegram-bot-sdk.readme.io/docs/sendmessage).
+For more information on supported parameters, check out these [docs](https://core.telegram.org/bots/api#sendmessage).
 
-- `content(string $content, int $limit = null)`: Notification message, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
+- `content(string $content, int $limit = null)`: Notification message, supports markdown. For more information on supported markdown styles, check out these [docs](https://core.telegram.org/bots/api#formatting-options).
 - `line(string $content)`: Adds a message in a new line.
 - `escapedLine(string $content)`: Adds a message in a new line while escaping special characters (For Markdown).
 - `view(string $view, array $data = [], array $mergeData = [])`: (optional) Blade template name with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
@@ -389,7 +389,7 @@ For more information on supported parameters, check out these [docs](https://tel
 
 ### Telegram File methods
 
-- `content(string $content)`: (optional) File caption, supports markdown. For more information on supported markdown styles, check out these [docs](https://telegram-bot-sdk.readme.io/reference#section-formatting-options).
+- `content(string $content)`: (optional) File caption, supports markdown. For more information on supported markdown styles, check out these [docs](https://core.telegram.org/bots/api#formatting-options).
 - `view(string $view, array $data = [], array $mergeData = [])`: (optional) Blade template name with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
 - `file(string|resource|StreamInterface $file, string $type, string $filename = null)`: Local file path or remote URL, `$type` of the file (Ex:`photo`, `audio`, `document`, `video`, `animation`, `voice`, `video_note`) and optionally filename with extension. Ex: `sample.pdf`. You can use helper methods instead of using this to make it easier to work with file attachment.
 - `photo(string $file)`: Helper method to attach a photo.
@@ -455,7 +455,7 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [link-packagist]: https://packagist.org/packages/laravel-notification-channels/telegram
 [link-author]: https://github.com/irazasyed
 [link-contributors]: ../../contributors
-[link-notification-facade]: https://laravel.com/docs/9.x/notifications#using-the-notification-facade
-[link-on-demand-notifications]: https://laravel.com/docs/9.x/notifications#on-demand-notifications
+[link-notification-facade]: https://laravel.com/docs/10.x/notifications#using-the-notification-facade
+[link-on-demand-notifications]: https://laravel.com/docs/10.x/notifications#on-demand-notifications
 [link-telegram-docs-update]: https://core.telegram.org/bots/api#update
 [link-telegram-docs-getupdates]: https://core.telegram.org/bots/api#getupdates
