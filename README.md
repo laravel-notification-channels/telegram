@@ -181,8 +181,8 @@ public function toTelegram($notifiable)
     return TelegramPoll::create()
         ->to($notifiable)
         ->content('Choose an option:')
-        ->keyboard('Button 1', request_contact: true)
-        ->keyboard('Button 2', request_location: true);
+        ->keyboard('Button 1')
+        ->keyboard('Button 2');
         // ->keyboard('send your number', request_contact: true)
         // ->keyboard('send your location', request_location: true);
 }
