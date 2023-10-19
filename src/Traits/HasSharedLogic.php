@@ -99,7 +99,7 @@ trait HasSharedLogic
      */
     public function hasToken(): bool
     {
-        return null !== $this->token;
+        return $this->token !== null;
     }
 
     /**
