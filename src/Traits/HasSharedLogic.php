@@ -43,7 +43,7 @@ trait HasSharedLogic
      * @return static
      * @throws \JsonException
      */
-    public function reply(array $markup): self
+    public function keyboardMarkup(array $markup): self
     {
         $this->payload['reply_markup'] = json_encode($markup,JSON_THROW_ON_ERROR);
 
@@ -51,7 +51,7 @@ trait HasSharedLogic
     }
 
     /**
-     * Add an inline button with callback_data.
+     * Add a normal keyboard button.
      *
      * @return static
      *
@@ -60,7 +60,7 @@ trait HasSharedLogic
     public function keyboard(string $text, int $columns = 2, bool $request_contact = false, bool $request_location = false): self {
         $this->keyboards[] = compact('text', 'request_contact', 'request_location');
 
-        $this->reply([
+        $this->keyboardMarkup([
             'keyboard' => array_chunk($this->keyboards, $columns),
             'one_time_keyboard' => true, // Hide the keyboard after the user makes a selection
             'resize_keyboard' => true, // Allow the keyboard to be resized
@@ -80,7 +80,7 @@ trait HasSharedLogic
     {
         $this->buttons[] = compact('text', 'url');
 
-        $this->reply([
+        $this->keyboardMarkup([
             'inline_keyboard' => array_chunk($this->buttons, $columns),
         ]);
 
@@ -98,7 +98,7 @@ trait HasSharedLogic
     {
         $this->buttons[] = compact('text', 'callback_data');
 
-        $this->reply([
+        $this->keyboardMarkup([
             'inline_keyboard' => array_chunk($this->buttons, $columns),
         ]);
 
