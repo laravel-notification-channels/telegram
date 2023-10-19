@@ -38,14 +38,14 @@ trait HasSharedLogic
     /**
      * sets reply markup for payload
      *
-     * @param array $markup
      *
      * @return static
+     *
      * @throws \JsonException
      */
     public function reply(array $markup): self
     {
-        $this->payload['reply_markup'] = json_encode($markup,JSON_THROW_ON_ERROR);
+        $this->payload['reply_markup'] = json_encode($markup, JSON_THROW_ON_ERROR);
 
         return $this;
     }
@@ -57,7 +57,8 @@ trait HasSharedLogic
      *
      * @throws \JsonException
      */
-    public function keyboard(string $text, int $columns = 2, bool $request_contact = false, bool $request_location = false): self {
+    public function keyboard(string $text, int $columns = 2, bool $request_contact = false, bool $request_location = false): self
+    {
         $this->keyboards[] = compact('text', 'request_contact', 'request_location');
 
         $this->reply([
