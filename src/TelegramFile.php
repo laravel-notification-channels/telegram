@@ -63,7 +63,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
             'contents' => is_resource($file) ? $file : fopen($file, 'rb'),
         ];
 
-        if (null !== $filename) {
+        if ($filename !== null) {
             $this->payload['file']['filename'] = $filename;
         }
 
@@ -191,7 +191,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
     {
         $data = [];
         foreach ($this->payload as $name => $contents) {
-            $data[] = ('file' === $name) ? $contents : compact('name', 'contents');
+            $data[] = ($name === 'file') ? $contents : compact('name', 'contents');
         }
 
         return $data;

@@ -17,6 +17,9 @@ trait HasSharedLogic
     /** @var array Params payload. */
     protected array $payload = [];
 
+    /** @var array Keyboard Buttons. */
+    protected array $keyboards = [];
+
     /** @var array Inline Keyboard Buttons. */
     protected array $buttons = [];
 
@@ -33,6 +36,41 @@ trait HasSharedLogic
     }
 
     /**
+     * sets reply markup for payload
+     *
+     *
+     * @return static
+     *
+     * @throws \JsonException
+     */
+    public function keyboardMarkup(array $markup): self
+    {
+        $this->payload['reply_markup'] = json_encode($markup, JSON_THROW_ON_ERROR);
+
+        return $this;
+    }
+
+    /**
+     * Add a normal keyboard button.
+     *
+     * @return static
+     *
+     * @throws \JsonException
+     */
+    public function keyboard(string $text, int $columns = 2, bool $request_contact = false, bool $request_location = false): self
+    {
+        $this->keyboards[] = compact('text', 'request_contact', 'request_location');
+
+        $this->keyboardMarkup([
+            'keyboard' => array_chunk($this->keyboards, $columns),
+            'one_time_keyboard' => true, // Hide the keyboard after the user makes a selection
+            'resize_keyboard' => true, // Allow the keyboard to be resized
+        ]);
+
+        return $this;
+    }
+
+    /**
      * Add an inline button.
      *
      * @return static
@@ -43,9 +81,9 @@ trait HasSharedLogic
     {
         $this->buttons[] = compact('text', 'url');
 
-        $this->payload['reply_markup'] = json_encode([
+        $this->keyboardMarkup([
             'inline_keyboard' => array_chunk($this->buttons, $columns),
-        ], JSON_THROW_ON_ERROR);
+        ]);
 
         return $this;
     }
@@ -61,9 +99,9 @@ trait HasSharedLogic
     {
         $this->buttons[] = compact('text', 'callback_data');
 
-        $this->payload['reply_markup'] = json_encode([
+        $this->keyboardMarkup([
             'inline_keyboard' => array_chunk($this->buttons, $columns),
-        ], JSON_THROW_ON_ERROR);
+        ]);
 
         return $this;
     }
@@ -99,7 +137,7 @@ trait HasSharedLogic
      */
     public function hasToken(): bool
     {
-        return null !== $this->token;
+        return $this->token !== null;
     }
 
     /**

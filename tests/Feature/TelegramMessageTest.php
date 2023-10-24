@@ -138,3 +138,24 @@ it('can set the disable web page preview', function () {
     $message = TelegramMessage::create()->options(['disable_web_page_preview' => true]);
     expect($message->getPayloadValue('disable_web_page_preview'))->toBeTrue();
 });
+
+test('a normal keyboard button can be added to the message', function () {
+    $message = TelegramMessage::create()->keyboard('Laravel');
+    expect($message->getPayloadValue('reply_markup'))->toEqual(
+        '{"keyboard":[[{"text":"Laravel","request_contact":false,"request_location":false}]],"one_time_keyboard":true,"resize_keyboard":true}'
+    );
+});
+
+test('a request phone keyboard button can be added to the message', function () {
+    $message = TelegramMessage::create()->keyboard('Laravel', request_contact: true);
+    expect($message->getPayloadValue('reply_markup'))->toEqual(
+        '{"keyboard":[[{"text":"Laravel","request_contact":true,"request_location":false}]],"one_time_keyboard":true,"resize_keyboard":true}'
+    );
+});
+
+test('a request location keyboard button can be added to the message', function () {
+    $message = TelegramMessage::create()->keyboard('Laravel', request_location: true);
+    expect($message->getPayloadValue('reply_markup'))->toEqual(
+        '{"keyboard":[[{"text":"Laravel","request_contact":false,"request_location":true}]],"one_time_keyboard":true,"resize_keyboard":true}'
+    );
+});

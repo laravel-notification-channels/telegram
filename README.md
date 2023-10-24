@@ -174,6 +174,23 @@ class InvoicePaid extends Notification
 Here's a screenshot preview of the above notification on Telegram Messenger:
 
 ![Laravel Telegram Notification Example](https://user-images.githubusercontent.com/1915268/66616627-39be6180-ebef-11e9-92cc-f2da81da047a.jpg)
+### Send with Keyboard
+```php
+public function toTelegram($notifiable)
+{
+    return TelegramPoll::create()
+        ->to($notifiable)
+        ->content('Choose an option:')
+        ->keyboard('Button 1')
+        ->keyboard('Button 2');
+        // ->keyboard('send your number', request_contact: true)
+        // ->keyboard('send your location', request_location: true);
+}
+```
+
+Preview:
+
+![Laravel Telegram Notification Keyboard](https://github.com/abbasudo/telegram/assets/86796762/9c10c7d0-740b-4270-bc7c-f0600e57ba7b)
 
 ### Send a Poll
 
