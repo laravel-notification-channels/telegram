@@ -51,6 +51,18 @@ trait HasSharedLogic
     }
 
     /**
+     * Recipient's Chat ID.
+     *
+     * @return static
+     */
+    public function normal()
+    {
+        unset($this->payload['parse_mode']);
+
+        return $this;
+    }
+    
+    /**
      * Add a normal keyboard button.
      *
      * @return static
