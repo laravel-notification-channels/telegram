@@ -51,7 +51,7 @@ trait HasSharedLogic
     }
 
     /**
-     * Recipient's Chat ID.
+     * unsets parse mode of the message.
      *
      * @return static
      */
@@ -62,6 +62,19 @@ trait HasSharedLogic
         return $this;
     }
 
+
+    /**
+     * Sets parse mode of the message.
+     *
+     * @return static
+     */
+    public function parseMode(string $mode = null)
+    {
+        $this->payload['parse_mode'] = $mode;
+
+        return $this;
+    }
+    
     /**
      * Add a normal keyboard button.
      *
