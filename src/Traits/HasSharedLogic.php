@@ -61,7 +61,7 @@ trait HasSharedLogic
 
         return $this;
     }
-    
+
     /**
      * Add a normal keyboard button.
      *
