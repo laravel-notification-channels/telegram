@@ -20,7 +20,7 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
     {
         parent::__construct();
         $this->content($content);
-        $this->payload['parse_mode'] = 'Markdown';
+        $this->payload['parse_mode'] = 'MarkdownV2';
     }
 
     public static function create(string $content = ''): self
