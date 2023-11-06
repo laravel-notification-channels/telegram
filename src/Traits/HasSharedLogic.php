@@ -62,7 +62,6 @@ trait HasSharedLogic
         return $this;
     }
 
-
     /**
      * Sets parse mode of the message.
      *
@@ -74,7 +73,7 @@ trait HasSharedLogic
 
         return $this;
     }
-    
+
     /**
      * Add a normal keyboard button.
      *
