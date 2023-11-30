@@ -89,6 +89,24 @@ trait HasSharedLogic
     }
 
     /**
+     * Add an inline button with web app callback.
+     *
+     * @return static
+     *
+     * @throws \JsonException
+     */
+    public function buttonWithWebapp(string $text, array $web_app, int $columns = 2): self
+    {
+        $this->buttons[] = compact('text', 'web_app');
+
+        $this->keyboardMarkup([
+            'inline_keyboard' => array_chunk($this->buttons, $columns),
+        ]);
+
+        return $this;
+    }
+
+    /**
      * Add an inline button with callback_data.
      *
      * @return static
