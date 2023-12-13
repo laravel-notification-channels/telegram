@@ -3,6 +3,7 @@
 namespace NotificationChannels\Telegram\Traits;
 
 use Illuminate\Support\Traits\Conditionable;
+use InvalidArgumentException;
 
 /**
  * Trait HasSharedLogic.
