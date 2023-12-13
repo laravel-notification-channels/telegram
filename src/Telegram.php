@@ -23,7 +23,7 @@ class Telegram
     /** @var string Telegram Bot API Base URI */
     protected string $apiBaseUri;
 
-    public function __construct(string $token = null, HttpClient $httpClient = null, string $apiBaseUri = null)
+    public function __construct(?string $token = null, ?HttpClient $httpClient = null, ?string $apiBaseUri = null)
     {
         $this->token = $token;
         $this->http = $httpClient ?? new HttpClient();

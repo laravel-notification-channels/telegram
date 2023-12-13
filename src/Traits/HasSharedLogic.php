@@ -67,12 +67,12 @@ trait HasSharedLogic
      *
      * @return static
      */
-    public function parseMode(string $mode = null)
+    public function parseMode(?string $mode = null)
     {
         if (isset($mode) and ! in_array($mode, $allowed = ['Markdown', 'HTML', 'MarkdownV2'])) {
             throw new InvalidArgumentException("Invalid aggregate type [$mode], allowed types: [".implode(', ', $allowed).'].');
         }
-        
+
         $this->payload['parse_mode'] = $mode;
 
         return $this;
