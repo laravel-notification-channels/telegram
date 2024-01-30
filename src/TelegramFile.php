@@ -48,7 +48,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
      * @param  resource|StreamInterface|string  $file
      * @return $this
      */
-    public function file(mixed $file, string $type, string $filename = null): self
+    public function file(mixed $file, string $type, ?string $filename = null): self
     {
         $this->type = $type;
 
@@ -102,7 +102,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
      *
      * @return $this
      */
-    public function document(string $file, string $filename = null): self
+    public function document(string $file, ?string $filename = null): self
     {
         return $this->file($file, 'document', $filename);
     }

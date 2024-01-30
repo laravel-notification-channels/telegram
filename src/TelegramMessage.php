@@ -33,7 +33,7 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
      *
      * @return $this
      */
-    public function content(string $content, int $limit = null): self
+    public function content(string $content, ?int $limit = null): self
     {
         $this->payload['text'] = $content;
 

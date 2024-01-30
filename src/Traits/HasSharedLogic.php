@@ -3,6 +3,7 @@
 namespace NotificationChannels\Telegram\Traits;
 
 use Illuminate\Support\Traits\Conditionable;
+use InvalidArgumentException;
 
 /**
  * Trait HasSharedLogic.
@@ -46,6 +47,34 @@ trait HasSharedLogic
     public function keyboardMarkup(array $markup): self
     {
         $this->payload['reply_markup'] = json_encode($markup, JSON_THROW_ON_ERROR);
+
+        return $this;
+    }
+
+    /**
+     * unsets parse mode of the message.
+     *
+     * @return static
+     */
+    public function normal()
+    {
+        unset($this->payload['parse_mode']);
+
+        return $this;
+    }
+
+    /**
+     * Sets parse mode of the message.
+     *
+     * @return static
+     */
+    public function parseMode(?string $mode = null)
+    {
+        if (isset($mode) and ! in_array($mode, $allowed = ['Markdown', 'HTML', 'MarkdownV2'])) {
+            throw new InvalidArgumentException("Invalid aggregate type [$mode], allowed types: [".implode(', ', $allowed).'].');
+        }
+
+        $this->payload['parse_mode'] = $mode;
 
         return $this;
     }
