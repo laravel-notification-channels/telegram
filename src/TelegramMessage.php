@@ -51,7 +51,7 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
         return $this;
     }
 
-    public function lineIf($boolean, $line): self
+    public function lineIf(bool $boolean, string $line): self
     {
         if ($boolean) {
             return $this->line($line);
