@@ -27,9 +27,9 @@ it('can add one message per line', function () {
 
 it('can add one message per lineIf if first argument is true', function () {
     $message = TelegramMessage::create()
-        ->lineIf(true,'Laravel Notification Channels are awesome!')
-        ->lineIf(false,'Telegram Notification Channel is fantastic :)')
-        ->lineIf(true,'Telegram Notification Channel is fantastic =)');
+        ->lineIf(true, 'Laravel Notification Channels are awesome!')
+        ->lineIf(false, 'Telegram Notification Channel is fantastic :)')
+        ->lineIf(true, 'Telegram Notification Channel is fantastic =)');
     expect($message->getPayloadValue('text'))->toEqual("Laravel Notification Channels are awesome!\nTelegram Notification Channel is fantastic =)\n");
 });
 
