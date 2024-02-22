@@ -157,6 +157,7 @@ class InvoicePaid extends Notification
             // Markdown supported.
             ->content("Hello there!")
             ->line("Your invoice has been *PAID*")
+            ->lineIf($notifiable->amount > 0, "Amount paid: {$notifiable->amount}")
             ->line("Thank you!")
 
             // (Optional) Blade template for the content.
@@ -395,6 +396,7 @@ For more information on supported parameters, check out these [docs](https://cor
 
 - `content(string $content, int $limit = null)`: Notification message, supports markdown. For more information on supported markdown styles, check out these [docs](https://core.telegram.org/bots/api#formatting-options).
 - `line(string $content)`: Adds a message in a new line.
+- `lineIf(bool $boolean, string $line)`: Adds a message in a new line if the given condition is true.
 - `escapedLine(string $content)`: Adds a message in a new line while escaping special characters (For Markdown).
 - `view(string $view, array $data = [], array $mergeData = [])`: (optional) Blade template name with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
 - `chunk(int $limit = 4096)`: (optional) Message chars chunk size to send in parts (For long messages). Note: Chunked messages will be rate limited to one message per second to comply with rate limitation requirements from Telegram.
