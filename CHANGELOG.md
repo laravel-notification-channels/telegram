@@ -2,6 +2,23 @@
 
 All notable changes to `telegram` will be documented in this file
 
+## 5.0 - 2024-03-12
+
+### What's Changed
+
+* Laravel 11 Support.
+* Fix Call to a member function toArray() on array by @tantrus332 in https://github.com/laravel-notification-channels/telegram/pull/174
+* Add keyboard function to messages by @abbasudo in https://github.com/laravel-notification-channels/telegram/pull/183
+* Add ability to change default parsing mode by @abbasudo in https://github.com/laravel-notification-channels/telegram/pull/185
+* Addition of 'lineIf' method to messages by @MammutAlex in https://github.com/laravel-notification-channels/telegram/pull/190
+
+### New Contributors
+
+* @tantrus332 made their first contribution in https://github.com/laravel-notification-channels/telegram/pull/174
+* @MammutAlex made their first contribution in https://github.com/laravel-notification-channels/telegram/pull/190
+
+**Full Changelog**: https://github.com/laravel-notification-channels/telegram/compare/4.0.0...5.0.0
+
 ## 4.0.0 - 2023-02-14
 
 ### What's Changed
