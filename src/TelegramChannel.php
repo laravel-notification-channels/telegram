@@ -6,6 +6,7 @@ use GuzzleHttp\Psr7\Response;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 
 /**
@@ -36,6 +37,11 @@ class TelegramChannel
 
         if (is_string($message)) {
             $message = TelegramMessage::create($message);
+        }
+
+        if ($message instanceof TelegramSenderContract === false)
+        {
+            return null;
         }
 
         if ($message->toNotGiven()) {
