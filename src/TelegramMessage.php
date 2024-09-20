@@ -135,11 +135,11 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
     
             return $this->telegram->sendMessage($params);
         } catch(Exception $exception) {
-            if(! $this->exceptionHandler) {
-                throw $exception;
+            if($this->exceptionHandler) {
+                 $this->exceptionHandler($exception);
             }
                 
-            $this->exceptionHandler($exception);
+            throw $exception;
         }
     }
 
