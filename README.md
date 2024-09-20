@@ -167,7 +167,13 @@ class InvoicePaid extends Notification
             ->button('View Invoice', $url)
             ->button('Download Invoice', $url)
             // (Optional) Inline Button with callback. You can handle callback in your bot instance
-            ->buttonWithCallback('Confirm', 'confirm_invoice ' . $this->invoice->id);
+            ->buttonWithCallback('Confirm', 'confirm_invoice ' . $this->invoice->id)
+
+            // (Optional) Register a callback to handle exceptions if they occur.
+            // This allows you to define a custom action when an exception is thrown.
+            ->onError(function($exception) {
+                // Custom logic to handle the exception
+            });
     }
 }
 ```

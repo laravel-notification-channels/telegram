@@ -7,6 +7,7 @@ use JsonException;
 use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use Psr\Http\Message\ResponseInterface;
+use Closure;
 
 /**
  * Class TelegramMessage.
@@ -15,6 +16,7 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
 {
     /** @var int Message Chunk Size */
     public int $chunkSize = 0;
+    public ?Closure $exceptionHandler = null;
 
     public function __construct(string $content = '')
     {
@@ -83,6 +85,22 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
     }
 
     /**
+     * Registers a callback function to handle exceptions.
+     *
+     * This method allows you to define a custom error handler, 
+     * which will be invoked if an exception occurs during the 
+     * notification process. The callback must be a valid Closure.
+     *
+     * @param Closure $callback The closure that will handle exceptions.
+     * @return self
+     */
+    public function onError(Closure $callback): self
+    {
+        $this->exceptionHandler = $callback;
+        return $this;
+    }
+
+    /**
      * Chunk message to given size.
      *
      * @return $this
@@ -110,11 +128,19 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
     {
         $params = $this->toArray();
 
-        if ($this->shouldChunk()) {
-            return $this->sendChunkedMessage($params);
+        try {
+            if ($this->shouldChunk()) {
+                return $this->sendChunkedMessage($params);
+            }
+    
+            return $this->telegram->sendMessage($params);
+        } catch(Exception $exception) {
+            if(! $this->exceptionHandler) {
+                throw $exception;
+            }
+                
+            $this->exceptionHandler($exception);
         }
-
-        return $this->telegram->sendMessage($params);
     }
 
     /**
