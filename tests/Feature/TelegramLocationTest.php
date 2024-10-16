@@ -24,31 +24,31 @@ it('accepts content when created', function () {
 });
 
 test('the recipients chat id can be set', function () {
-    $message = new TelegramLocation();
+    $message = new TelegramLocation;
     $message->to(12345);
     expect($message->getPayloadValue('chat_id'))->toEqual(12345);
 });
 
 test('the notification latitude can be set', function () {
-    $message = new TelegramLocation();
+    $message = new TelegramLocation;
     $message->latitude(TEST_LAT);
     expect($message->getPayloadValue('latitude'))->toEqual(TEST_LAT);
 });
 
 test('the notification longitude can be set', function () {
-    $message = new TelegramLocation();
+    $message = new TelegramLocation;
     $message->longitude(TEST_LONG);
     expect($message->getPayloadValue('longitude'))->toEqual(TEST_LONG);
 });
 
 test('additional options can be set for the message', function () {
-    $message = new TelegramLocation();
+    $message = new TelegramLocation;
     $message->options(['foo' => 'bar']);
     expect($message->getPayloadValue('foo'))->toEqual('bar');
 });
 
 it('can determine if the recipient chat id has not been set', function () {
-    $message = new TelegramLocation();
+    $message = new TelegramLocation;
     expect($message->toNotGiven())->toBeTrue();
 
     $message->to(12345);
@@ -70,7 +70,7 @@ it('can return the payload as an array', function () {
 });
 
 it('can send a location', function () {
-    $notifiable = new TestNotifiable();
+    $notifiable = new TestNotifiable;
     $notification = new TestLocationNotification(TEST_LAT, TEST_LONG);
 
     $expectedResponse = $this->makeMockResponse([

@@ -6,8 +6,8 @@ use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;
 use NotificationChannels\Telegram\Tests\TestSupport\TestNotification;
 
 it('can send a message', function () {
-    $notifiable = new TestNotifiable();
-    $notification = new TestNotification();
+    $notifiable = new TestNotifiable;
+    $notification = new TestNotification;
 
     $expectedResponse = ['ok' => true, 'result' => ['message_id' => 123, 'chat' => ['id' => 12345]]];
     $actualResponse = $this->sendMockNotification('sendMessage', $notifiable, $notification, $expectedResponse);
@@ -19,8 +19,8 @@ test('notification failed event', function () {
     self::expectException($exception_class = CouldNotSendNotification::class);
     self::expectExceptionMessage($exception_message = 'Some exception');
 
-    $notifiable = new TestNotifiable();
-    $notification = new TestNotification();
+    $notifiable = new TestNotifiable;
+    $notification = new TestNotification;
 
     $payload = $notification->toTelegram($notifiable)->toArray();
 

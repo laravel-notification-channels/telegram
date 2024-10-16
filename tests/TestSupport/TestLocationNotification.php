@@ -13,8 +13,7 @@ class TestLocationNotification extends Notification
     public function __construct(
         private float|string $latitude,
         private float|string $longitude
-    ) {
-    }
+    ) {}
 
     public function toTelegram($notifiable): TelegramLocation
     {

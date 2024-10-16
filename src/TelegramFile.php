@@ -4,10 +4,10 @@ namespace NotificationChannels\Telegram;
 
 use Illuminate\Support\Facades\View;
 use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
+use NotificationChannels\Telegram\Enums\ParseMode;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use NotificationChannels\Telegram\Enums\ParseMode;
 
 /**
  * Class TelegramFile.
@@ -47,8 +47,6 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
      * Generic method to attach files of any type based on API.
      *
      * @param  resource|StreamInterface|string  $file
-     * @param  string $type
-     * @param  string|null $filename
      * @return $this
      */
     public function file(mixed $file, string $type, ?string $filename = null): self
@@ -75,7 +73,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * Attach an image.
-     * @param string $file
+     *
      * @return $this
      */
     public function photo(string $file): self
@@ -85,7 +83,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * Attach an audio file.
-     * @param string $file
+     *
      * @return $this
      */
     public function audio(string $file): self
@@ -95,8 +93,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * Attach a document or any file as document.
-     * @param string $file
-     * @param string|null $filename
+     *
      * @return $this
      */
     public function document(string $file, ?string $filename = null): self
@@ -106,7 +103,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * Attach a video file.
-     * @param string $file
+     *
      * @return $this
      */
     public function video(string $file): self
@@ -116,7 +113,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * Attach an animation file.
-     * @param string $file
+     *
      * @return $this
      */
     public function animation(string $file): self
@@ -126,7 +123,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * Attach a voice file.
-     * @param string $file
+     *
      * @return $this
      */
     public function voice(string $file): self
@@ -136,7 +133,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * Attach a video note file.
-     * @param string $file
+     *
      * @return $this
      */
     public function videoNote(string $file): self

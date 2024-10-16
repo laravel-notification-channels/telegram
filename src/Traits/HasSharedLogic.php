@@ -41,8 +41,7 @@ trait HasSharedLogic
     /**
      * Set the recipient's Chat ID.
      *
-     * @param int|string $chatId The unique identifier for the target chat
-     * @return static
+     * @param  int|string  $chatId  The unique identifier for the target chat
      */
     public function to(int|string $chatId): static
     {
@@ -54,9 +53,9 @@ trait HasSharedLogic
     /**
      * Set the keyboard markup for the message.
      *
-     * @param array<string, mixed> $markup The keyboard markup array
+     * @param  array<string, mixed>  $markup  The keyboard markup array
+     *
      * @throws JsonException When JSON encoding fails
-     * @return static
      */
     public function keyboardMarkup(array $markup): static
     {
@@ -67,8 +66,6 @@ trait HasSharedLogic
 
     /**
      * Unset parse mode of the message.
-     *
-     * @return static
      */
     public function normal(): static
     {
@@ -80,8 +77,7 @@ trait HasSharedLogic
     /**
      * Set the parse mode of the message.
      *
-     * @param ParseMode|null $mode The parse mode to use
-     * @return static
+     * @param  ParseMode|null  $mode  The parse mode to use
      */
     public function parseMode(?ParseMode $mode = null): static
     {
@@ -93,12 +89,12 @@ trait HasSharedLogic
     /**
      * Add a normal keyboard button.
      *
-     * @param string $text The text to display on the button
-     * @param int $columns Number of columns for button layout
-     * @param bool $requestContact Whether to request user's contact
-     * @param bool $requestLocation Whether to request user's location
+     * @param  string  $text  The text to display on the button
+     * @param  int  $columns  Number of columns for button layout
+     * @param  bool  $requestContact  Whether to request user's contact
+     * @param  bool  $requestLocation  Whether to request user's location
+     *
      * @throws JsonException When JSON encoding fails
-     * @return static
      */
     public function keyboard(
         string $text,
@@ -124,11 +120,11 @@ trait HasSharedLogic
     /**
      * Add an inline button with URL.
      *
-     * @param string $text The text to display on the button
-     * @param string $url The URL to open when button is pressed
-     * @param int $columns Number of columns for button layout
+     * @param  string  $text  The text to display on the button
+     * @param  string  $url  The URL to open when button is pressed
+     * @param  int  $columns  Number of columns for button layout
+     *
      * @throws JsonException When JSON encoding fails
-     * @return static
      */
     public function button(string $text, string $url, int $columns = 2): static
     {
@@ -140,11 +136,11 @@ trait HasSharedLogic
     /**
      * Add an inline button with callback data.
      *
-     * @param string $text The text to display on the button
-     * @param string $callbackData The data to send when button is pressed
-     * @param int $columns Number of columns for button layout
+     * @param  string  $text  The text to display on the button
+     * @param  string  $callbackData  The data to send when button is pressed
+     * @param  int  $columns  Number of columns for button layout
+     *
      * @throws JsonException When JSON encoding fails
-     * @return static
      */
     public function buttonWithCallback(string $text, string $callbackData, int $columns = 2): static
     {
@@ -159,11 +155,11 @@ trait HasSharedLogic
     /**
      * Add an inline button with web app.
      *
-     * @param string $text The text to display on the button
-     * @param string $url The URL of the Web App to open
-     * @param int $columns Number of columns for button layout
+     * @param  string  $text  The text to display on the button
+     * @param  string  $url  The URL of the Web App to open
+     * @param  int  $columns  Number of columns for button layout
+     *
      * @throws JsonException When JSON encoding fails
-     * @return static
      */
     public function buttonWithWebApp(string $text, string $url, int $columns = 2): static
     {
@@ -178,8 +174,7 @@ trait HasSharedLogic
     /**
      * Send the message silently. Users will receive a notification with no sound.
      *
-     * @param bool $disable Whether to disable the notification sound
-     * @return static
+     * @param  bool  $disable  Whether to disable the notification sound
      */
     public function disableNotification(bool $disable = true): static
     {
@@ -191,8 +186,7 @@ trait HasSharedLogic
     /**
      * Set the Bot Token. Overrides default bot token with the given value for this notification.
      *
-     * @param string $token The bot token to use
-     * @return static
+     * @param  string  $token  The bot token to use
      */
     public function token(string $token): static
     {
@@ -203,8 +197,6 @@ trait HasSharedLogic
 
     /**
      * Determine if bot token is given for this notification.
-     *
-     * @return bool
      */
     public function hasToken(): bool
     {
@@ -214,8 +206,7 @@ trait HasSharedLogic
     /**
      * Set additional options to pass to sendMessage method.
      *
-     * @param array<string, mixed> $options Additional options
-     * @return static
+     * @param  array<string, mixed>  $options  Additional options
      */
     public function options(array $options): static
     {
@@ -231,8 +222,7 @@ trait HasSharedLogic
      * which will be invoked if an exception occurs during the
      * notification process. The callback must be a valid Closure.
      *
-     * @param Closure $callback The closure that will handle exceptions.
-     * @return self
+     * @param  Closure  $callback  The closure that will handle exceptions.
      */
     public function onError(Closure $callback): self
     {
@@ -244,20 +234,17 @@ trait HasSharedLogic
     /**
      * Set a condition for sending the message.
      *
-     * @param bool|callable $condition The condition to evaluate
-     * @return static
+     * @param  bool|callable  $condition  The condition to evaluate
      */
     public function sendWhen(bool|callable $condition): static
     {
-        $this->sendCondition = $this->when($condition, fn() => true, fn() => false);
+        $this->sendCondition = $this->when($condition, fn () => true, fn () => false);
 
         return $this;
     }
 
     /**
      * Determine if the message can be sent based on the condition.
-     *
-     * @return bool
      */
     public function canSend(): bool
     {
@@ -266,18 +253,16 @@ trait HasSharedLogic
 
     /**
      * Determine if chat id is not given.
-     *
-     * @return bool
      */
     public function toNotGiven(): bool
     {
-        return !isset($this->payload['chat_id']);
+        return ! isset($this->payload['chat_id']);
     }
 
     /**
      * Get payload value for given key.
      *
-     * @param string $key The key to retrieve from payload
+     * @param  string  $key  The key to retrieve from payload
      * @return mixed The value from payload or null if not found
      */
     public function getPayloadValue(string $key): mixed
@@ -308,9 +293,9 @@ trait HasSharedLogic
     /**
      * Update the inline keyboard markup.
      *
-     * @param int $columns Number of columns for button layout
+     * @param  int  $columns  Number of columns for button layout
+     *
      * @throws JsonException When JSON encoding fails
-     * @return static
      */
     private function updateInlineKeyboard(int $columns): static
     {

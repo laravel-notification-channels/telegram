@@ -8,13 +8,14 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\View;
 use JsonException;
 use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
-use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Telegram\Enums\ParseMode;
+use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use Psr\Http\Message\ResponseInterface;
 
 final class TelegramMessage extends TelegramBase implements TelegramSenderContract
 {
     private const DEFAULT_CHUNK_SIZE = 4096;
+
     private const CHUNK_SEPARATOR = '%#TGMSG#%';
 
     public function __construct(
@@ -84,9 +85,10 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
     }
 
     /**
+     * @return array<int, array<string, mixed>>|ResponseInterface|null
+     *
      * @throws CouldNotSendNotification
      * @throws JsonException
-     * @return array<int, array<string, mixed>>|ResponseInterface|null
      */
     public function send(): array|ResponseInterface|null
     {
@@ -96,8 +98,9 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
     }
 
     /**
-     * @param array<string, mixed> $params
+     * @param  array<string, mixed>  $params
      * @return array<int, array<string, mixed>>
+     *
      * @throws CouldNotSendNotification
      * @throws JsonException
      */

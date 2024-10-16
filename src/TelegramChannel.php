@@ -32,7 +32,7 @@ class TelegramChannel
             $message = TelegramMessage::create($message);
         }
 
-        if (!$message->canSend()) {
+        if (! $message->canSend()) {
             return null;
         }
 

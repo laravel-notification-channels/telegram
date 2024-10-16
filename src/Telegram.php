@@ -25,7 +25,7 @@ class Telegram
 
     public function __construct(
         ?string $token = null,
-        HttpClient $httpClient = new HttpClient(),
+        HttpClient $httpClient = new HttpClient,
         string $apiBaseUri = 'https://api.telegram.org'
     ) {
         $this->token = $token;
@@ -117,7 +117,7 @@ class Telegram
      */
     public function sendFile(array $params, string|array $type, bool $multipart = false): ?ResponseInterface
     {
-        return $this->sendRequest('send'.Str::studly((array)$type[0]), $params, $multipart);
+        return $this->sendRequest('send'.Str::studly((array) $type[0]), $params, $multipart);
     }
 
     /**

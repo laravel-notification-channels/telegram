@@ -10,13 +10,13 @@ it('accepts question when constructed', function () {
 });
 
 test('the recipients chat id can be set', function () {
-    $message = new TelegramPoll();
+    $message = new TelegramPoll;
     $message->to(12345);
     expect($message->getPayloadValue('chat_id'))->toEqual(12345);
 });
 
 test('the question message can be set', function () {
-    $message = new TelegramPoll();
+    $message = new TelegramPoll;
     $message->question("Aren't Laravel Notification Channels awesome?");
     expect($message->getPayloadValue('question'))->toEqual("Aren't Laravel Notification Channels awesome?");
 });
@@ -27,13 +27,13 @@ it('accepts question when created', function () {
 });
 
 test('the options can be set for the question', function () {
-    $message = new TelegramPoll();
+    $message = new TelegramPoll;
     $message->choices(['Yes', 'No']);
     expect($message->getPayloadValue('options'))->toEqual('["Yes","No"]');
 });
 
 it('can determine if the recipient chat id has not been set', function () {
-    $message = new TelegramPoll();
+    $message = new TelegramPoll;
     expect($message->toNotGiven())->toBeTrue();
 
     $message->to(12345);
@@ -54,8 +54,8 @@ it('can return the payload as an array', function () {
 });
 
 it('can send a poll', function () {
-    $notifiable = new TestNotifiable();
-    $notification = new TestPollNotification();
+    $notifiable = new TestNotifiable;
+    $notification = new TestPollNotification;
 
     $expectedResponse = $this->makeMockResponse([
         'poll' => [
