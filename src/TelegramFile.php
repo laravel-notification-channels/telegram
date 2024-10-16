@@ -7,6 +7,7 @@ use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use NotificationChannels\Telegram\Enums\ParseMode;
 
 /**
  * Class TelegramFile.
@@ -20,7 +21,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
     {
         parent::__construct();
         $this->content($content);
-        $this->payload['parse_mode'] = 'Markdown';
+        $this->parseMode(ParseMode::Markdown);
     }
 
     public static function create(string $content = ''): self
@@ -46,6 +47,8 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
      * Generic method to attach files of any type based on API.
      *
      * @param  resource|StreamInterface|string  $file
+     * @param  string $type
+     * @param  string|null $filename
      * @return $this
      */
     public function file(mixed $file, string $type, ?string $filename = null): self
@@ -72,9 +75,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * Attach an image.
-     *
-     * Use this method to send photos.
-     *
+     * @param string $file
      * @return $this
      */
     public function photo(string $file): self
@@ -84,10 +85,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * Attach an audio file.
-     *
-     * Use this method to send audio files, if you want Telegram clients to display them in the music player.
-     * Your audio must be in the .mp3 format.
-     *
+     * @param string $file
      * @return $this
      */
     public function audio(string $file): self
@@ -97,9 +95,8 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * Attach a document or any file as document.
-     *
-     * Use this method to send general files.
-     *
+     * @param string $file
+     * @param string|null $filename
      * @return $this
      */
     public function document(string $file, ?string $filename = null): self
@@ -109,9 +106,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * Attach a video file.
-     *
-     * Use this method to send video files, Telegram clients support mp4 videos.
-     *
+     * @param string $file
      * @return $this
      */
     public function video(string $file): self
@@ -121,9 +116,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * Attach an animation file.
-     *
-     * Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
-     *
+     * @param string $file
      * @return $this
      */
     public function animation(string $file): self
@@ -133,10 +126,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * Attach a voice file.
-     *
-     * Use this method to send audio files, if you want Telegram clients to display the file as a playable voice
-     * message. For this to work, your audio must be in an .ogg file encoded with OPUS.
-     *
+     * @param string $file
      * @return $this
      */
     public function voice(string $file): self
@@ -146,10 +136,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * Attach a video note file.
-     *
-     * Telegram clients support rounded square mp4 videos of up to 1 minute long.
-     * Use this method to send video messages.
-     *
+     * @param string $file
      * @return $this
      */
     public function videoNote(string $file): self

@@ -1,6 +1,6 @@
 vendor
 build
-.phpunit.result.cache
+.phpunit.cache
 composer.lock
 phpunit.xml
 phpstan.neon

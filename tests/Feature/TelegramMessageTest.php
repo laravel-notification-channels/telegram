@@ -155,14 +155,14 @@ test('a normal keyboard button can be added to the message', function () {
 });
 
 test('a request phone keyboard button can be added to the message', function () {
-    $message = TelegramMessage::create()->keyboard('Laravel', request_contact: true);
+    $message = TelegramMessage::create()->keyboard('Laravel', requestContact: true);
     expect($message->getPayloadValue('reply_markup'))->toEqual(
         '{"keyboard":[[{"text":"Laravel","request_contact":true,"request_location":false}]],"one_time_keyboard":true,"resize_keyboard":true}'
     );
 });
 
 test('a request location keyboard button can be added to the message', function () {
-    $message = TelegramMessage::create()->keyboard('Laravel', request_location: true);
+    $message = TelegramMessage::create()->keyboard('Laravel', requestLocation: true);
     expect($message->getPayloadValue('reply_markup'))->toEqual(
         '{"keyboard":[[{"text":"Laravel","request_contact":false,"request_location":true}]],"one_time_keyboard":true,"resize_keyboard":true}'
     );

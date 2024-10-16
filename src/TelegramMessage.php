@@ -1,26 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NotificationChannels\Telegram;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\View;
 use JsonException;
 use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
+use NotificationChannels\Telegram\Enums\ParseMode;
 use Psr\Http\Message\ResponseInterface;
 
-/**
- * Class TelegramMessage.
- */
-class TelegramMessage extends TelegramBase implements TelegramSenderContract
+final class TelegramMessage extends TelegramBase implements TelegramSenderContract
 {
-    /** @var int Message Chunk Size */
-    public int $chunkSize = 0;
+    private const DEFAULT_CHUNK_SIZE = 4096;
+    private const CHUNK_SEPARATOR = '%#TGMSG#%';
 
-    public function __construct(string $content = '')
-    {
+    public function __construct(
+        string $content = '',
+        public int $chunkSize = 0
+    ) {
         parent::__construct();
         $this->content($content);
-        $this->payload['parse_mode'] = 'Markdown';
+        $this->parseMode(ParseMode::Markdown);
     }
 
     public static function create(string $content = ''): self
@@ -28,16 +31,10 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
         return new self($content);
     }
 
-    /**
-     * Notification message (Supports Markdown).
-     *
-     * @return $this
-     */
     public function content(string $content, ?int $limit = null): self
     {
         $this->payload['text'] = $content;
-
-        if ($limit) {
+        if ($limit !== null) {
             $this->chunkSize = $limit;
         }
 
@@ -46,57 +43,41 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
 
     public function line(string $content): self
     {
-        $this->payload['text'] .= $content."\n";
+        $this->payload['text'] .= "$content\n";
 
         return $this;
     }
 
-    public function lineIf(bool $boolean, string $line): self
+    public function lineIf(bool $condition, string $line): self
     {
-        if ($boolean) {
-            return $this->line($line);
-        }
-
-        return $this;
+        return $condition ? $this->line($line) : $this;
     }
 
     public function escapedLine(string $content): self
     {
-        // code taken from public gist https://gist.github.com/vijinho/3d66fab3270fc377b8485387ce7e7455
-        $content = str_replace([
-            '\\', '-', '#', '*', '+', '`', '.', '[', ']', '(', ')', '!', '&', '<', '>', '_', '{', '}', ], [
-                '\\\\', '\-', '\#', '\*', '\+', '\`', '\.', '\[', '\]', '\(', '\)', '\!', '\&', '\<', '\>', '\_', '\{', '\}',
-            ], $content);
+        $content = str_replace('\\', '\\\\', $content);
 
-        return $this->line($content);
+        $escapedContent = preg_replace_callback(
+            '/[_*[\]()~`>#\+\-=|{}.!]/',
+            fn ($matches): string => "\\$matches[0]",
+            $content
+        );
+
+        return $this->line($escapedContent ?? $content);
     }
 
-    /**
-     * Attach a view file as the content for the notification.
-     * Supports Laravel blade template.
-     *
-     * @return $this
-     */
     public function view(string $view, array $data = [], array $mergeData = []): self
     {
         return $this->content(View::make($view, $data, $mergeData)->render());
     }
 
-    /**
-     * Chunk message to given size.
-     *
-     * @return $this
-     */
-    public function chunk(int $limit = 4096): self
+    public function chunk(int $limit = self::DEFAULT_CHUNK_SIZE): self
     {
         $this->chunkSize = $limit;
 
         return $this;
     }
 
-    /**
-     * Should the message be chunked.
-     */
     public function shouldChunk(): bool
     {
         return $this->chunkSize > 0;
@@ -105,19 +86,18 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
     /**
      * @throws CouldNotSendNotification
      * @throws JsonException
+     * @return array<int, array<string, mixed>>|ResponseInterface|null
      */
-    public function send(): ResponseInterface|array|null
+    public function send(): array|ResponseInterface|null
     {
-        $params = $this->toArray();
-
-        if ($this->shouldChunk()) {
-            return $this->sendChunkedMessage($params);
-        }
-
-        return $this->telegram->sendMessage($params);
+        return $this->shouldChunk()
+            ? $this->sendChunkedMessage($this->toArray())
+            : $this->telegram->sendMessage($this->toArray());
     }
 
     /**
+     * @param array<string, mixed> $params
+     * @return array<int, array<string, mixed>>
      * @throws CouldNotSendNotification
      * @throws JsonException
      */
@@ -129,52 +109,47 @@ class TelegramMessage extends TelegramBase implements TelegramSenderContract
             unset($params['reply_markup']);
         }
 
-        $messages = $this->chunkStrings($this->getPayloadValue('text'), $this->chunkSize);
+        $messages = $this->chunkStrings($params['text'], $this->chunkSize);
+        $lastIndex = count($messages) - 1;
 
-        $payloads = collect($messages)
+        return Collection::make($messages)
             ->filter()
-            ->map(fn ($text) => array_merge($params, ['text' => $text]));
+            ->map(function (string $text, int $index) use ($params, $replyMarkup, $lastIndex): ?array {
+                $payload = [...$params, 'text' => $text];
+                if ($index === $lastIndex && $replyMarkup !== null) {
+                    $payload['reply_markup'] = $replyMarkup;
+                }
 
-        if ($replyMarkup) {
-            $lastMessage = $payloads->pop();
-            $lastMessage['reply_markup'] = $replyMarkup;
-            $payloads->push($lastMessage);
-        }
+                $response = $this->telegram->sendMessage($payload);
+                sleep(1); // Rate limiting
 
-        return $payloads->map(function ($payload) {
-            $response = $this->telegram->sendMessage($payload);
-
-            // To avoid rate limit of one message per second.
-            sleep(1);
-
-            if ($response) {
-                return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
-            }
-
-            return $response;
-        })->toArray();
+                return $response ? json_decode(
+                    $response->getBody()->getContents(),
+                    true,
+                    512,
+                    JSON_THROW_ON_ERROR
+                ) : null;
+            })
+            ->filter()
+            ->values()
+            ->all();
     }
 
     /**
-     * Chunk the given string into an array of strings.
+     * @return array<int, string>
      */
-    private function chunkStrings(string $value, int $limit = 4096): array
+    private function chunkStrings(string $value, int $limit = self::DEFAULT_CHUNK_SIZE): array
     {
         if (mb_strwidth($value, 'UTF-8') <= $limit) {
             return [$value];
         }
 
-        if ($limit > 4096) {
-            $limit = 4096;
-        }
+        $limit = min($limit, self::DEFAULT_CHUNK_SIZE);
 
-        $output = explode('%#TGMSG#%', wordwrap($value, $limit, '%#TGMSG#%'));
+        $output = explode(self::CHUNK_SEPARATOR, wordwrap($value, $limit, self::CHUNK_SEPARATOR));
 
-        // Fallback for when the string is too long and wordwrap doesn't cut it.
-        if (count($output) <= 1) {
-            $output = mb_str_split($value, $limit, 'UTF-8');
-        }
-
-        return $output;
+        return count($output) <= 1
+            ? mb_str_split($value, $limit, 'UTF-8') ?? [$value]
+            : $output;
     }
 }

@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 class Telegram
 {
     /** @var HttpClient HTTP Client */
-    protected HttpClient $http;
+    protected readonly HttpClient $http;
 
     /** @var null|string Telegram Bot API Token. */
     protected ?string $token;
@@ -23,11 +23,14 @@ class Telegram
     /** @var string Telegram Bot API Base URI */
     protected string $apiBaseUri;
 
-    public function __construct(?string $token = null, ?HttpClient $httpClient = null, ?string $apiBaseUri = null)
-    {
+    public function __construct(
+        ?string $token = null,
+        HttpClient $httpClient = new HttpClient(),
+        string $apiBaseUri = 'https://api.telegram.org'
+    ) {
         $this->token = $token;
-        $this->http = $httpClient ?? new HttpClient();
-        $this->setApiBaseUri($apiBaseUri ?? 'https://api.telegram.org');
+        $this->http = $httpClient;
+        $this->setApiBaseUri($apiBaseUri);
     }
 
     /**
@@ -112,9 +115,9 @@ class Telegram
      *
      * @throws CouldNotSendNotification
      */
-    public function sendFile(array $params, string $type, bool $multipart = false): ?ResponseInterface
+    public function sendFile(array $params, string|array $type, bool $multipart = false): ?ResponseInterface
     {
-        return $this->sendRequest('send'.Str::studly($type), $params, $multipart);
+        return $this->sendRequest('send'.Str::studly((array)$type[0]), $params, $multipart);
     }
 
     /**

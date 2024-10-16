@@ -87,10 +87,10 @@ use NotificationChannels\Telegram\TelegramUpdates;
 $updates = TelegramUpdates::create()
     // (Optional). Get's the latest update. NOTE: All previous updates will be forgotten using this method.
     // ->latest()
-    
+
     // (Optional). Limit to 2 updates (By default, updates starting with the earliest unconfirmed update are returned).
     ->limit(2)
-    
+
     // (Optional). Add more params to the request.
     ->options([
         'timeout' => 0,
@@ -154,6 +154,7 @@ class InvoicePaid extends Notification
         return TelegramMessage::create()
             // Optional recipient user id.
             ->to($notifiable->telegram_user_id)
+
             // Markdown supported.
             ->content("Hello there!")
             ->line("Your invoice has been *PAID*")
@@ -165,9 +166,16 @@ class InvoicePaid extends Notification
 
             // (Optional) Inline Buttons
             ->button('View Invoice', $url)
-            ->button('Download Invoice', $url)
+            ->button('Download Invoice', $url);
+
+            // (Optional) Conditional notification. Only send if amount is greater than 0. Otherwise, don't send.
+            // ->sendWhen($notifiable->amount > 0)
+
+            // (Optional) Inline Button with Web App
+            // ->buttonWithWebApp('Open Web App', $url)
+
             // (Optional) Inline Button with callback. You can handle callback in your bot instance
-            ->buttonWithCallback('Confirm', 'confirm_invoice ' . $this->invoice->id);
+            // ->buttonWithCallback('Confirm', 'confirm_invoice ' . $this->invoice->id)
     }
 }
 ```
@@ -362,10 +370,10 @@ Notification::route('telegram', 'TELEGRAM_CHAT_ID')
 
 Using the [notification facade][link-notification-facade] you can send a notification to multiple recipients at once.
 
-> If you're sending bulk notifications to multiple users, the Telegram Bot API will not allow more than 30 messages per second or so. 
+> If you're sending bulk notifications to multiple users, the Telegram Bot API will not allow more than 30 messages per second or so.
 > Consider spreading out notifications over large intervals of 8—12 hours for best results.
 >
-> Also note that your bot will not be able to send more than 20 messages per minute to the same group. 
+> Also note that your bot will not be able to send more than 20 messages per minute to the same group.
 >
 > If you go over the limit, you'll start getting `429` errors. For more details, refer Telegram Bots [FAQ](https://core.telegram.org/bots/faq#broadcasting-to-users).
 
@@ -386,8 +394,11 @@ Notification::send($recipients, new InvoicePaid());
 - `token(string $token)`: Bot token if you wish to override the default token for a specific notification.
 - `button(string $text, string $url, int $columns = 2)`: Adds an inline "Call to Action" button. You can add as many as you want, and they'll be placed 2 in a row by default.
 - `buttonWithCallback(string $text, string $callback_data, int $columns = 2)`: Adds an inline button with the given callback data. You can add as many as you want, and they'll be placed 2 in a row by default.
+- `buttonWithWebApp(string $text, string $url, int $columns = 2)`: Adds an inline button that opens a web application when clicked. This button can be used to direct users to a specific web app.
 - `disableNotification(bool $disableNotification = true)`: Send the message silently. Users will receive a notification with no sound.
 - `options(array $options)`: Allows you to add additional params or override the payload.
+- `sendWhen(bool $condition)`: Sets a condition for sending the notification. If the condition is true, the notification will be sent; otherwise, it will not.
+- `onError(Closure $callback)`: Sets a callback function to handle exceptions. Callback receives an array with `to`, `request`, `exception` keys.
 - `getPayloadValue(string $key)`: Get payload value for given key.
 
 ### Telegram Message methods

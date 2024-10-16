@@ -1,35 +1,50 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NotificationChannels\Telegram\Traits;
 
+use Closure;
 use Illuminate\Support\Traits\Conditionable;
-use InvalidArgumentException;
+use JsonException;
+use NotificationChannels\Telegram\Enums\ParseMode;
 
 /**
- * Trait HasSharedLogic.
+ * Trait HasSharedLogic
+ *
+ * Provides shared functionality for Telegram message handling.
+ *
+ * @template TReturn of static
  */
 trait HasSharedLogic
 {
     use Conditionable;
 
-    /** @var null|string Bot Token. */
+    /** @var string|null Bot Token */
     public ?string $token = null;
 
-    /** @var array Params payload. */
+    /** @var array<string, mixed> Params payload */
     protected array $payload = [];
 
-    /** @var array Keyboard Buttons. */
+    /** @var array<int, array<string, mixed>> Keyboard Buttons */
     protected array $keyboards = [];
 
-    /** @var array Inline Keyboard Buttons. */
+    /** @var array<int, array<string, mixed>> Inline Keyboard Buttons */
     protected array $buttons = [];
 
+    /** @var bool|null Condition for sending the message */
+    private ?bool $sendCondition = null;
+
+    /** @var Closure|null Callback function to handle exceptions */
+    public ?Closure $exceptionHandler = null;
+
     /**
-     * Recipient's Chat ID.
+     * Set the recipient's Chat ID.
      *
+     * @param int|string $chatId The unique identifier for the target chat
      * @return static
      */
-    public function to(int|string $chatId): self
+    public function to(int|string $chatId): static
     {
         $this->payload['chat_id'] = $chatId;
 
@@ -37,14 +52,13 @@ trait HasSharedLogic
     }
 
     /**
-     * sets reply markup for payload
+     * Set the keyboard markup for the message.
      *
-     *
+     * @param array<string, mixed> $markup The keyboard markup array
+     * @throws JsonException When JSON encoding fails
      * @return static
-     *
-     * @throws \JsonException
      */
-    public function keyboardMarkup(array $markup): self
+    public function keyboardMarkup(array $markup): static
     {
         $this->payload['reply_markup'] = json_encode($markup, JSON_THROW_ON_ERROR);
 
@@ -52,11 +66,11 @@ trait HasSharedLogic
     }
 
     /**
-     * unsets parse mode of the message.
+     * Unset parse mode of the message.
      *
      * @return static
      */
-    public function normal()
+    public function normal(): static
     {
         unset($this->payload['parse_mode']);
 
@@ -64,17 +78,14 @@ trait HasSharedLogic
     }
 
     /**
-     * Sets parse mode of the message.
+     * Set the parse mode of the message.
      *
+     * @param ParseMode|null $mode The parse mode to use
      * @return static
      */
-    public function parseMode(?string $mode = null)
+    public function parseMode(?ParseMode $mode = null): static
     {
-        if (isset($mode) and ! in_array($mode, $allowed = ['Markdown', 'HTML', 'MarkdownV2'])) {
-            throw new InvalidArgumentException("Invalid aggregate type [$mode], allowed types: [".implode(', ', $allowed).'].');
-        }
-
-        $this->payload['parse_mode'] = $mode;
+        $this->payload['parse_mode'] = $mode?->value;
 
         return $this;
     }
@@ -82,79 +93,108 @@ trait HasSharedLogic
     /**
      * Add a normal keyboard button.
      *
+     * @param string $text The text to display on the button
+     * @param int $columns Number of columns for button layout
+     * @param bool $requestContact Whether to request user's contact
+     * @param bool $requestLocation Whether to request user's location
+     * @throws JsonException When JSON encoding fails
      * @return static
-     *
-     * @throws \JsonException
      */
-    public function keyboard(string $text, int $columns = 2, bool $request_contact = false, bool $request_location = false): self
-    {
-        $this->keyboards[] = compact('text', 'request_contact', 'request_location');
+    public function keyboard(
+        string $text,
+        int $columns = 2,
+        bool $requestContact = false,
+        bool $requestLocation = false
+    ): static {
+        $this->keyboards[] = [
+            'text' => $text,
+            'request_contact' => $requestContact,
+            'request_location' => $requestLocation,
+        ];
 
         $this->keyboardMarkup([
             'keyboard' => array_chunk($this->keyboards, $columns),
-            'one_time_keyboard' => true, // Hide the keyboard after the user makes a selection
-            'resize_keyboard' => true, // Allow the keyboard to be resized
+            'one_time_keyboard' => true,
+            'resize_keyboard' => true,
         ]);
 
         return $this;
     }
 
     /**
-     * Add an inline button.
+     * Add an inline button with URL.
      *
+     * @param string $text The text to display on the button
+     * @param string $url The URL to open when button is pressed
+     * @param int $columns Number of columns for button layout
+     * @throws JsonException When JSON encoding fails
      * @return static
-     *
-     * @throws \JsonException
      */
-    public function button(string $text, string $url, int $columns = 2): self
+    public function button(string $text, string $url, int $columns = 2): static
     {
         $this->buttons[] = compact('text', 'url');
 
-        $this->keyboardMarkup([
-            'inline_keyboard' => array_chunk($this->buttons, $columns),
-        ]);
-
-        return $this;
+        return $this->updateInlineKeyboard($columns);
     }
 
     /**
-     * Add an inline button with callback_data.
+     * Add an inline button with callback data.
      *
+     * @param string $text The text to display on the button
+     * @param string $callbackData The data to send when button is pressed
+     * @param int $columns Number of columns for button layout
+     * @throws JsonException When JSON encoding fails
      * @return static
-     *
-     * @throws \JsonException
      */
-    public function buttonWithCallback(string $text, string $callback_data, int $columns = 2): self
+    public function buttonWithCallback(string $text, string $callbackData, int $columns = 2): static
     {
-        $this->buttons[] = compact('text', 'callback_data');
+        $this->buttons[] = [
+            'text' => $text,
+            'callback_data' => $callbackData,
+        ];
 
-        $this->keyboardMarkup([
-            'inline_keyboard' => array_chunk($this->buttons, $columns),
-        ]);
-
-        return $this;
+        return $this->updateInlineKeyboard($columns);
     }
 
     /**
-     * Send the message silently.
-     * Users will receive a notification with no sound.
+     * Add an inline button with web app.
      *
+     * @param string $text The text to display on the button
+     * @param string $url The URL of the Web App to open
+     * @param int $columns Number of columns for button layout
+     * @throws JsonException When JSON encoding fails
      * @return static
      */
-    public function disableNotification(bool $disableNotification = true): self
+    public function buttonWithWebApp(string $text, string $url, int $columns = 2): static
     {
-        $this->payload['disable_notification'] = $disableNotification;
+        $this->buttons[] = [
+            'text' => $text,
+            'web_app' => ['url' => $url],
+        ];
+
+        return $this->updateInlineKeyboard($columns);
+    }
+
+    /**
+     * Send the message silently. Users will receive a notification with no sound.
+     *
+     * @param bool $disable Whether to disable the notification sound
+     * @return static
+     */
+    public function disableNotification(bool $disable = true): static
+    {
+        $this->payload['disable_notification'] = $disable;
 
         return $this;
     }
 
     /**
-     * Bot Token.
-     * Overrides default bot token with the given value for this notification.
+     * Set the Bot Token. Overrides default bot token with the given value for this notification.
      *
+     * @param string $token The bot token to use
      * @return static
      */
-    public function token(string $token): self
+    public function token(string $token): static
     {
         $this->token = $token;
 
@@ -163,6 +203,8 @@ trait HasSharedLogic
 
     /**
      * Determine if bot token is given for this notification.
+     *
+     * @return bool
      */
     public function hasToken(): bool
     {
@@ -170,29 +212,73 @@ trait HasSharedLogic
     }
 
     /**
-     * Additional options to pass to sendMessage method.
+     * Set additional options to pass to sendMessage method.
      *
+     * @param array<string, mixed> $options Additional options
      * @return static
      */
-    public function options(array $options): self
+    public function options(array $options): static
     {
-        $this->payload = array_merge($this->payload, $options);
+        $this->payload = [...$this->payload, ...$options];
 
         return $this;
     }
 
     /**
+     * Registers a callback function to handle exceptions.
+     *
+     * This method allows you to define a custom error handler,
+     * which will be invoked if an exception occurs during the
+     * notification process. The callback must be a valid Closure.
+     *
+     * @param Closure $callback The closure that will handle exceptions.
+     * @return self
+     */
+    public function onError(Closure $callback): self
+    {
+        $this->exceptionHandler = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Set a condition for sending the message.
+     *
+     * @param bool|callable $condition The condition to evaluate
+     * @return static
+     */
+    public function sendWhen(bool|callable $condition): static
+    {
+        $this->sendCondition = $this->when($condition, fn() => true, fn() => false);
+
+        return $this;
+    }
+
+    /**
+     * Determine if the message can be sent based on the condition.
+     *
+     * @return bool
+     */
+    public function canSend(): bool
+    {
+        return $this->sendCondition ?? true;
+    }
+
+    /**
      * Determine if chat id is not given.
+     *
+     * @return bool
      */
     public function toNotGiven(): bool
     {
-        return ! isset($this->payload['chat_id']);
+        return !isset($this->payload['chat_id']);
     }
 
     /**
      * Get payload value for given key.
      *
-     * @return null|mixed
+     * @param string $key The key to retrieve from payload
+     * @return mixed The value from payload or null if not found
      */
     public function getPayloadValue(string $key): mixed
     {
@@ -200,7 +286,9 @@ trait HasSharedLogic
     }
 
     /**
-     * Returns params payload.
+     * Get the complete payload as array.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -209,9 +297,25 @@ trait HasSharedLogic
 
     /**
      * Convert the object into something JSON serializable.
+     *
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
         return $this->toArray();
+    }
+
+    /**
+     * Update the inline keyboard markup.
+     *
+     * @param int $columns Number of columns for button layout
+     * @throws JsonException When JSON encoding fails
+     * @return static
+     */
+    private function updateInlineKeyboard(int $columns): static
+    {
+        return $this->keyboardMarkup([
+            'inline_keyboard' => array_chunk($this->buttons, $columns),
+        ]);
     }
 }

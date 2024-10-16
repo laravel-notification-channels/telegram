@@ -13,15 +13,9 @@ use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
  */
 class TelegramChannel
 {
-    private Dispatcher $dispatcher;
-
-    /**
-     * Channel constructor.
-     */
-    public function __construct(Dispatcher $dispatcher)
-    {
-        $this->dispatcher = $dispatcher;
-    }
+    public function __construct(
+        private readonly Dispatcher $dispatcher
+    ) {}
 
     /**
      * Send the given notification.
@@ -38,16 +32,19 @@ class TelegramChannel
             $message = TelegramMessage::create($message);
         }
 
-        if ($message->toNotGiven()) {
-            $to = $notifiable->routeNotificationFor('telegram', $notification)
-                ?? $notifiable->routeNotificationFor(self::class, $notification);
-
-            if (! $to) {
-                return null;
-            }
-
-            $message->to($to);
+        if (!$message->canSend()) {
+            return null;
         }
+
+        $to = $message->getPayloadValue('chat_id') ?:
+              ($notifiable->routeNotificationFor('telegram', $notification) ?:
+              $notifiable->routeNotificationFor(self::class, $notification));
+
+        if (! $to) {
+            return null;
+        }
+
+        $message->to($to);
 
         if ($message->hasToken()) {
             $message->telegram->setToken($message->token);
@@ -56,15 +53,23 @@ class TelegramChannel
         try {
             $response = $message->send();
         } catch (CouldNotSendNotification $exception) {
-            $this->dispatcher->dispatch(new NotificationFailed($notifiable, $notification, 'telegram', [
+            $data = [
                 'to' => $message->getPayloadValue('chat_id'),
                 'request' => $message->toArray(),
                 'exception' => $exception,
-            ]));
+            ];
+
+            if ($message->exceptionHandler) {
+                ($message->exceptionHandler)($data);
+            }
+
+            $this->dispatcher->dispatch(new NotificationFailed($notifiable, $notification, 'telegram', $data));
 
             throw $exception;
         }
 
-        return $response instanceof Response ? json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR) : $response;
+        return $response instanceof Response
+                ? json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR)
+                : $response;
     }
 }

@@ -7,8 +7,7 @@ namespace NotificationChannels\Telegram;
  */
 class TelegramUpdates
 {
-    /** @var array Params payload. */
-    protected array $payload = [];
+    public function __construct(protected array $payload = []) {}
 
     public static function create(): self
     {
