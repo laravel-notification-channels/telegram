@@ -28,6 +28,8 @@ This package makes it easy to send Telegram notification using [Telegram Bot API
   - [Routing a Message](#routing-a-message)
   - [Handling Response](#handling-response)
   - [Exception Handling](#exception-handling)
+    - [Using NotificationFailed Event](#using-notificationfailed-event)
+    - [Using onError Callback](#using-onerror-callback)
   - [On-Demand Notifications](#on-demand-notifications)
   - [Sending to Multiple Recipients](#sending-to-multiple-recipients)
 - [Available Methods](#available-methods)
@@ -364,7 +366,7 @@ In case of failures, the package provides two ways to handle exceptions.
 
 #### Using NotificationFailed Event
 
-You can listen to the `Illuminate\Notifications\Events\NotificationFailed` event, which provides a `$data` array containing `to`, `request`, and `exception` keys.
+> You can listen to the `Illuminate\Notifications\Events\NotificationFailed` event, which provides a `$data` array containing `to`, `request`, and `exception` keys.
 
 Listener example:
 ```php
@@ -395,7 +397,7 @@ class HandleNotificationFailure
 
 #### Using onError Callback
 
-You can handle exceptions for individual notifications using the `onError` method in your notification:
+> You can handle exceptions for individual notifications using the `onError` method in your notification:
 
 ```php
 public function toTelegram($notifiable)
@@ -469,7 +471,7 @@ For more information on supported parameters, check out these [docs](https://cor
 
 ### Telegram Message Methods
 
-Telegram message notifications are used to send text messages to the user. Supports [Telegram formatting options](https://core.telegram.org/bots/api#formatting-options)
+> Telegram message notifications are used to send text messages to the user. Supports [Telegram formatting options](https://core.telegram.org/bots/api#formatting-options)
 
 - `content(string $content, int $limit = null)` - Set message content with optional length limit. Supports markdown.
 - `line(string $content)` - Add new line of content.
@@ -482,14 +484,14 @@ Telegram message notifications are used to send text messages to the user. Suppo
 
 ### Telegram Location Methods
 
-Telegram location messages are used to share a geographical location with the user.
+> Telegram location messages are used to share a geographical location with the user.
 
 - `latitude(float|string $latitude)` - Set location latitude.
 - `longitude(float|string $longitude)` - Set location longitude.
 
 ### Telegram File Methods
 
-Telegram file messages are used to share various types of files with the user.
+> Telegram file messages are used to share various types of files with the user.
 
 - `content(string $content)` - Set file caption. Supports markdown.
 - `view(string $view, array $data = [], array $mergeData = [])` - Use Blade template for caption.
@@ -507,7 +509,7 @@ Telegram file messages are used to share various types of files with the user.
 
 ### Telegram Contact Methods
 
-Telegram contact messages are used to share contact information with the user.
+> Telegram contact messages are used to share contact information with the user.
 
 - `phoneNumber(string $phone)` - Set contact phone.
 - `firstName(string $name)` - Set contact first name.
@@ -516,7 +518,7 @@ Telegram contact messages are used to share contact information with the user.
 
 ### Telegram Poll Methods
 
-Telegram polls are a type of interactive message that allows users to vote on a question. Polls can be used to gather feedback, make decisions, or even run contests.
+> Telegram polls are a type of interactive message that allows users to vote on a question. Polls can be used to gather feedback, make decisions, or even run contests.
 
 - `question(string $question)` - Set poll question.
 - `choices(array $choices)` - Set poll choices.
