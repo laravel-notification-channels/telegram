@@ -109,7 +109,7 @@ if($updates['ok']) {
 }
 ```
 
-[!NOTE]
+> [!NOTE]
 > This method will not work if an outgoing webhook is set up.
 
 For a complete list of available parameters for the `options`, see [Telegram Bot API docs][link-telegram-docs-getupdates].
@@ -439,6 +439,7 @@ Notification::route('telegram', 'TELEGRAM_CHAT_ID')
 
 Using the [notification facade][link-notification-facade] you can send a notification to multiple recipients at once.
 
+> [!WARNING]
 > If you're sending bulk notifications to multiple users, the Telegram Bot API will not allow more than 30 messages per second or so.
 > Consider spreading out notifications over large intervals of 8—12 hours for best results.
 >
@@ -485,7 +486,7 @@ For more information on supported parameters, check out these [docs](https://cor
 - `view(string $view, array $data = [], array $mergeData = [])` - Use Blade template with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
 - `chunk(int $limit = 4096)` - Split long messages (rate limited to 1/second).
 
-[!NOTE]
+> [!NOTE]
 > Chunked messages will be rate limited to one message per second to comply with rate limitation requirements from Telegram.
 
 ### Telegram Location Methods
