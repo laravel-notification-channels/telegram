@@ -89,7 +89,9 @@ use NotificationChannels\Telegram\TelegramUpdates;
 
 // Response is an array of updates.
 $updates = TelegramUpdates::create()
-    // (Optional). Get's the latest update. NOTE: All previous updates will be forgotten using this method.
+
+    // (Optional). Get's the latest update.
+    // NOTE: All previous updates will be forgotten using this method.
     // ->latest()
 
     // (Optional). Limit to 2 updates (By default, updates starting with the earliest unconfirmed update are returned).
@@ -107,7 +109,8 @@ if($updates['ok']) {
 }
 ```
 
-_Note: This method will not work if an outgoing webhook is set up._
+[!NOTE]
+> This method will not work if an outgoing webhook is set up.
 
 For a complete list of available parameters for the `options`, see [Telegram Bot API docs][link-telegram-docs-getupdates].
 
@@ -153,7 +156,7 @@ class InvoicePaid extends Notification
 
     public function toTelegram($notifiable)
     {
-        $url = url('/invoice/' . $this->invoice->id);
+        $url = url('/invoice/' . $notifiable->invoice->id);
 
         return TelegramMessage::create()
             // Optional recipient user id.
@@ -172,7 +175,8 @@ class InvoicePaid extends Notification
             ->button('View Invoice', $url)
             ->button('Download Invoice', $url);
 
-            // (Optional) Conditional notification. Only send if amount is greater than 0. Otherwise, don't send.
+            // (Optional) Conditional notification.
+            // Only send if amount is greater than 0. Otherwise, don't send.
             // ->sendWhen($notifiable->amount > 0)
 
             // (Optional) Inline Button with Web App
@@ -481,7 +485,8 @@ For more information on supported parameters, check out these [docs](https://cor
 - `view(string $view, array $data = [], array $mergeData = [])` - Use Blade template with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
 - `chunk(int $limit = 4096)` - Split long messages (rate limited to 1/second).
 
-> **Note:** Chunked messages will be rate limited to one message per second to comply with rate limitation requirements from Telegram.
+[!NOTE]
+> Chunked messages will be rate limited to one message per second to comply with rate limitation requirements from Telegram.
 
 ### Telegram Location Methods
 
