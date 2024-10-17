@@ -77,11 +77,11 @@ trait HasSharedLogic
     /**
      * Set the parse mode of the message.
      *
-     * @param  ParseMode|null  $mode  The parse mode to use
+     * @param ParseMode|string  $mode  The parse mode to use
      */
-    public function parseMode(?ParseMode $mode = null): static
+    public function parseMode(ParseMode|string $mode): static
     {
-        $this->payload['parse_mode'] = $mode?->value;
+        $this->payload['parse_mode'] = ($mode instanceof ParseMode) ? $mode->value : $mode;
 
         return $this;
     }
