@@ -77,7 +77,7 @@ trait HasSharedLogic
     /**
      * Set the parse mode of the message.
      *
-     * @param ParseMode|string  $mode  The parse mode to use
+     * @param  ParseMode|string  $mode  The parse mode to use
      */
     public function parseMode(ParseMode|string $mode): static
     {
