@@ -13,8 +13,6 @@ use NotificationChannels\Telegram\Enums\ParseMode;
  * Trait HasSharedLogic
  *
  * Provides shared functionality for Telegram message handling.
- *
- * @template TReturn of static
  */
 trait HasSharedLogic
 {

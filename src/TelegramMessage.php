@@ -152,7 +152,7 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
         $output = explode(self::CHUNK_SEPARATOR, wordwrap($value, $limit, self::CHUNK_SEPARATOR));
 
         return count($output) <= 1
-            ? mb_str_split($value, $limit, 'UTF-8') ?? [$value]
+            ? mb_str_split($value, $limit, 'UTF-8')
             : $output;
     }
 }

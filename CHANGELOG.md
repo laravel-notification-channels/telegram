@@ -8,6 +8,7 @@ All notable changes to `telegram` will be documented in this file
 
 * Drop support for Laravel 10.
 * Drop support for PHP 8.1.
+* Add support for Laravel 12.
 * Add `sendWhen` method to conditionally send a message.
 * Add ParseMode Enum and refactor parsing mode setting logic.
 * Add `buttonWithWebApp` method to open web app from a button.
