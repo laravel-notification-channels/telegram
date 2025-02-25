@@ -513,6 +513,7 @@ For more information on supported parameters, check out these [docs](https://cor
 - `animation(string $file)` - Send animated GIF.
 - `voice(string $file)` - Send voice note (OGG/OPUS).
 - `videoNote(string $file)` - Send video note (≤1min, rounded square video).
+- `sticker(string $file)` - Send sticker (static PNG/WEBP, animated .TGS, or video .WEBM stickers).
 
 ### Telegram Contact Methods
 

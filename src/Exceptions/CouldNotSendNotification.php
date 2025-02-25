@@ -46,4 +46,20 @@ final class CouldNotSendNotification extends Exception
     {
         return new self("The communication with Telegram failed. `{$message}`");
     }
+
+    /**
+     * Thrown when the file cannot be opened.
+     */
+    public static function fileAccessFailed(string $file): self
+    {
+        return new self("Failed to open file: {$file}");
+    }
+
+    /**
+     * Thrown when the file identifier is invalid (ID or URL).
+     */
+    public static function invalidFileIdentifier(string $file): self
+    {
+        return new self("Invalid file identifier: {$file}");
+    }
 }

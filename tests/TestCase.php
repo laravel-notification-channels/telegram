@@ -48,6 +48,27 @@ class TestCase extends Orchestra
         return $this->channel->send($notifiable, $notification);
     }
 
+    protected function sendFileMockNotification(
+        mixed $notifiable,
+        Notification $notification,
+        array $expectedResponse
+    ) {
+
+        $telegramFile = $notification->toTelegram($notifiable);
+        $this->telegram
+            ->shouldReceive('sendFile')
+            ->with(
+                $telegramFile->toArray(),
+                $telegramFile->type->value,
+                $telegramFile->hasFile()
+            )
+            ->once()
+            ->andReturns(new Response(200, [], json_encode($expectedResponse)));
+
+        return $this->channel->send($notifiable, $notification);
+    }
+
+
     protected function makeMockResponse(array $result)
     {
         $payload = [
