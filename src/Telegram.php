@@ -14,15 +14,15 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Telegram
 {
-    /** @var string Telegram Bot API Base URI */
-    protected string $apiBaseUri;
+    /** Default Telegram Bot API Base URI.*/
+    protected const API_BASE_URI = 'https://api.telegram.org';
 
     public function __construct(
         protected ?string $token = null,
         protected HttpClient $http = new HttpClient,
-        string $apiBaseUri = 'https://api.telegram.org'
+        protected ?string $apiBaseUri = null
     ) {
-        $this->setApiBaseUri($apiBaseUri);
+        $this->setApiBaseUri($apiBaseUri ?? static::API_BASE_URI);
     }
 
     /**

@@ -27,6 +27,7 @@ This package makes it easy to send Telegram notification using [Telegram Bot API
   - [Attach a Venue](#attach-a-venue)
   - [Attach a Video](#attach-a-video)
   - [Attach a GIF File](#attach-a-gif-file)
+  - [Attach a Sticker](#attach-a-sticker)
   - [Routing a Message](#routing-a-message)
   - [Handling Response](#handling-response)
   - [Exception Handling](#exception-handling)
@@ -318,12 +319,16 @@ Preview:
 public function toTelegram($notifiable)
 {
     return TelegramVenue::create()
-        ->latitude('40.6892494')
-        ->longitude('-74.0466891')
-        ->title('Sample Venue')
-        ->address('123 Main St.');
+        ->latitude('38.8951')
+        ->longitude('-77.0364')
+        ->title('Grand Palace')
+        ->address('Bangkok, Thailand');
 }
 ```
+
+Preview:
+
+![Laravel Telegram Venue Notification Example](https://github.com/user-attachments/assets/96e762a6-c4b5-4d8d-8c2d-9d32adb754d0)
 
 ### Attach a Video
 
@@ -357,6 +362,20 @@ public function toTelegram($notifiable)
 Preview:
 
 ![Laravel Telegram Gif Notification Example](https://user-images.githubusercontent.com/1915268/66617071-109ed080-ebf1-11e9-989b-b237f2b9502d.jpg)
+
+### Attach a Sticker
+
+```php
+public function toTelegram($notifiable)
+{
+    return TelegramFile::create()
+        ->sticker(storage_path('telegram/AnimatedSticker.tgs'));
+}
+```
+
+Preview:
+
+![Laravel Telegram Sticker Notification Example](https://github.com/user-attachments/assets/5206aac7-022c-4288-ae26-3a117f117fe0)
 
 ### Routing a Message
 

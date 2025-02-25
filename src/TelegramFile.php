@@ -69,7 +69,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
         $typeValue = $this->type->value;
 
         // Handle file URLs or Telegram file IDs
-        if (is_string($file) && !$this->isReadableFile($file)) {
+        if (is_string($file) && !$this->isReadableFile($file) && $filename === null) {
             if (!filter_var($file, FILTER_VALIDATE_URL) && !preg_match('/^[a-zA-Z0-9_-]+$/', $file)) {
                 throw CouldNotSendNotification::invalidFileIdentifier($file);
             }
