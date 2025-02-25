@@ -2,29 +2,6 @@
 
 All notable changes to `telegram` will be documented in this file
 
-## 6.0 - (Unreleased)
-
-### What's Changed
-
-* Drop support for Laravel 10.
-* Drop support for PHP 8.1.
-* Add support for Laravel 12.
-* Add `TelegramVenue` to support `sendVenue` method.
-* Add `sticker` method to the `TelegramFile` to send sticker file.
-* Add `sendWhen` method to conditionally send a message.
-* Add ParseMode Enum and refactor parsing mode setting logic.
-* Add `buttonWithWebApp` method to open web app from a button.
-* Add `onError` method to handle exceptions. Based of https://github.com/laravel-notification-channels/telegram/pull/201
-* Refactor `sendFile` to support raw data sending.
-* Refactor `escapedLine` method.
-* Refactor `HasSharedLogic` trait.
-* Refactor classes to use PHP 8.2 features.
-* Revise `keyboard` method parameters to `$requestLocation` and `$requestContact` to be consistent.
-
-### New Contributors
-
-* @Hesammousavi made their first contribution in https://github.com/laravel-notification-channels/telegram/pull/201
-
 ## 5.0 - 2024-03-12
 
 ### What's Changed
