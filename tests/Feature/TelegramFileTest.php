@@ -77,9 +77,39 @@ it('can add a document with custom filename', function () {
     $filename = 'custom.pdf';
     $this->telegramFile->document($url, $filename);
 
-    // Since it's a URL, it won't use the multipart format
-    expect($this->telegramFile->type)->toBe(FileType::Document)
-        ->and($this->telegramFile->getPayloadValue(FileType::Document->value))->toBe($url);
+    $multipart = $this->telegramFile->toMultipart();
+
+    expect($multipart)->toBeArray()
+        ->and($multipart)->toHaveKeys([0, 1, 2])
+        ->and($multipart[0])->toHaveKey('name', 'caption')
+        ->and($multipart[0])->toHaveKey('contents', $this->telegramFile->getPayloadValue('caption'))
+
+        ->and($multipart[1])->toHaveKey('name', 'parse_mode')
+        ->and($multipart[1])->toHaveKey('contents', $this->telegramFile->getPayloadValue('parse_mode'))
+
+        ->and($multipart[2])->toHaveKey('name', $this->telegramFile->type->value)
+        ->and($multipart[2])->toHaveKey('contents', $url)
+        ->and($multipart[2])->toHaveKey('filename', $filename);
+});
+
+it('can send document with content on-fly', function () {
+    $content = 'Hello Text Content';
+    $filename = 'hello.txt';
+    $this->telegramFile->document($content, $filename);
+
+    $multipart = $this->telegramFile->toMultipart();
+
+    expect($multipart)->toBeArray()
+        ->and($multipart)->toHaveKeys([0, 1, 2])
+        ->and($multipart[0])->toHaveKey('name', 'caption')
+        ->and($multipart[0])->toHaveKey('contents', $this->telegramFile->getPayloadValue('caption'))
+
+        ->and($multipart[1])->toHaveKey('name', 'parse_mode')
+        ->and($multipart[1])->toHaveKey('contents', $this->telegramFile->getPayloadValue('parse_mode'))
+
+        ->and($multipart[2])->toHaveKey('name', $this->telegramFile->type->value)
+        ->and($multipart[2])->toHaveKey('contents', $content)
+        ->and($multipart[2])->toHaveKey('filename', $filename);
 });
 
 it('can add a video', function () {
