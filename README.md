@@ -290,6 +290,9 @@ public function toTelegram($notifiable)
         ->to($notifiable->telegram_user_id) // Optional
         ->content('Did you know we can set a custom filename too?')
         ->document('https://file-examples-com.github.io/uploads/2017/10/file-sample_150kB.pdf', 'sample.pdf');
+
+        // You may also send document content on-fly.
+        // ->document('Hello Text Document Content', 'hello.txt');
 }
 ```
 
