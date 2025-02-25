@@ -1,8 +1,8 @@
 <?php
 
 use NotificationChannels\Telegram\TelegramVenue;
-use NotificationChannels\Telegram\Tests\TestSupport\TestVenueNotification;
 use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;
+use NotificationChannels\Telegram\Tests\TestSupport\TestVenueNotification;
 
 const TEST_LAT = 38.8951;
 const TEST_LONG = -77.0364;

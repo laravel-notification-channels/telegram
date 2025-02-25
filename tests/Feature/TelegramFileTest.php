@@ -2,20 +2,15 @@
 
 namespace NotificationChannels\Telegram\Tests;
 
-use InvalidArgumentException;
+use Illuminate\Support\Facades\View;
+use Mockery;
 use NotificationChannels\Telegram\Enums\FileType;
 use NotificationChannels\Telegram\Enums\ParseMode;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
-use NotificationChannels\Telegram\Telegram;
 use NotificationChannels\Telegram\TelegramFile;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
-use GuzzleHttp\Psr7\Response;
-use Mockery;
-use Illuminate\Support\Facades\View;
 use NotificationChannels\Telegram\Tests\TestSupport\TestFileNotification;
 use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;
-
+use Psr\Http\Message\StreamInterface;
 
 beforeEach(function () {
     $this->telegramFileCaption = 'Test content';

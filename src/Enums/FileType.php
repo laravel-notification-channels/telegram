@@ -23,7 +23,7 @@ enum FileType: string
      */
     public function getMimeType(): string
     {
-        return match($this) {
+        return match ($this) {
             self::Document => 'application/octet-stream',
             self::Photo => 'image/jpeg',
             self::Audio => 'audio/mp3',
@@ -42,7 +42,7 @@ enum FileType: string
      */
     public function getAllowedExtensions(): array
     {
-        return match($this) {
+        return match ($this) {
             self::Document => [], // Any extension allowed
             self::Photo => ['jpg', 'jpeg', 'png', 'webp'],
             self::Audio => ['mp3', 'ogg', 'm4a'],

@@ -2,13 +2,13 @@
 
 namespace NotificationChannels\Telegram;
 
+use Illuminate\Support\Facades\View;
 use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Enums\FileType;
 use NotificationChannels\Telegram\Enums\ParseMode;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
-use Illuminate\Support\Facades\View;
 
 /**
  * Class TelegramFile
@@ -24,7 +24,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
     /** @var array File types that don't support captions */
     protected array $captionUnsupportedTypes = [
         FileType::VideoNote,
-        FileType::Sticker
+        FileType::Sticker,
     ];
 
     /**
@@ -58,9 +58,10 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
     /**
      * Attach a file to the message.
      *
-     * @param resource|StreamInterface|string $file The file content or path
-     * @param FileType|string $type The file type
-     * @param string|null $filename Optional custom filename
+     * @param  resource|StreamInterface|string  $file  The file content or path
+     * @param  FileType|string  $type  The file type
+     * @param  string|null  $filename  Optional custom filename
+     *
      * @throws CouldNotSendNotification
      */
     public function file(mixed $file, FileType|string $type, ?string $filename = null): self
@@ -69,8 +70,8 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
         $typeValue = $this->type->value;
 
         // Handle file URLs or Telegram file IDs
-        if (is_string($file) && !$this->isReadableFile($file) && $filename === null) {
-            if (!filter_var($file, FILTER_VALIDATE_URL) && !preg_match('/^[a-zA-Z0-9_-]+$/', $file)) {
+        if (is_string($file) && ! $this->isReadableFile($file) && $filename === null) {
+            if (! filter_var($file, FILTER_VALIDATE_URL) && ! preg_match('/^[a-zA-Z0-9_-]+$/', $file)) {
                 throw CouldNotSendNotification::invalidFileIdentifier($file);
             }
 
@@ -185,7 +186,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
      */
     protected function supportsCaptions(): bool
     {
-        return !in_array($this->type, $this->captionUnsupportedTypes);
+        return ! in_array($this->type, $this->captionUnsupportedTypes);
     }
 
     /**
@@ -196,7 +197,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
         $payload = $this->payload;
 
         // Remove caption for unsupported file types
-        if (!$this->supportsCaptions() && isset($payload['caption'])) {
+        if (! $this->supportsCaptions() && isset($payload['caption'])) {
             unset($payload['caption']);
         }
 

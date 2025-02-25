@@ -68,7 +68,6 @@ class TestCase extends Orchestra
         return $this->channel->send($notifiable, $notification);
     }
 
-
     protected function makeMockResponse(array $result)
     {
         $payload = [
