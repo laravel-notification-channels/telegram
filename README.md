@@ -220,15 +220,14 @@ Preview:
 public function toTelegram($notifiable)
 {
     return TelegramPoll::create()
-        ->to($chatId)
-        ->question('What is your favorite programming language?')
-        ->choices(['PHP', 'Python', 'JavaScript', 'Java', 'C#']);
+        ->question('Which is your favorite Laravel Notification Channel?')
+        ->choices(['Telegram', 'Facebook', 'Slack']);
 }
 ```
 
 Preview:
 
-![Laravel Telegram Poll Example](https://user-images.githubusercontent.com/60013703/143135248-1224a69b-3233-4686-8a59-d41517d8c722.png)
+![Laravel Telegram Poll Example](https://github.com/user-attachments/assets/7324ccc5-9370-414a-9337-10c4e7446f5c)
 
 ### Attach a Contact
 
@@ -245,7 +244,7 @@ public function toTelegram($notifiable)
 
 Preview:
 
-![Laravel Telegram Contact Example](https://user-images.githubusercontent.com/60013703/143510191-1d0f8e08-bd9a-4be5-8978-e6561508b47a.png)
+![Laravel Telegram Contact Example](https://github.com/user-attachments/assets/24f6e1c9-3ed6-4839-b9da-64ce09d09663)
 
 ### Attach an Audio
 
