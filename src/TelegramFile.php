@@ -206,7 +206,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
     /**
      * Create multipart array for file uploads.
      */
-    public function toMultipart(array $payload = null): array
+    public function toMultipart(?array $payload = null): array
     {
         $payload = $payload ?? $this->payload;
         $data = [];

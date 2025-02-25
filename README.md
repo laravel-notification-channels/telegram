@@ -24,6 +24,7 @@ This package makes it easy to send Telegram notification using [Telegram Bot API
   - [Attach a Photo](#attach-a-photo)
   - [Attach a Document](#attach-a-document)
   - [Attach a Location](#attach-a-location)
+  - [Attach a Venue](#attach-a-venue)
   - [Attach a Video](#attach-a-video)
   - [Attach a GIF File](#attach-a-gif-file)
   - [Routing a Message](#routing-a-message)
@@ -37,6 +38,7 @@ This package makes it easy to send Telegram notification using [Telegram Bot API
   - [Common Methods](#common-methods)
   - [Telegram Message Methods](#telegram-message-methods)
   - [Telegram Location Methods](#telegram-location-methods)
+  - [Telegram Venue Methods](#telegram-venue-methods)
   - [Telegram File Methods](#telegram-file-methods)
   - [Telegram Contact Methods](#telegram-contact-methods)
   - [Telegram Poll Methods](#telegram-poll-methods)
@@ -310,6 +312,19 @@ Preview:
 
 ![Laravel Telegram Location Notification Example](https://user-images.githubusercontent.com/1915268/66616918-54450a80-ebf0-11e9-86ea-d5264fe05ba9.jpg)
 
+### Attach a Venue
+
+```php
+public function toTelegram($notifiable)
+{
+    return TelegramVenue::create()
+        ->latitude('40.6892494')
+        ->longitude('-74.0466891')
+        ->title('Sample Venue')
+        ->address('123 Main St.');
+}
+```
+
 ### Attach a Video
 
 ```php
@@ -496,13 +511,26 @@ For more information on supported parameters, check out these [docs](https://cor
 - `latitude(float|string $latitude)` - Set location latitude.
 - `longitude(float|string $longitude)` - Set location longitude.
 
+### Telegram Venue Methods
+
+> Telegram venue messages are used to share a geographical location information about a venue.
+
+- `latitude(float|string $latitude)` - Set venue latitude.
+- `longitude(float|string $longitude)` - Set venue longitude.
+- `title(string $title)` - Set venue name/title.
+- `address(string $address)` - Set venue address.
+- `foursquareId(string $foursquareId)` - (Optional) Set Foursquare identifier of the venue.
+- `foursquareType(string $foursquareType)` - (Optional) Set Foursquare type of the venue, if known.
+- `googlePlaceId(string $googlePlaceId)` - (Optional) Set Google Places identifier of the venue.
+- `googlePlaceType(string $googlePlaceType)` - (Optional) Set Google Places type of the venue.
+
 ### Telegram File Methods
 
 > Telegram file messages are used to share various types of files with the user.
 
 - `content(string $content)` - Set file caption. Supports markdown.
 - `view(string $view, array $data = [], array $mergeData = [])` - Use Blade template for caption.
-- `file(string|resource|StreamInterface $file, string $type, string $filename = null)` - Attach file by path/URL. Types: `photo`, `audio`, `document`, `video`, `animation`, `voice`, `video_note`. Use helper methods below for convenience. Filename is optional, ex: `sample.pdf`.
+- `file(string|resource|StreamInterface $file, FileType|string $type, string $filename = null)` - Attach file by path/URL. Types: `photo`, `audio`, `document`, `video`, `animation`, `voice`, `video_note`, `sticker` (Use Enum `Enums\FileType`). Use helper methods below for convenience. Filename is optional, ex: `sample.pdf`.
 
 #### Helper Methods:
 

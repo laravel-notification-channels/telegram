@@ -157,6 +157,16 @@ class Telegram
     }
 
     /**
+     * Send a Venue.
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function sendVenue(array $params): ?ResponseInterface
+    {
+        return $this->sendRequest('sendVenue', $params);
+    }
+
+    /**
      * Get HttpClient.
      */
     protected function httpClient(): HttpClient

@@ -9,6 +9,7 @@ All notable changes to `telegram` will be documented in this file
 * Drop support for Laravel 10.
 * Drop support for PHP 8.1.
 * Add support for Laravel 12.
+* Add `TelegramVenue` to support `sendVenue` method.
 * Add `sticker` method to the `TelegramFile` to send sticker file.
 * Add `sendWhen` method to conditionally send a message.
 * Add ParseMode Enum and refactor parsing mode setting logic.
