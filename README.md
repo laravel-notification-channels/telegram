@@ -169,7 +169,7 @@ class InvoicePaid extends Notification
             ->content("Hello there!")
             ->line("Your invoice has been *PAID*")
             ->lineIf($notifiable->amount > 0, "Amount paid: {$notifiable->amount}")
-            ->line("Thank you!")
+            ->line(sprintf("Thank you, ".TelegramMessage::escapeMarkdown("$user->name!"))
 
             // (Optional) Blade template for the content.
             // ->view('notification', ['url' => $url])
@@ -524,6 +524,10 @@ For more information on supported parameters, check out these [docs](https://cor
 
 > [!NOTE]
 > Chunked messages will be rate limited to one message per second to comply with rate limitation requirements from Telegram.
+
+#### Helper Methods:
+
+- `escapeMarkdown(string $content)` - Escape a string to make it safe for the `markdownv2` parse mode
 
 ### Telegram Location Methods
 
