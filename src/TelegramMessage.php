@@ -32,6 +32,16 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
         return new self($content);
     }
 
+    /** @see https://core.telegram.org/bots/api#markdownv2-style */
+    public static function escapeMarkdown(string $content): ?string
+    {
+        return preg_replace_callback(
+            '/[_*[\]()~`>#\+\-=|{}.!]/',
+            fn ($matches): string => "\\$matches[0]",
+            $content
+        );
+    }
+
     public function content(string $content, ?int $limit = null): self
     {
         $this->payload['text'] = $content;
@@ -58,13 +68,9 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
     {
         $content = str_replace('\\', '\\\\', $content);
 
-        $escapedContent = preg_replace_callback(
-            '/[_*[\]()~`>#\+\-=|{}.!]/',
-            fn ($matches): string => "\\$matches[0]",
-            $content
-        );
+        $escapedContent = self::escapeMarkdown($content) ?: $content;
 
-        return $this->line($escapedContent ?? $content);
+        return $this->line($escapedContent);
     }
 
     public function view(string $view, array $data = [], array $mergeData = []): self

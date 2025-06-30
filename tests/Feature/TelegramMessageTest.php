@@ -41,6 +41,27 @@ it('can escape special markdown characters per line', function () {
     expect($message->getPayloadValue('text'))->toEqual("Laravel Notification\_Channels are awesome\!\nTelegram Notification Channel is fantastic :)\n");
 });
 
+it('can escape markdown characters', function (string $input, string $expected) {
+    expect(TelegramMessage::escapeMarkdown($input))->toEqual($expected);
+})->with([
+    'special characters' => ['_*[]()~`>#+-=|{}.!', '\_\*\[\]\(\)\~\`\>\#\+\-\=\|\{\}\.\!'],
+    'a string with special characters' => ['Hello, _world_!', 'Hello, \_world\_\!'],
+    'a string with *' => ['*Hello, world!*', '\*Hello, world\!\*'],
+    'a string with []' => ['[Hello, world!]', '\[Hello, world\!\]'],
+    'a string with ()' => ['(Hello, world!)', '\(Hello, world\!\)'],
+    'a string with ~' => ['~Hello, world!~', '\~Hello, world\!\~'],
+    'a string with `' => ['`Hello, world!`', '\`Hello, world\!\`'],
+    'a string with >' => ['>Hello, world!', '\>Hello, world\!'],
+    'a string with #' => ['#Hello, world!', '\#Hello, world\!'],
+    'a string with +' => ['+Hello, world!', '\+Hello, world\!'],
+    'a string with -' => ['-Hello, world!', '\-Hello, world\!'],
+    'a string with =' => ['=Hello, world!', '\=Hello, world\!'],
+    'a string with |' => ['|Hello, world!', '\|Hello, world\!'],
+    'a string with {}' => ['{Hello, world!}', '\{Hello, world\!\}'],
+    'a string with .' => ['.Hello, world!', '\.Hello, world\!'],
+    'a string with !' => ['!Hello, world!', '\!Hello, world\!'],
+]);
+
 it('can attach a view as the content', function () {
     View::addLocation(__DIR__.'/../TestSupport');
 
