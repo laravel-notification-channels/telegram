@@ -1,29 +1,29 @@
-name: Fix PHP code style issues
+name: Check & fix styling
 
 on:
-  push:
-    paths:
-      - '**.php'
-      - 'code-style.yml'
+    push:
+        paths:
+            - '**.php'
+            - 'code-style.yml'
+
+permissions:
+    contents: write
 
 jobs:
-  code-style:
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    code-styling:
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
 
-    runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+              with:
+                  ref: ${{ github.head_ref }}
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
+            - name: Fix PHP code style issues
+              uses: aglipanci/laravel-pint-action@v2
 
-      - name: Fix PHP code style issues
-        uses: aglipanci/laravel-pint-action@latest
-
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: Fix styling
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Commit changes
+              uses: stefanzweifel/git-auto-commit-action@v7
+              with:
+                  commit_message: Fix styling
