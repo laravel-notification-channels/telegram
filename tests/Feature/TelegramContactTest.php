@@ -1,5 +1,7 @@
 <?php
 
+namespace NotificationChannels\Telegram\Tests\Feature;
+
 use NotificationChannels\Telegram\TelegramContact;
 use NotificationChannels\Telegram\Tests\TestSupport\TestContactNotification;
 use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;

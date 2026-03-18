@@ -1,5 +1,7 @@
 <?php
 
+namespace NotificationChannels\Telegram\Tests\Feature;
+
 use Illuminate\Support\Facades\View;
 use NotificationChannels\Telegram\TelegramMessage;
 

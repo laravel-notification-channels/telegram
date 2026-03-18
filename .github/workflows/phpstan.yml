@@ -5,23 +5,45 @@ on:
     paths:
       - '**.php'
       - 'phpstan.neon.dist'
+      - '.github/workflows/phpstan.yml'
+  pull_request:
 
 jobs:
   phpstan:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
-
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    env:
+      COMPOSER_CACHE_DIR: ~/.composer/cache
+      LARAVEL_VERSION: 12.*
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4'
+          tools: composer:v2
           coverage: none
+          extensions: mbstring, curl, fileinfo
+          ini-values: memory_limit=-1
 
-      - name: Install composer dependencies
-        uses: ramsey/composer-install@v3
+      - name: Cache Composer
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.COMPOSER_CACHE_DIR }}
+          key: composer-${{ runner.os }}-phpstan-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+            composer-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: |
+          composer require laravel/framework:${{ env.LARAVEL_VERSION }} --no-interaction --no-update
+          composer update --prefer-dist --no-interaction --no-progress
 
       - name: Run PHPStan
-        run: ./vendor/bin/phpstan --error-format=github
+        run: vendor/bin/phpstan analyse --error-format=github

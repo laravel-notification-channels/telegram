@@ -1,5 +1,7 @@
 <?php
 
+namespace NotificationChannels\Telegram\Tests\Feature;
+
 use Illuminate\Notifications\Events\NotificationFailed;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;

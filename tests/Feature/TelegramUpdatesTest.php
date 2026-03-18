@@ -1,5 +1,7 @@
 <?php
 
+namespace NotificationChannels\Telegram\Tests\Feature;
+
 use GuzzleHttp\Psr7\Response;
 use NotificationChannels\Telegram\TelegramUpdates;
 

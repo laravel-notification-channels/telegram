@@ -50,11 +50,13 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ${{ env.COMPOSER_CACHE_DIR }}
-          key: composer-${{ runner.os }}-${{ matrix.php }}-${{ matrix.laravel }}-${{ matrix.stability }}-${{ hashFiles('**/composer.lock') }}
+          key: composer-${{ runner.os }}-${{ matrix.php }}-${{ matrix.laravel }}-${{ matrix.stability }}-${{ hashFiles(...) }}
           restore-keys: |
             composer-${{ runner.os }}-${{ matrix.php }}-${{ matrix.laravel }}-${{ matrix.stability }}-
             composer-${{ runner.os }}-${{ matrix.php }}-${{ matrix.laravel }}-
             composer-${{ runner.os }}-${{ matrix.php }}-
+            composer-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+            composer-${{ runner.os }}-
 
       - name: Install Dependencies (with retry)
         uses: nick-fields/retry@v3
@@ -64,18 +66,17 @@ jobs:
           retry_wait_seconds: 20
           command: |
             composer require laravel/framework:${{ matrix.laravel }} --no-interaction --no-update
-            
+
             composer update \
               --${{ matrix.stability }} \
               --prefer-dist \
               --no-interaction \
               --no-progress \
-              --no-suggest \
               $([[ "${{ matrix.stability }}" == "prefer-lowest" ]] && echo "--prefer-stable")
-      
+
       - name: Check platform requirements
         run: composer check-platform-reqs
-  
+
       - name: Security Audit
         if: matrix.stability == 'prefer-stable'
         run: composer audit --no-interaction
@@ -84,4 +85,4 @@ jobs:
         run: composer show -D
 
       - name: Run Tests
-        run: vendor/bin/pest
+        run: vendor/bin/pest --no-coverage

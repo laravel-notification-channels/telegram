@@ -30,8 +30,8 @@
         "larastan/larastan": "^3.0",
         "mockery/mockery": "^1.4.4",
         "orchestra/testbench": "^10.0 || ^11.0",
-        "pestphp/pest": "^3.0",
-        "pestphp/pest-plugin-laravel": "^3.0",
+        "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-laravel": "^4.0",
         "phpstan/extension-installer": "^1.2",
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0"

@@ -1,6 +1,6 @@
 <?php
 
-namespace NotificationChannels\Telegram\Tests;
+namespace NotificationChannels\Telegram\Tests\Feature;
 
 use Illuminate\Support\Facades\View;
 use Mockery;
