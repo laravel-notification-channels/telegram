@@ -1,29 +1,33 @@
-name: PHPUnit tests
+name: Tests
 
 on:
-  - push
-  - pull_request
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   tests:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
-
     runs-on: ubuntu-latest
 
-    continue-on-error: ${{ matrix.experimental }}
+    env:
+      COMPOSER_CACHE_DIR: ~/.composer/cache
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        php: ['8.2', '8.3', '8.4']
-        dependencies: [lowest, highest]
-        experimental: [false]
+        php: [8.3, 8.4, 8.5]
+        laravel: [12.*, 13.*]
+        stability: [prefer-lowest, prefer-stable]
 
-    name: PHP ${{ matrix.php }} (${{ matrix.dependencies }})
+    name: PHP ${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -31,20 +35,53 @@ jobs:
           php-version: ${{ matrix.php }}
           tools: composer:v2
           coverage: none
+          extensions: mbstring, curl, fileinfo
+          ini-values: memory_limit=-1
 
-      - name: Setup problem matchers
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Configure Composer
         run: |
-          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
-          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+          composer config --global process-timeout 2000
+          composer config --global github-protocols https
 
-      - name: Install dependencies
-        uses: ramsey/composer-install@v3
+      - name: Cache Composer
+        uses: actions/cache@v5
         with:
-          dependency-versions: ${{ matrix.dependencies }}
-          composer-options: --prefer-dist ${{ matrix.composer-options }}
+          path: ${{ env.COMPOSER_CACHE_DIR }}
+          key: composer-${{ runner.os }}-${{ matrix.php }}-${{ matrix.laravel }}-${{ matrix.stability }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-${{ matrix.php }}-${{ matrix.laravel }}-${{ matrix.stability }}-
+            composer-${{ runner.os }}-${{ matrix.php }}-${{ matrix.laravel }}-
+            composer-${{ runner.os }}-${{ matrix.php }}-
+
+      - name: Install Dependencies (with retry)
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          retry_wait_seconds: 20
+          command: |
+            composer require laravel/framework:${{ matrix.laravel }} --no-interaction --no-update
+            
+            composer update \
+              --${{ matrix.stability }} \
+              --prefer-dist \
+              --no-interaction \
+              --no-progress \
+              --no-suggest \
+              $([[ "${{ matrix.stability }}" == "prefer-lowest" ]] && echo "--prefer-stable")
+      
+      - name: Check platform requirements
+        run: composer check-platform-reqs
+  
+      - name: Security Audit
+        if: matrix.stability == 'prefer-stable'
+        run: composer audit --no-interaction
 
       - name: List Installed Dependencies
         run: composer show -D
 
-      - name: Execute tests
-        run: ./vendor/bin/pest
+      - name: Run Tests
+        run: vendor/bin/pest
