@@ -16,7 +16,7 @@ jobs:
 
     env:
       COMPOSER_CACHE_DIR: ~/.composer/cache
-      LARAVEL_VERSION: 12.*
+      LARAVEL_VERSION: '12.*'
 
     steps:
       - name: Checkout

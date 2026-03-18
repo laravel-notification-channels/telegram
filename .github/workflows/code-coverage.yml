@@ -12,7 +12,7 @@ jobs:
 
     env:
       COMPOSER_CACHE_DIR: ~/.composer/cache
-      LARAVEL_VERSION: 12.*
+      LARAVEL_VERSION: '12.*'
 
     steps:
       - name: Checkout code
@@ -21,7 +21,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.3
+          php-version: 8.4
           tools: composer:v2
           coverage: pcov
           extensions: mbstring, curl, fileinfo
