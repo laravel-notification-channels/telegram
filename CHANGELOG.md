@@ -2,6 +2,81 @@
 
 All notable changes to `telegram` will be documented in this file
 
+## 7.0 - 2026-03-19
+
+### What's Changed
+
+* Add `TelegramMessage::escapeMarkdown` by @alies-dev in https://github.com/laravel-notification-channels/telegram/pull/209
+
+#### Breaking Changes
+
+- `TelegramFile::file()` now strictly normalizes inputs to PSR-7 streams and rejects unsupported types earlier. Passing arbitrary values through to Guzzle is no longer allowed.
+
+#### Added
+
+- Laravel 13 support.
+- New Telegram payload builders and fields:
+  - `businessConnectionId()`, `messageThreadId()`, `directMessagesTopicId()`
+  - `protectContent()`, `allowPaidBroadcast()`, `messageEffectId()`
+  - `replyParameters()`, `suggestedPostParameters()`
+  
+- `TelegramLocation` enhancements: `horizontalAccuracy()`, `livePeriod()`, `heading()`, `proximityAlertRadius()`.
+- `TelegramMessage`: `entities()`, `linkPreviewOptions()`.
+- `TelegramFile`: `captionEntities()`, `showCaptionAboveMedia()`.
+- New builders: `TelegramDice`, `TelegramMediaGroup`.
+- Low-level client helpers:
+  - `sendDice`, `sendMediaGroup`, `sendChatAction`
+  - `editMessageText`, `editMessageCaption`, `editMessageMedia`, `editMessageReplyMarkup`
+  - `stopPoll`, `deleteMessage`, `deleteMessages`
+  
+
+#### Changed
+
+- Minimum PHP version bumped to 8.3.
+- Dropped Laravel 11 support.
+- Codebase now enforces stricter typing (`strict_types`, improved PHPDoc shapes).
+- Centralized response decoding via `Telegram::decodeResponse()` using Guzzle JSON utilities.
+- Improved Telegram error parsing with safer fallbacks.
+- Refactored:
+  - `TelegramChannel` recipient resolution and response handling
+  - `TelegramFile` upload handling (clear remote vs local distinction)
+  - `TelegramMessage` chunked sending behavior
+  - Shared media logic extracted to `InteractsWithTelegramMedia`
+  
+- `onError()` now accepts any callable.
+- `HasSharedLogic` typing hardened; keyboard layouts normalized for invalid column counts.
+- `TelegramBase` now accepts optional `Telegram` instance (better testability).
+- `TelegramUpdates::get()` safely returns empty array on invalid responses.
+- Config now supports both `services.telegram.*` and legacy keys.
+
+#### Dev / Tooling
+
+- Upgraded to Pest 4 + `pest-plugin-laravel` 4.
+- PHPUnit 12 configuration and coverage updates.
+- CI workflows modernized (tests, coverage, changelog, PHPStan, PHP versions).
+- PHPStan raised to `level: max` with stricter rules enabled.
+
+#### Tests
+
+- Expanded coverage:
+  - Response decoding and error parsing
+  - Channel routing and early returns
+  - Chunked message handling
+  - Updates fallback handling
+  - Dice, media groups, and client helpers
+  
+- Updated test suite to align with refactored runtime and tooling.
+
+#### Docs
+
+- README refreshed with new builders, helpers, and configuration details.
+
+### New Contributors
+
+* @alies-dev made their first contribution in https://github.com/laravel-notification-channels/telegram/pull/209
+
+**Full Changelog**: https://github.com/laravel-notification-channels/telegram/compare/6.0.0...7.0.0
+
 ## 6.0 - 2025-02-25
 
 #### What's Changed
