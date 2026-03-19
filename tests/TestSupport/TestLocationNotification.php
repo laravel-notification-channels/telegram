@@ -21,6 +21,9 @@ class TestLocationNotification extends Notification
             ->to(12345)
             ->latitude($this->latitude)
             ->longitude($this->longitude)
-            ->options(['horizontal_accuracy' => 100]);
+            ->horizontalAccuracy(100)
+            ->livePeriod(300)
+            ->heading(180)
+            ->proximityAlertRadius(50);
     }
 }

@@ -43,6 +43,19 @@ test('the notification longitude can be set', function () {
     expect($message->getPayloadValue('longitude'))->toEqual(TEST_LONG);
 });
 
+test('additional location parameters can be set', function () {
+    $message = new TelegramLocation;
+    $message->horizontalAccuracy(100)
+        ->livePeriod(300)
+        ->heading(180)
+        ->proximityAlertRadius(50);
+
+    expect($message->getPayloadValue('horizontal_accuracy'))->toEqual(100)
+        ->and($message->getPayloadValue('live_period'))->toEqual(300)
+        ->and($message->getPayloadValue('heading'))->toEqual(180)
+        ->and($message->getPayloadValue('proximity_alert_radius'))->toEqual(50);
+});
+
 test('additional options can be set for the message', function () {
     $message = new TelegramLocation;
     $message->options(['foo' => 'bar']);
@@ -59,13 +72,21 @@ it('can determine if the recipient chat id has not been set', function () {
 
 it('can return the payload as an array', function () {
     $message = new TelegramLocation(TEST_LAT, TEST_LONG);
-    $message->to(12345);
-    $message->options(['foo' => 'bar']);
+    $message->to(12345)
+        ->horizontalAccuracy(100)
+        ->livePeriod(300)
+        ->heading(180)
+        ->proximityAlertRadius(50)
+        ->options(['foo' => 'bar']);
     $expected = [
         'chat_id' => 12345,
         'foo' => 'bar',
         'latitude' => TEST_LAT,
         'longitude' => TEST_LONG,
+        'horizontal_accuracy' => 100,
+        'live_period' => 300,
+        'heading' => 180,
+        'proximity_alert_radius' => 50,
     ];
 
     expect($message->toArray())->toEqual($expected);

@@ -349,7 +349,11 @@ public function toTelegram($notifiable)
     return TelegramLocation::create()
         ->to($notifiable->telegram_user_id)
         ->latitude('40.6892494')
-        ->longitude('-74.0466891');
+        ->longitude('-74.0466891')
+        ->horizontalAccuracy(25)
+        ->livePeriod(300)
+        ->heading(180)
+        ->proximityAlertRadius(50);
 }
 ```
 
@@ -680,6 +684,10 @@ For more information on supported parameters, check out these [docs](https://cor
 
 - `latitude(float|string $latitude)` - Set location latitude.
 - `longitude(float|string $longitude)` - Set location longitude.
+- `horizontalAccuracy(float|int|string $horizontalAccuracy)` - Set the location accuracy radius in meters.
+- `livePeriod(int $livePeriod)` - Set the live location period in seconds.
+- `heading(int $heading)` - Set the movement direction in degrees.
+- `proximityAlertRadius(int $proximityAlertRadius)` - Set the proximity alert radius in meters.
 
 ### Telegram Venue Methods
 
