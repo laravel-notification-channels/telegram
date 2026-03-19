@@ -217,17 +217,22 @@ public function toTelegram($notifiable)
 }
 ```
 
+Preview:
+
+![Laravel Telegram Notification Keyboard](https://github.com/user-attachments/assets/e7552bb3-4655-489d-9cf4-107b94bb5a21)
+
 You can also request structured input from the keyboard:
 
 ```php
 TelegramMessage::create()
+    ->content('Please share your phone number or location')
     ->keyboard('Send your number', requestContact: true)
     ->keyboard('Send your location', requestLocation: true);
 ```
 
 Preview:
 
-![Laravel Telegram Notification Keyboard](https://github.com/abbasudo/telegram/assets/86796762/9c10c7d0-740b-4270-bc7c-f0600e57ba7b)
+![Laravel Telegram Notification Keyboard Request Number and Location](https://github.com/user-attachments/assets/f934fc8c-36ec-402f-9179-4dcccc06242f)
 
 ### Send a Dice
 
@@ -241,6 +246,10 @@ public function toTelegram($notifiable)
         ->emoji('🎯');
 }
 ```
+
+Preview:
+
+![Laravel Telegram Dice Notification](https://github.com/user-attachments/assets/237d5eba-0f65-470b-ad1b-0f447dd70ab9)
 
 ### Send a Poll
 
@@ -311,7 +320,7 @@ You can also use a helper method with a remote file or Telegram file ID:
 
 ```php
 TelegramFile::create()
-    ->photo('https://file-examples-com.github.io/uploads/2017/10/file_example_JPG_1MB.jpg');
+    ->photo('https://samples-files.com/samples/images/jpg/1280-720-sample.jpg');
 ```
 
 Preview:
@@ -325,10 +334,28 @@ public function toTelegram($notifiable)
 {
     return TelegramFile::create()
         ->to($notifiable->telegram_user_id) // Optional
-        ->content('Did you know we can set a custom filename too?')
-        ->document('https://file-examples-com.github.io/uploads/2017/10/file-sample_150kB.pdf', 'sample.pdf');
+        ->content('Here is your PDF document')
+        ->document('https://samples-files.com/samples/documents/pdf/sample-1-small-size.pdf');
 }
 ```
+
+Preview:
+
+![Laravel Telegram Document Notification Example](https://github.com/user-attachments/assets/06be6dff-4321-4336-896c-d0f73610bd40)
+
+If you want to control the filename, you need to upload the actual file contents instead of passing the remote URL directly:
+
+```php
+$contents = file_get_contents('https://samples-files.com/samples/documents/pdf/sample-1-small-size.pdf');
+
+TelegramFile::create()
+    ->content('Did you know we can set a custom filename too?')
+    ->document($contents, 'sample.pdf');
+```
+
+Preview:
+
+![Laravel Telegram Document Notification Example with Custom Filename](https://github.com/user-attachments/assets/24d82d61-7f77-420c-b9c5-3bce92b77616)
 
 Raw file contents are also supported when you provide a filename:
 
@@ -339,9 +366,25 @@ TelegramFile::create()
 
 Preview:
 
-![Laravel Telegram Document Notification Example](https://user-images.githubusercontent.com/1915268/66616850-10520580-ebf0-11e9-9122-4f4d263f3b53.jpg)
+![Laravel Telegram Document On Fly](https://github.com/user-attachments/assets/944dbd40-039c-42ab-86ab-4840cf09d320)
 
 ### Attach a Location
+
+```php
+public function toTelegram($notifiable)
+{
+    return TelegramLocation::create()
+        ->to($notifiable->telegram_user_id)
+        ->latitude('40.6892494')
+        ->longitude('-74.0466891');
+}
+```
+
+Preview:
+
+![Laravel Telegram Location Notification Example](https://github.com/user-attachments/assets/d47e65f2-aeeb-4c76-a953-c044186f4ed2)
+
+You can also send live location
 
 ```php
 public function toTelegram($notifiable)
@@ -359,7 +402,7 @@ public function toTelegram($notifiable)
 
 Preview:
 
-![Laravel Telegram Location Notification Example](https://user-images.githubusercontent.com/1915268/66616918-54450a80-ebf0-11e9-86ea-d5264fe05ba9.jpg)
+![Laravel Telegram Live Location Notification Example](https://github.com/user-attachments/assets/f93387e9-177b-4241-bce5-8dc9d2d5737d)
 
 ### Attach a Venue
 
@@ -387,13 +430,13 @@ public function toTelegram($notifiable)
     return TelegramFile::create()
         ->to($notifiable->telegram_user_id)
         ->content('Sample *video* notification!')
-        ->video('https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_480_1_5MG.mp4');
+        ->video('https://samples-files.com/samples/video/mp4/sample2-720x480.mp4');
 }
 ```
 
 Preview:
 
-![Laravel Telegram Video Notification Example](https://user-images.githubusercontent.com/1915268/66617038-ed742100-ebf0-11e9-865a-bf0245d2cbbb.jpg)
+![Laravel Telegram Video Notification Example](https://github.com/user-attachments/assets/25aafad0-7e85-4a52-a036-7e7ec5fb2db5)
 
 ### Attach a GIF File
 
@@ -403,7 +446,7 @@ public function toTelegram($notifiable)
     return TelegramFile::create()
         ->to($notifiable->telegram_user_id)
         ->content('Woot! We can send animated gif notifications too!')
-        ->animation('https://sample-videos.com/gif/2.gif');
+        ->animation('https://disk.sample.cat/samples/gif/sample-2.gif');
 }
 ```
 
@@ -416,7 +459,7 @@ TelegramFile::create()
 
 Preview:
 
-![Laravel Telegram Gif Notification Example](https://user-images.githubusercontent.com/1915268/66617071-109ed080-ebf1-11e9-989b-b237f2b9502d.jpg)
+![Laravel Telegram Gif Notification Example](https://github.com/user-attachments/assets/920b52bc-0b80-4050-a9b4-b45abdffa914)
 
 ### Attach a Sticker
 
@@ -435,6 +478,8 @@ Preview:
 
 ### Send a Media Group
 
+Use `TelegramMediaGroup` to send multiple items in a single group.
+
 ```php
 use NotificationChannels\Telegram\TelegramMediaGroup;
 
@@ -442,10 +487,8 @@ public function toTelegram($notifiable)
 {
     return TelegramMediaGroup::create()
         ->to($notifiable->telegram_user_id)
-        ->messageThreadId(42)
         ->photo('https://example.com/one.jpg', 'First image')
-        ->photo('https://example.com/two.jpg')
-        ->document('Quarterly report content', 'Quarterly report', 'report.txt');
+        ->photo('https://example.com/two.jpg');
 }
 ```
 
@@ -457,7 +500,40 @@ TelegramMediaGroup::create()
     ->video(storage_path('app/telegram/video.mp4'), 'Release demo');
 ```
 
-Media groups support albums of `photo`, `video`, `audio`, and `document` items. Each item may be a Telegram file ID, a remote URL, a local path, a stream/resource, or raw file contents when you provide a filename. Uploaded files are sent automatically as multipart attachments.
+Preview:
+
+![Laravel Telegram Media Group Notification Example](https://github.com/user-attachments/assets/a450ac69-48cf-4ffd-be07-40f9cdd16dc1)
+
+Documents are also supported, including dynamically generated content:
+
+```php
+TelegramMediaGroup::create()
+    ->document('Monthly report content on-the-fly', 'Monthly report caption', 'monthly.txt')
+    ->document('/path/to/local/file.pdf', 'pdf file caption', 'annual-report.pdf');
+```
+
+Preview:
+
+![Laravel Telegram Media Group Documents Notification Example](https://github.com/user-attachments/assets/83febf55-b6ec-4e1f-94ed-b273891a2edc)
+
+#### Supported Input Types
+
+Each media item can be provided as:
+
+* A Telegram file ID
+* A remote URL
+* A local file path
+* A stream or resource
+* Raw file contents (requires a filename)
+
+When uploading local files or raw content, the package automatically handles multipart uploads.
+
+Media groups support albums of `photo`, `video`, `audio`, and `document` items.
+
+> [!NOTE]
+> Telegram does not allow mixing certain media types within a single group.
+> Documents cannot be combined with photos or videos.
+> However, photos and videos can be sent together in the same media group.
 
 ### Routing a Message
 
