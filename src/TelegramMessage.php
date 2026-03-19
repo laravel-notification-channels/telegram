@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace NotificationChannels\Telegram;
 
-use Illuminate\Support\Collection;
+use GuzzleHttp\Exception\InvalidArgumentException;
 use Illuminate\Support\Facades\View;
-use JsonException;
 use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Enums\ParseMode;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
@@ -15,15 +14,17 @@ use Psr\Http\Message\ResponseInterface;
 final class TelegramMessage extends TelegramBase implements TelegramSenderContract
 {
     private const DEFAULT_CHUNK_SIZE = 4096;
-
     private const CHUNK_SEPARATOR = '%#TGMSG#%';
+
+    private string $text = '';
 
     public function __construct(
         string $content = '',
         public int $chunkSize = 0
     ) {
         parent::__construct();
-        $this->content($content);
+
+        $this->text = $content;
         $this->parseMode(ParseMode::Markdown);
     }
 
@@ -44,7 +45,8 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
 
     public function content(string $content, ?int $limit = null): self
     {
-        $this->payload['text'] = $content;
+        $this->text = $content;
+
         if ($limit !== null) {
             $this->chunkSize = $limit;
         }
@@ -54,25 +56,33 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
 
     public function line(string $content): self
     {
-        $this->payload['text'] .= "$content\n";
+        $this->text .= $content . "\n";
 
         return $this;
     }
 
     public function lineIf(bool $condition, string $line): self
     {
-        return $condition ? $this->line($line) : $this;
+        if ($condition) {
+            $this->line($line);
+        }
+
+        return $this;
     }
 
     public function escapedLine(string $content): self
     {
         $content = str_replace('\\', '\\\\', $content);
 
-        $escapedContent = self::escapeMarkdown($content) ?: $content;
+        $escaped = self::escapeMarkdown($content) ?? $content;
 
-        return $this->line($escapedContent);
+        return $this->line($escaped);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  array<string, mixed>  $mergeData
+     */
     public function view(string $view, array $data = [], array $mergeData = []): self
     {
         return $this->content(View::make($view, $data, $mergeData)->render());
@@ -94,13 +104,16 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
      * @return array<int, array<string, mixed>>|ResponseInterface|null
      *
      * @throws CouldNotSendNotification
-     * @throws JsonException
+     * @throws InvalidArgumentException
      */
     public function send(): array|ResponseInterface|null
     {
+        /** @var array<string, mixed> $payload */
+        $payload = $this->toArray();
+
         return $this->shouldChunk()
-            ? $this->sendChunkedMessage($this->toArray())
-            : $this->telegram->sendMessage($this->toArray());
+            ? $this->sendChunkedMessage($payload)
+            : $this->telegram->sendMessage($payload);
     }
 
     /**
@@ -108,57 +121,77 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
      * @return array<int, array<string, mixed>>
      *
      * @throws CouldNotSendNotification
-     * @throws JsonException
+     * @throws InvalidArgumentException
      */
     private function sendChunkedMessage(array $params): array
     {
-        $replyMarkup = $this->getPayloadValue('reply_markup');
+        $replyMarkup = $params['reply_markup'] ?? null;
 
-        if ($replyMarkup) {
+        if ($replyMarkup !== null) {
             unset($params['reply_markup']);
         }
 
-        $messages = $this->chunkStrings($params['text'], $this->chunkSize);
+        $messages = $this->chunkStrings($this->text, $this->chunkSize);
+        $messages = array_values(array_filter($messages, static fn ($m) => $m !== ''));
+
         $lastIndex = count($messages) - 1;
+        $responses = [];
 
-        return Collection::make($messages)
-            ->filter()
-            ->map(function (string $text, int $index) use ($params, $replyMarkup, $lastIndex): ?array {
-                $payload = [...$params, 'text' => $text];
-                if ($index === $lastIndex && $replyMarkup !== null) {
-                    $payload['reply_markup'] = $replyMarkup;
-                }
+        foreach ($messages as $index => $message) {
+            $payload = [...$params, 'text' => $message];
 
-                $response = $this->telegram->sendMessage($payload);
-                sleep(1); // Rate limiting
+            if ($index === $lastIndex && $replyMarkup !== null) {
+                $payload['reply_markup'] = $replyMarkup;
+            }
 
-                return $response ? json_decode(
-                    $response->getBody()->getContents(),
-                    true,
-                    512,
-                    JSON_THROW_ON_ERROR
-                ) : null;
-            })
-            ->filter()
-            ->values()
-            ->all();
+            $response = $this->telegram->sendMessage($payload);
+
+            // Telegram rate limiting safety
+            sleep(1);
+
+            if ($response !== null) {
+                $responses[] = Telegram::decodeResponse($response);
+            }
+        }
+
+        return $responses;
     }
 
     /**
-     * @return array<int, string>
+     * @return list<string>
      */
     private function chunkStrings(string $value, int $limit = self::DEFAULT_CHUNK_SIZE): array
     {
+        $limit = max(1, min($limit, self::DEFAULT_CHUNK_SIZE));
+
         if (mb_strwidth($value, 'UTF-8') <= $limit) {
             return [$value];
         }
 
-        $limit = min($limit, self::DEFAULT_CHUNK_SIZE);
+        $wrapped = wordwrap($value, $limit, self::CHUNK_SEPARATOR);
+        $parts = explode(self::CHUNK_SEPARATOR, $wrapped);
 
-        $output = explode(self::CHUNK_SEPARATOR, wordwrap($value, $limit, self::CHUNK_SEPARATOR));
+        return count($parts) > 1
+            ? $parts
+            : mb_str_split($value, $limit, 'UTF-8');
+    }
 
-        return count($output) <= 1
-            ? mb_str_split($value, $limit, 'UTF-8')
-            : $output;
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
+    {
+        return [
+            'text' => $this->text,
+            ...parent::toArray(),
+        ];
+    }
+
+    public function getPayloadValue(string $key): string|int|float|bool|array|null
+    {
+        return match ($key) {
+            'text' => $this->text,
+            default => parent::getPayloadValue($key),
+        };
     }
 }

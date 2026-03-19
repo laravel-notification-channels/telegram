@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NotificationChannels\Telegram;
 
 use Exception;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\InvalidArgumentException;
+use GuzzleHttp\Utils;
 use Illuminate\Support\Str;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use Psr\Http\Message\ResponseInterface;
@@ -15,12 +19,14 @@ use Psr\Http\Message\ResponseInterface;
 class Telegram
 {
     /** Default Telegram Bot API Base URI.*/
-    protected const API_BASE_URI = 'https://api.telegram.org';
+    protected const string API_BASE_URI = 'https://api.telegram.org';
+
+    protected string $apiBaseUri;
 
     public function __construct(
         protected ?string $token = null,
         protected HttpClient $http = new HttpClient,
-        protected ?string $apiBaseUri = null
+        ?string $apiBaseUri = null
     ) {
         $this->setApiBaseUri($apiBaseUri ?? static::API_BASE_URI);
     }
@@ -94,6 +100,8 @@ class Telegram
      *
      * @see https://core.telegram.org/bots/api#sendmessage
      *
+     * @param  array<string, mixed>  $params
+     *
      * @throws CouldNotSendNotification
      */
     public function sendMessage(array $params): ?ResponseInterface
@@ -104,6 +112,7 @@ class Telegram
     /**
      * Send File as Image or Document.
      *
+     * @param  array<string, mixed>|list<array{name: string, contents: mixed, filename?: string}>  $params
      *
      * @throws CouldNotSendNotification
      */
@@ -115,6 +124,7 @@ class Telegram
     /**
      * Send a Poll.
      *
+     * @param  array<string, mixed>  $params
      *
      * @throws CouldNotSendNotification
      */
@@ -126,6 +136,7 @@ class Telegram
     /**
      * Send a Contact.
      *
+     * @param  array<string, mixed>  $params
      *
      * @throws CouldNotSendNotification
      */
@@ -137,6 +148,7 @@ class Telegram
     /**
      * Get updates.
      *
+     * @param  array<string, mixed>  $params
      *
      * @throws CouldNotSendNotification
      */
@@ -148,6 +160,7 @@ class Telegram
     /**
      * Send a Location.
      *
+     * @param  array<string, mixed>  $params
      *
      * @throws CouldNotSendNotification
      */
@@ -159,11 +172,26 @@ class Telegram
     /**
      * Send a Venue.
      *
+     * @param  array<string, mixed>  $params
+     *
      * @throws CouldNotSendNotification
      */
     public function sendVenue(array $params): ?ResponseInterface
     {
         return $this->sendRequest('sendVenue', $params);
+    }
+
+    /**
+     * @return array<string, mixed>
+     *
+     * @throws InvalidArgumentException
+     */
+    public static function decodeResponse(ResponseInterface $response): array
+    {
+        /** @var array<string, mixed> $decodedResponse */
+        $decodedResponse = Utils::jsonDecode($response->getBody()->getContents(), true);
+
+        return $decodedResponse;
     }
 
     /**
@@ -177,6 +205,7 @@ class Telegram
     /**
      * Send an API request and return response.
      *
+     * @param  array<string, mixed>|list<array{name: string, contents: mixed, filename?: string}>  $params
      *
      * @throws CouldNotSendNotification
      */
@@ -195,7 +224,7 @@ class Telegram
         } catch (ClientException $exception) {
             throw CouldNotSendNotification::telegramRespondedWithAnError($exception);
         } catch (Exception $exception) {
-            throw CouldNotSendNotification::couldNotCommunicateWithTelegram($exception);
+            throw CouldNotSendNotification::couldNotCommunicateWithTelegram($exception->getMessage());
         }
     }
 }

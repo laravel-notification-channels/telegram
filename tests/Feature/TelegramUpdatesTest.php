@@ -103,3 +103,15 @@ it('can get updates', function () {
 
     expect($actualResponse)->toBe($expectedResponse);
 });
+
+it('returns an empty array when telegram does not return a psr response', function () {
+    $update = TelegramUpdates::create();
+
+    $this->telegram
+        ->shouldReceive('getUpdates')
+        ->with($update->toArray())
+        ->once()
+        ->andReturn(null);
+
+    expect($update->get())->toBe([]);
+});

@@ -1,15 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NotificationChannels\Telegram;
 
-use GuzzleHttp\Psr7\Response;
+use Closure;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Notifications\Notification;
+use GuzzleHttp\Exception\InvalidArgumentException;
+use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
+use Psr\Http\Message\ResponseInterface;
 
 /**
- * Class TelegramChannel.
+ * @phpstan-type TelegramResponse array<string|int, mixed>
  */
 class TelegramChannel
 {
@@ -18,33 +23,37 @@ class TelegramChannel
     ) {}
 
     /**
-     * Send the given notification.
+     * @return TelegramResponse|null
      *
-     *
-     * @throws CouldNotSendNotification|\JsonException
+     * @throws CouldNotSendNotification|InvalidArgumentException
      */
     public function send(mixed $notifiable, Notification $notification): ?array
     {
-        // @phpstan-ignore-next-line
+        if (! method_exists($notification, 'toTelegram')) {
+            return null;
+        }
+
         $message = $notification->toTelegram($notifiable);
 
         if (is_string($message)) {
             $message = TelegramMessage::create($message);
         }
 
+        if (! ($message instanceof TelegramBase && $message instanceof TelegramSenderContract)) {
+            return null;
+        }
+
         if (! $message->canSend()) {
             return null;
         }
 
-        $to = $message->getPayloadValue('chat_id') ?:
-              ($notifiable->routeNotificationFor('telegram', $notification) ?:
-              $notifiable->routeNotificationFor(self::class, $notification));
+        $recipient = $this->resolveRecipient($message, $notifiable, $notification);
 
-        if (! $to) {
+        if ($recipient === null) {
             return null;
         }
 
-        $message->to($to);
+        $message->to($recipient);
 
         if ($message->hasToken()) {
             $message->telegram->setToken($message->token);
@@ -59,17 +68,44 @@ class TelegramChannel
                 'exception' => $exception,
             ];
 
-            if ($message->exceptionHandler) {
-                ($message->exceptionHandler)($data);
-            }
+            $message->exceptionHandler?->__invoke($data);
 
-            $this->dispatcher->dispatch(new NotificationFailed($notifiable, $notification, 'telegram', $data));
+            $this->dispatcher->dispatch(
+                new NotificationFailed($notifiable, $notification, 'telegram', $data)
+            );
 
             throw $exception;
         }
 
-        return $response instanceof Response
-                ? json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR)
-                : $response;
+        return $response instanceof ResponseInterface
+            ? Telegram::decodeResponse($response)
+            : $response;
+    }
+
+    private function resolveRecipient(
+        TelegramBase $message,
+        mixed $notifiable,
+        Notification $notification
+    ): int|string|null {
+        $chatId = $this->chatIdValue($message->getPayloadValue('chat_id'));
+
+        if ($chatId !== null) {
+            return $chatId;
+        }
+
+        if (! is_object($notifiable) || ! method_exists($notifiable, 'routeNotificationFor')) {
+            return null;
+        }
+
+        return $this->chatIdValue(
+            $notifiable->routeNotificationFor('telegram', $notification)
+        ) ?? $this->chatIdValue(
+            $notifiable->routeNotificationFor(self::class, $notification)
+        );
+    }
+
+    private function chatIdValue(mixed $value): int|string|null
+    {
+        return is_int($value) || is_string($value) ? $value : null;
     }
 }

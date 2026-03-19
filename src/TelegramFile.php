@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NotificationChannels\Telegram;
 
 use Illuminate\Support\Facades\View;
@@ -9,19 +11,22 @@ use NotificationChannels\Telegram\Enums\ParseMode;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use GuzzleHttp\Psr7\Utils;
 
 /**
  * Class TelegramFile
  *
  * Handles file-based Telegram notifications with support for various file types
  * and content formats.
+ *
+ * @phpstan-type MultipartItem array{name: string, contents: mixed, filename?: string}
  */
 class TelegramFile extends TelegramBase implements TelegramSenderContract
 {
     /** @var FileType The file content type */
     public FileType $type = FileType::Document;
 
-    /** @var array File types that don't support captions */
+    /** @var list<FileType> File types that don't support captions */
     protected array $captionUnsupportedTypes = [
         FileType::VideoNote,
         FileType::Sticker,
@@ -66,26 +71,20 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
      */
     public function file(mixed $file, FileType|string $type, ?string $filename = null): self
     {
-        $this->type = is_string($type) ? FileType::tryFrom($type) ?? FileType::Document : $type;
+        $this->type = is_string($type)
+            ? FileType::tryFrom($type) ?? FileType::Document
+            : $type;
+
         $typeValue = $this->type->value;
 
         // Handle file URLs or Telegram file IDs
-        if (is_string($file) && ! $this->isReadableFile($file) && $filename === null) {
-            if (! filter_var($file, FILTER_VALIDATE_URL) && ! preg_match('/^[a-zA-Z0-9_-]+$/', $file)) {
-                throw CouldNotSendNotification::invalidFileIdentifier($file);
-            }
-
+        if (is_string($file) && $this->isRemoteFile($file, $filename)) {
             $this->payload[$typeValue] = $file;
 
             return $this;
         }
 
-        $contents = match (true) {
-            $file instanceof StreamInterface => $file->detach(),
-            is_resource($file) => $file,
-            $this->isReadableFile($file) => @fopen($file, 'rb') ?: throw CouldNotSendNotification::fileAccessFailed($file),
-            default => $file
-        };
+        $contents = $this->normalizeFile($file, $filename);
 
         $fileData = [
             'name' => $typeValue,
@@ -167,6 +166,9 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * Use a Laravel Blade view as the content.
+     *
+     * @param  array<string, mixed>  $data
+     * @param  array<string, mixed>  $mergeData
      */
     public function view(string $view, array $data = [], array $mergeData = []): self
     {
@@ -186,11 +188,13 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
      */
     protected function supportsCaptions(): bool
     {
-        return ! in_array($this->type, $this->captionUnsupportedTypes);
+        return ! in_array($this->type, $this->captionUnsupportedTypes, true);
     }
 
     /**
      * Convert the notification to an array for API consumption.
+     *
+     * @return array<string, mixed>|list<MultipartItem>
      */
     public function toArray(): array
     {
@@ -201,11 +205,16 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
             unset($payload['caption']);
         }
 
-        return $this->hasFile() ? $this->toMultipart($payload) : $payload;
+        return $this->hasFile()
+            ? $this->toMultipart($payload)
+            : $payload;
     }
 
     /**
      * Create multipart array for file uploads.
+     *
+     * @param  array<string, mixed>|null  $payload
+     * @return list<MultipartItem>
      */
     public function toMultipart(?array $payload = null): array
     {
@@ -213,9 +222,25 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
         $data = [];
 
         foreach ($payload as $name => $contents) {
-            $data[] = ($name === 'file')
-                ? $contents
-                : compact('name', 'contents');
+            if ($name === 'file' && is_array($contents) && isset($contents['name'], $contents['contents']) && is_string($contents['name'])) {
+                $file = [
+                    'name' => $contents['name'],
+                    'contents' => $contents['contents'],
+                ];
+
+                if (isset($contents['filename']) && is_string($contents['filename'])) {
+                    $file['filename'] = $contents['filename'];
+                }
+
+                $data[] = $file;
+
+                continue;
+            }
+
+            $data[] = [
+                'name' => $name,
+                'contents' => $contents,
+            ];
         }
 
         return $data;
@@ -229,11 +254,9 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
     public function send(): ?ResponseInterface
     {
         // Get the method endpoint based on file type
-        $method = $this->type->value;
-
         return $this->telegram->sendFile(
             $this->toArray(),
-            $method,
+            $this->type->value,
             $this->hasFile()
         );
     }
@@ -244,5 +267,40 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
     protected function isReadableFile(string $file): bool
     {
         return is_file($file) && is_readable($file);
+    }
+
+    private function isRemoteFile(string $file, ?string $filename): bool
+    {
+        if ($filename !== null) {
+            return false;
+        }
+
+        return filter_var($file, FILTER_VALIDATE_URL)
+            || preg_match('/^[a-zA-Z0-9_-]+$/', $file) === 1;
+    }
+
+    /**
+     * @param resource|StreamInterface|string $file
+     * @param string|null  $filename  Optional custom filename
+     *
+     * @return StreamInterface
+     * */
+    private function normalizeFile(mixed $file, ?string $filename = null): StreamInterface
+    {
+        return match (true) {
+            $file instanceof StreamInterface => $file,
+
+            is_resource($file) => Utils::streamFor($file),
+
+            is_string($file) && $this->isReadableFile($file)
+                => Utils::streamFor(fopen($file, 'rb')),
+
+            is_string($file) && $filename !== null
+                => Utils::streamFor($file),
+
+            default => throw CouldNotSendNotification::invalidFileIdentifier(
+                is_string($file) ? $file : 'Invalid file input'
+            ),
+        };
     }
 }

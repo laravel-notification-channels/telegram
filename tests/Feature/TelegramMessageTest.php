@@ -3,6 +3,7 @@
 namespace NotificationChannels\Telegram\Tests\Feature;
 
 use Illuminate\Support\Facades\View;
+use GuzzleHttp\Psr7\Response;
 use NotificationChannels\Telegram\TelegramMessage;
 
 it('accepts content when constructed', function () {
@@ -189,4 +190,23 @@ test('a request location keyboard button can be added to the message', function 
     expect($message->getPayloadValue('reply_markup'))->toEqual(
         '{"keyboard":[[{"text":"Laravel","request_contact":false,"request_location":true}]],"one_time_keyboard":true,"resize_keyboard":true}'
     );
+});
+
+it('returns chunked telegram responses as decoded arrays', function () {
+    $message = TelegramMessage::create(str_repeat('A', 12))->chunk(5);
+
+    $this->telegram
+        ->shouldReceive('sendMessage')
+        ->times(3)
+        ->andReturn(
+            new Response(200, [], json_encode(['ok' => true, 'result' => ['message_id' => 1]])),
+            new Response(200, [], json_encode(['ok' => true, 'result' => ['message_id' => 2]])),
+            new Response(200, [], json_encode(['ok' => true, 'result' => ['message_id' => 3]])),
+        );
+
+    expect($message->send())->toBe([
+        ['ok' => true, 'result' => ['message_id' => 1]],
+        ['ok' => true, 'result' => ['message_id' => 2]],
+        ['ok' => true, 'result' => ['message_id' => 3]],
+    ]);
 });

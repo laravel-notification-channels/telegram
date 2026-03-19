@@ -13,6 +13,9 @@ use NotificationChannels\Telegram\Enums\ParseMode;
  * Trait HasSharedLogic
  *
  * Provides shared functionality for Telegram message handling.
+ *
+ * @phpstan-type PayloadValue string|int|float|bool|array<string, mixed>|null
+ * @phpstan-type Payload array<string, PayloadValue>
  */
 trait HasSharedLogic
 {
@@ -21,13 +24,13 @@ trait HasSharedLogic
     /** @var string|null Bot Token */
     public ?string $token = null;
 
-    /** @var array<string, mixed> Params payload */
+    /** @var Payload Params payload */
     protected array $payload = [];
 
-    /** @var array<int, array<string, mixed>> Keyboard Buttons */
+    /** @var list<array<string, mixed>> Keyboard Buttons */
     protected array $keyboards = [];
 
-    /** @var array<int, array<string, mixed>> Inline Keyboard Buttons */
+    /** @var list<array{text: string} & array<string, mixed>> Inline Keyboard Buttons */
     protected array $buttons = [];
 
     /** @var bool|null Condition for sending the message */
@@ -100,6 +103,8 @@ trait HasSharedLogic
         bool $requestContact = false,
         bool $requestLocation = false
     ): static {
+        $columns = max(1, $columns);
+
         $this->keyboards[] = [
             'text' => $text,
             'request_contact' => $requestContact,
@@ -126,7 +131,10 @@ trait HasSharedLogic
      */
     public function button(string $text, string $url, int $columns = 2): static
     {
-        $this->buttons[] = compact('text', 'url');
+        $this->buttons[] = [
+            'text' => $text,
+            'url' => $url,
+        ];
 
         return $this->updateInlineKeyboard($columns);
     }
@@ -195,6 +203,7 @@ trait HasSharedLogic
 
     /**
      * Determine if bot token is given for this notification.
+     * @phpstan-assert-if-true string $this->token
      */
     public function hasToken(): bool
     {
@@ -204,7 +213,7 @@ trait HasSharedLogic
     /**
      * Set additional options to pass to sendMessage method.
      *
-     * @param  array<string, mixed>  $options  Additional options
+     * @param Payload $options  Additional options
      */
     public function options(array $options): static
     {
@@ -220,11 +229,13 @@ trait HasSharedLogic
      * which will be invoked if an exception occurs during the
      * notification process. The callback must be a valid Closure.
      *
-     * @param  Closure  $callback  The closure that will handle exceptions.
+     * @param callable  $callback  The closure that will handle exceptions.
      */
-    public function onError(Closure $callback): self
+    public function onError(callable $callback): self
     {
-        $this->exceptionHandler = $callback;
+        $this->exceptionHandler = $callback instanceof Closure
+            ? $callback
+            : Closure::fromCallable($callback);
 
         return $this;
     }
@@ -261,9 +272,9 @@ trait HasSharedLogic
      * Get payload value for given key.
      *
      * @param  string  $key  The key to retrieve from payload
-     * @return mixed The value from payload or null if not found
+     * @return PayloadValue The value from payload or null if not found
      */
-    public function getPayloadValue(string $key): mixed
+    public function getPayloadValue(string $key): string|int|float|bool|array|null
     {
         return $this->payload[$key] ?? null;
     }
@@ -271,7 +282,7 @@ trait HasSharedLogic
     /**
      * Get the complete payload as array.
      *
-     * @return array<string, mixed>
+     * @return Payload
      */
     public function toArray(): array
     {
@@ -281,7 +292,7 @@ trait HasSharedLogic
     /**
      * Convert the object into something JSON serializable.
      *
-     * @return array<string, mixed>
+     * @return Payload
      */
     public function jsonSerialize(): array
     {
@@ -297,6 +308,8 @@ trait HasSharedLogic
      */
     private function updateInlineKeyboard(int $columns): static
     {
+        $columns = max(1, $columns);
+
         return $this->keyboardMarkup([
             'inline_keyboard' => array_chunk($this->buttons, $columns),
         ]);

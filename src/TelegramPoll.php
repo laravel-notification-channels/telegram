@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NotificationChannels\Telegram;
 
 use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
@@ -36,6 +38,8 @@ class TelegramPoll extends TelegramBase implements TelegramSenderContract
 
     /**
      * Poll choices.
+     *
+     * @param  array<int, string>  $choices
      *
      * @return $this
      */
