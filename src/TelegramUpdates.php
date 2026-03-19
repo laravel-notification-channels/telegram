@@ -38,7 +38,6 @@ class TelegramUpdates
      * Additional options.
      *
      * @param  array<string, mixed>  $options
-     *
      * @return $this
      */
     public function options(array $options): self

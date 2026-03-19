@@ -14,6 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 final class TelegramMessage extends TelegramBase implements TelegramSenderContract
 {
     private const DEFAULT_CHUNK_SIZE = 4096;
+
     private const CHUNK_SEPARATOR = '%#TGMSG#%';
 
     private string $text = '';
@@ -56,7 +57,7 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
 
     public function line(string $content): self
     {
-        $this->text .= $content . "\n";
+        $this->text .= $content."\n";
 
         return $this;
     }

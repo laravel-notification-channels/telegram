@@ -2,8 +2,8 @@
 
 namespace NotificationChannels\Telegram\Tests\Feature;
 
-use Illuminate\Support\Facades\View;
 use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Facades\View;
 use NotificationChannels\Telegram\TelegramMessage;
 
 it('accepts content when constructed', function () {

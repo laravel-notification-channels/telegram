@@ -259,5 +259,4 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
             $this->hasFile()
         );
     }
-
 }

@@ -5,12 +5,12 @@ namespace NotificationChannels\Telegram\Tests\Feature;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\InvalidArgumentException;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Mockery;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Telegram\Telegram;
 use RuntimeException;
-use GuzzleHttp\Psr7\Request;
 
 it('decodes valid telegram responses', function () {
     $response = new Response(200, [], json_encode([

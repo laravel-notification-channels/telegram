@@ -2,6 +2,7 @@
 
 namespace NotificationChannels\Telegram\Tests\Feature;
 
+use GuzzleHttp\Psr7\Response;
 use NotificationChannels\Telegram\TelegramMediaGroup;
 use NotificationChannels\Telegram\Tests\TestSupport\TestMediaGroupNotification;
 use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;
@@ -97,7 +98,7 @@ it('can send a media group', function () {
         ->with($group->toArray(), false)
         ->once()
         ->andReturn(
-            new \GuzzleHttp\Psr7\Response(200, [], json_encode($expectedResponse))
+            new Response(200, [], json_encode($expectedResponse))
         );
 
     expect($this->channel->send($notifiable, $notification))->toBe($expectedResponse);

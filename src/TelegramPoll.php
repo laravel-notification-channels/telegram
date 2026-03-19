@@ -40,7 +40,6 @@ class TelegramPoll extends TelegramBase implements TelegramSenderContract
      * Poll choices.
      *
      * @param  array<int, string>  $choices
-     *
      * @return $this
      */
     public function choices(array $choices): self

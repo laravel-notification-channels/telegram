@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace NotificationChannels\Telegram;
 
-use Closure;
+use GuzzleHttp\Exception\InvalidArgumentException;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Notifications\Notification;
-use GuzzleHttp\Exception\InvalidArgumentException;
 use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use Psr\Http\Message\ResponseInterface;

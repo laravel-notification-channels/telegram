@@ -12,7 +12,7 @@ interface TelegramSenderContract
     /**
      * Send the message.
      *
-     * @return \Psr\Http\Message\ResponseInterface|array<int, array<string, mixed>>|null
+     * @return ResponseInterface|array<int, array<string, mixed>>|null
      *
      * @throws CouldNotSendNotification
      */

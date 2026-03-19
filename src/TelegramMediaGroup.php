@@ -174,5 +174,4 @@ class TelegramMediaGroup extends TelegramBase implements TelegramSenderContract
             'reply_parameters',
         ]));
     }
-
 }

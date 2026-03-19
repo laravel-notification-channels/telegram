@@ -265,6 +265,7 @@ trait HasSharedLogic
 
     /**
      * Determine if bot token is given for this notification.
+     *
      * @phpstan-assert-if-true string $this->token
      */
     public function hasToken(): bool
@@ -275,7 +276,7 @@ trait HasSharedLogic
     /**
      * Set additional options to pass to sendMessage method.
      *
-     * @param Payload $options  Additional options
+     * @param  Payload  $options  Additional options
      */
     public function options(array $options): static
     {
@@ -291,7 +292,7 @@ trait HasSharedLogic
      * which will be invoked if an exception occurs during the
      * notification process. The callback must be a valid Closure.
      *
-     * @param callable  $callback  The closure that will handle exceptions.
+     * @param  callable  $callback  The closure that will handle exceptions.
      */
     public function onError(callable $callback): self
     {

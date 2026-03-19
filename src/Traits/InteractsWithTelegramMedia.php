@@ -67,8 +67,7 @@ trait InteractsWithTelegramMedia
         return match (true) {
             $file instanceof StreamInterface => $file,
             is_resource($file) => Utils::streamFor($file),
-            is_string($file) && $this->isReadableFile($file)
-                => Utils::streamFor(fopen($file, 'rb') ?: throw CouldNotSendNotification::fileAccessFailed($file)),
+            is_string($file) && $this->isReadableFile($file) => Utils::streamFor(fopen($file, 'rb') ?: throw CouldNotSendNotification::fileAccessFailed($file)),
             is_string($file) && $filename !== null => Utils::streamFor($file),
             default => throw CouldNotSendNotification::invalidFileIdentifier(
                 is_string($file) ? $file : $invalidMessage

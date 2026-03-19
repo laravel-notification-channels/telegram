@@ -2,8 +2,9 @@
 
 namespace NotificationChannels\Telegram\Tests\Feature;
 
-use Illuminate\Notifications\Notification;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Notifications\Events\NotificationFailed;
+use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Telegram\TelegramMessage;
 use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;
@@ -92,7 +93,7 @@ it('uses the routed telegram recipient when chat id is not set on the message', 
             'chat_id' => 67890,
         ])
         ->once()
-        ->andReturn(new \GuzzleHttp\Psr7\Response(200, [], json_encode($expectedResponse)));
+        ->andReturn(new Response(200, [], json_encode($expectedResponse)));
 
     expect($this->channel->send($notifiable, $notification))->toBe($expectedResponse);
 });
