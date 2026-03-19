@@ -192,6 +192,52 @@ test('a request location keyboard button can be added to the message', function 
     );
 });
 
+it('can set message entities and link preview options', function () {
+    $message = TelegramMessage::create('Laravel')
+        ->entities([
+            [
+                'offset' => 0,
+                'length' => 8,
+                'type' => 'bold',
+            ],
+        ])
+        ->linkPreviewOptions([
+            'is_disabled' => true,
+        ]);
+
+    expect($message->toArray())
+        ->toHaveKey('entities', '[{"offset":0,"length":8,"type":"bold"}]')
+        ->toHaveKey('link_preview_options', '{"is_disabled":true}');
+});
+
+it('can set common telegram send options', function () {
+    $message = TelegramMessage::create('Laravel')
+        ->businessConnectionId('biz-123')
+        ->messageThreadId(10)
+        ->directMessagesTopicId(11)
+        ->protectContent()
+        ->allowPaidBroadcast()
+        ->messageEffectId('effect-123')
+        ->replyParameters([
+            'message_id' => 99,
+        ])
+        ->suggestedPostParameters([
+            'price' => 100,
+        ]);
+
+    expect($message->toArray())->toMatchArray([
+        'text' => 'Laravel',
+        'business_connection_id' => 'biz-123',
+        'message_thread_id' => 10,
+        'direct_messages_topic_id' => 11,
+        'protect_content' => true,
+        'allow_paid_broadcast' => true,
+        'message_effect_id' => 'effect-123',
+        'reply_parameters' => '{"message_id":99}',
+        'suggested_post_parameters' => '{"price":100}',
+    ]);
+});
+
 it('returns chunked telegram responses as decoded arrays', function () {
     $message = TelegramMessage::create(str_repeat('A', 12))->chunk(5);
 

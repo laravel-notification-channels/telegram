@@ -189,6 +189,68 @@ trait HasSharedLogic
         return $this;
     }
 
+    public function businessConnectionId(string $businessConnectionId): static
+    {
+        $this->payload['business_connection_id'] = $businessConnectionId;
+
+        return $this;
+    }
+
+    public function messageThreadId(int $messageThreadId): static
+    {
+        $this->payload['message_thread_id'] = $messageThreadId;
+
+        return $this;
+    }
+
+    public function directMessagesTopicId(int $directMessagesTopicId): static
+    {
+        $this->payload['direct_messages_topic_id'] = $directMessagesTopicId;
+
+        return $this;
+    }
+
+    public function protectContent(bool $protect = true): static
+    {
+        $this->payload['protect_content'] = $protect;
+
+        return $this;
+    }
+
+    public function allowPaidBroadcast(bool $allow = true): static
+    {
+        $this->payload['allow_paid_broadcast'] = $allow;
+
+        return $this;
+    }
+
+    public function messageEffectId(string $messageEffectId): static
+    {
+        $this->payload['message_effect_id'] = $messageEffectId;
+
+        return $this;
+    }
+
+    /**
+     * @param  array<string, mixed>  $replyParameters
+     *
+     * @throws JsonException
+     */
+    public function replyParameters(array $replyParameters): static
+    {
+        return $this->jsonPayload('reply_parameters', $replyParameters);
+    }
+
+    /**
+     * @param  array<string, mixed>  $suggestedPostParameters
+     *
+     * @throws JsonException
+     */
+    public function suggestedPostParameters(array $suggestedPostParameters): static
+    {
+        return $this->jsonPayload('suggested_post_parameters', $suggestedPostParameters);
+    }
+
     /**
      * Set the Bot Token. Overrides default bot token with the given value for this notification.
      *
@@ -313,5 +375,17 @@ trait HasSharedLogic
         return $this->keyboardMarkup([
             'inline_keyboard' => array_chunk($this->buttons, $columns),
         ]);
+    }
+
+    /**
+     * @param  array<string, mixed>|list<array<string, mixed>>  $value
+     *
+     * @throws JsonException
+     */
+    protected function jsonPayload(string $key, array $value): static
+    {
+        $this->payload[$key] = json_encode($value, JSON_THROW_ON_ERROR);
+
+        return $this;
     }
 }

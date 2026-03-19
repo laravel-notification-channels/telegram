@@ -182,6 +182,106 @@ class Telegram
     }
 
     /**
+     * @param  array<string, mixed>  $params
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function sendDice(array $params): ?ResponseInterface
+    {
+        return $this->sendRequest('sendDice', $params);
+    }
+
+    /**
+     * @param  array<string, mixed>|list<array{name: string, contents: mixed, filename?: string}>  $params
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function sendMediaGroup(array $params, bool $multipart = false): ?ResponseInterface
+    {
+        return $this->sendRequest('sendMediaGroup', $params, $multipart);
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function sendChatAction(array $params): ?ResponseInterface
+    {
+        return $this->sendRequest('sendChatAction', $params);
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function editMessageText(array $params): ?ResponseInterface
+    {
+        return $this->sendRequest('editMessageText', $params);
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function editMessageCaption(array $params): ?ResponseInterface
+    {
+        return $this->sendRequest('editMessageCaption', $params);
+    }
+
+    /**
+     * @param  array<string, mixed>|list<array{name: string, contents: mixed, filename?: string}>  $params
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function editMessageMedia(array $params, bool $multipart = false): ?ResponseInterface
+    {
+        return $this->sendRequest('editMessageMedia', $params, $multipart);
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function editMessageReplyMarkup(array $params): ?ResponseInterface
+    {
+        return $this->sendRequest('editMessageReplyMarkup', $params);
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function stopPoll(array $params): ?ResponseInterface
+    {
+        return $this->sendRequest('stopPoll', $params);
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function deleteMessage(array $params): ?ResponseInterface
+    {
+        return $this->sendRequest('deleteMessage', $params);
+    }
+
+    /**
+     * @param  array<string, mixed>  $params
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function deleteMessages(array $params): ?ResponseInterface
+    {
+        return $this->sendRequest('deleteMessages', $params);
+    }
+
+    /**
      * @return array<string, mixed>
      *
      * @throws InvalidArgumentException

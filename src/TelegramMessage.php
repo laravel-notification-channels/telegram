@@ -88,6 +88,26 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
         return $this->content(View::make($view, $data, $mergeData)->render());
     }
 
+    /**
+     * @param  list<array<string, mixed>>  $entities
+     */
+    public function entities(array $entities): self
+    {
+        $this->payload['entities'] = json_encode($entities, JSON_THROW_ON_ERROR);
+
+        return $this;
+    }
+
+    /**
+     * @param  array<string, mixed>  $linkPreviewOptions
+     */
+    public function linkPreviewOptions(array $linkPreviewOptions): self
+    {
+        $this->payload['link_preview_options'] = json_encode($linkPreviewOptions, JSON_THROW_ON_ERROR);
+
+        return $this;
+    }
+
     public function chunk(int $limit = self::DEFAULT_CHUNK_SIZE): self
     {
         $this->chunkSize = $limit;

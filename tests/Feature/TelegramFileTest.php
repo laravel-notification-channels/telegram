@@ -257,6 +257,23 @@ it('can set caption with content method', function () {
     expect($this->telegramFile->getPayloadValue('caption'))->toBe($caption);
 });
 
+it('can set caption entities and show caption above media', function () {
+    $this->telegramFile
+        ->captionEntities([
+            [
+                'offset' => 0,
+                'length' => 4,
+                'type' => 'bold',
+            ],
+        ])
+        ->showCaptionAboveMedia();
+
+    expect($this->telegramFile->toArray())->toMatchArray([
+        'caption_entities' => '[{"offset":0,"length":4,"type":"bold"}]',
+        'show_caption_above_media' => true,
+    ]);
+});
+
 it('sends file through Telegram', function () {
     $notifiable = new TestNotifiable;
     $notification = new TestFileNotification;
