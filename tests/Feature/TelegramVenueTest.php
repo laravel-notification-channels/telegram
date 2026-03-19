@@ -90,6 +90,15 @@ test('optional foursquare type can be set', function () {
     expect($message->getPayloadValue('foursquare_type'))->toEqual('coffee_shop');
 });
 
+test('optional google place data can be set', function () {
+    $message = new TelegramVenue;
+    $message->googlePlaceId('google-place-id')
+        ->googlePlaceType('restaurant');
+
+    expect($message->getPayloadValue('google_place_id'))->toEqual('google-place-id')
+        ->and($message->getPayloadValue('google_place_type'))->toEqual('restaurant');
+});
+
 test('additional options can be set for the message', function () {
     $message = new TelegramVenue;
     $message->options(['foo' => 'bar']);
