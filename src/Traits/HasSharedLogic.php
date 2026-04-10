@@ -126,15 +126,22 @@ trait HasSharedLogic
      * @param  string  $text  The text to display on the button
      * @param  string  $url  The URL to open when button is pressed
      * @param  int  $columns  Number of columns for button layout
+     * @param  ?string  $style  Button style: 'danger' (red), 'success' (green), 'primary' (blue)
      *
      * @throws JsonException When JSON encoding fails
      */
-    public function button(string $text, string $url, int $columns = 2): static
+    public function button(string $text, string $url, int $columns = 2, ?string $style = null): static
     {
-        $this->buttons[] = [
+        $button = [
             'text' => $text,
             'url' => $url,
         ];
+
+        if ($style !== null) {
+            $button['style'] = $style;
+        }
+
+        $this->buttons[] = $button;
 
         return $this->updateInlineKeyboard($columns);
     }
@@ -145,15 +152,22 @@ trait HasSharedLogic
      * @param  string  $text  The text to display on the button
      * @param  string  $callbackData  The data to send when button is pressed
      * @param  int  $columns  Number of columns for button layout
+     * @param  ?string  $style  Button style: 'danger' (red), 'success' (green), 'primary' (blue)
      *
      * @throws JsonException When JSON encoding fails
      */
-    public function buttonWithCallback(string $text, string $callbackData, int $columns = 2): static
+    public function buttonWithCallback(string $text, string $callbackData, int $columns = 2, ?string $style = null): static
     {
-        $this->buttons[] = [
+        $button = [
             'text' => $text,
             'callback_data' => $callbackData,
         ];
+
+        if ($style !== null) {
+            $button['style'] = $style;
+        }
+
+        $this->buttons[] = $button;
 
         return $this->updateInlineKeyboard($columns);
     }
@@ -164,15 +178,22 @@ trait HasSharedLogic
      * @param  string  $text  The text to display on the button
      * @param  string  $url  The URL of the Web App to open
      * @param  int  $columns  Number of columns for button layout
+     * @param  ?string  $style  Button style: 'danger' (red), 'success' (green), 'primary' (blue)
      *
      * @throws JsonException When JSON encoding fails
      */
-    public function buttonWithWebApp(string $text, string $url, int $columns = 2): static
+    public function buttonWithWebApp(string $text, string $url, int $columns = 2, ?string $style = null): static
     {
-        $this->buttons[] = [
+        $button = [
             'text' => $text,
             'web_app' => ['url' => $url],
         ];
+
+        if ($style !== null) {
+            $button['style'] = $style;
+        }
+
+        $this->buttons[] = $button;
 
         return $this->updateInlineKeyboard($columns);
     }

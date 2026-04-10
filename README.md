@@ -196,6 +196,8 @@ class InvoicePaid extends Notification
         // ->sendWhen($notifiable->amount > 0)
         // ->buttonWithWebApp('Open Web App', $url)
         // ->buttonWithCallback('Confirm', 'confirm_invoice '.$this->invoice->id)
+        // ->buttonWithCallback('Delete', 'delete', style: 'danger')
+        // ->buttonWithCallback('Approve', 'approve', style: 'success')
     }
 }
 ```
@@ -717,9 +719,9 @@ For more information on supported parameters, check out these [docs](https://cor
 - `token(string $token)` - Override default bot token.
 - `parseMode(enum ParseMode $mode)` - Set message parse mode (or `normal()` to unset). Default is `ParseMode::Markdown`.
 - `keyboard(string $text, int $columns = 2, bool $requestContact = false, bool $requestLocation = false)` - Add regular keyboard. You can add as many as you want, and they'll be placed 2 in a row by default.
-- `button(string $text, string $url, int $columns = 2)` - Add inline CTA button.
-- `buttonWithCallback(string $text, string $callbackData, int $columns = 2)` - Add inline button with callback.
-- `buttonWithWebApp(string $text, string $url, int $columns = 2)` - Add inline web app button.
+- `button(string $text, string $url, int $columns = 2, ?string $style = null)` - Add inline CTA button. Optional `style`: `'danger'` (red), `'success'` (green), `'primary'` (blue).
+- `buttonWithCallback(string $text, string $callbackData, int $columns = 2, ?string $style = null)` - Add inline button with callback.
+- `buttonWithWebApp(string $text, string $url, int $columns = 2, ?string $style = null)` - Add inline web app button.
 - `disableNotification(bool $disableNotification = true)` - Send silently (notification without sound).
 - `businessConnectionId(string $businessConnectionId)` - Send on behalf of a connected business account.
 - `messageThreadId(int $messageThreadId)` - Send to a forum / topic thread.

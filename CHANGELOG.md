@@ -2,6 +2,12 @@
 
 All notable changes to `telegram` will be documented in this file
 
+## Unreleased
+
+### Added
+
+- Optional `style` parameter (`'danger'`, `'success'`, `'primary'`) on `button()`, `buttonWithCallback()`, and `buttonWithWebApp()` methods for colored inline keyboard buttons (Telegram Bot API 9.4).
+
 ## 7.0 - 2026-03-19
 
 ### What's Changed

@@ -238,6 +238,26 @@ it('can set common telegram send options', function () {
     ]);
 });
 
+test('an inline button with style can be added to the message', function () {
+    $message = TelegramMessage::create()->button('Delete', 'https://example.com', style: 'danger');
+    expect($message->getPayloadValue('reply_markup'))->toEqual('{"inline_keyboard":[[{"text":"Delete","url":"https:\/\/example.com","style":"danger"}]]}');
+});
+
+test('an inline button with callback and style can be added to the message', function () {
+    $message = TelegramMessage::create()->buttonWithCallback('Confirm', 'confirm_action', style: 'success');
+    expect($message->getPayloadValue('reply_markup'))->toEqual('{"inline_keyboard":[[{"text":"Confirm","callback_data":"confirm_action","style":"success"}]]}');
+});
+
+test('an inline button with primary style can be added to the message', function () {
+    $message = TelegramMessage::create()->buttonWithCallback('Info', 'info_action', style: 'primary');
+    expect($message->getPayloadValue('reply_markup'))->toEqual('{"inline_keyboard":[[{"text":"Info","callback_data":"info_action","style":"primary"}]]}');
+});
+
+test('an inline button without style has no style field', function () {
+    $message = TelegramMessage::create()->button('Laravel', 'https://laravel.com');
+    expect($message->getPayloadValue('reply_markup'))->toEqual('{"inline_keyboard":[[{"text":"Laravel","url":"https:\/\/laravel.com"}]]}');
+});
+
 it('returns chunked telegram responses as decoded arrays', function () {
     $message = TelegramMessage::create(str_repeat('A', 12))->chunk(5);
 
