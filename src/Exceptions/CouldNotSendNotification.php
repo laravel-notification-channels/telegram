@@ -6,8 +6,7 @@ namespace NotificationChannels\Telegram\Exceptions;
 
 use Exception;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\InvalidArgumentException;
-use GuzzleHttp\Utils;
+use JsonException;
 
 /**
  * Class CouldNotSendNotification.
@@ -17,17 +16,14 @@ final class CouldNotSendNotification extends Exception
     /**
      * Thrown when there's a bad request and an error is responded.
      *
-     * @throws InvalidArgumentException
+     * @throws JsonException
      */
     public static function telegramRespondedWithAnError(ClientException $exception): self
     {
-        if (! $exception->hasResponse()) {
-            return new self('Telegram responded with an error but no response body found');
-        }
+        $response = $exception->getResponse();
+        $statusCode = $response->getStatusCode();
 
-        $statusCode = $exception->getResponse()->getStatusCode();
-
-        $result = Utils::jsonDecode($exception->getResponse()->getBody()->getContents(), true);
+        $result = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         $description = is_array($result) && is_string($result['description'] ?? null)
             ? $result['description']
             : 'no description given';

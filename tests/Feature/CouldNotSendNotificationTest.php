@@ -5,7 +5,7 @@ namespace NotificationChannels\Telegram\Tests\Feature;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Mockery;
+use JsonException;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 
 it('builds an exception message from telegram error response description', function () {
@@ -37,14 +37,15 @@ it('falls back when telegram error response has no description', function () {
     expect($wrappedException->getMessage())->toBe('Telegram responded with an error `400 - no description given`');
 });
 
-it('falls back when telegram returns an error without a response', function () {
-    $exception = Mockery::mock(ClientException::class);
-    $exception->shouldReceive('hasResponse')->once()->andReturnFalse();
+it('throws a json exception when the telegram error response is not valid json', function () {
+    $exception = new ClientException(
+        'Bad Request',
+        new Request('POST', 'https://api.telegram.org/bot/sendMessage'),
+        new Response(400, [], '{invalid json')
+    );
 
-    $wrappedException = CouldNotSendNotification::telegramRespondedWithAnError($exception);
-
-    expect($wrappedException->getMessage())->toBe('Telegram responded with an error but no response body found');
-});
+    CouldNotSendNotification::telegramRespondedWithAnError($exception);
+})->throws(JsonException::class);
 
 it('builds helper exception messages', function () {
     expect(CouldNotSendNotification::telegramBotTokenNotProvided('Missing token')->getMessage())
