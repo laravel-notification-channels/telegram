@@ -7,6 +7,12 @@ All notable changes to `telegram` will be documented in this file
 ### Added
 
 - Optional `style` parameter (`'danger'`, `'success'`, `'primary'`) on `button()`, `buttonWithCallback()`, and `buttonWithWebApp()` methods for colored inline keyboard buttons (Telegram Bot API 9.4).
+- Support for `guzzlehttp/guzzle` 8.x alongside 7.x (`^7.8 || ^8.0`).
+
+### Changed
+
+- `Telegram::decodeResponse()` and `CouldNotSendNotification::telegramRespondedWithAnError()` now use PHP's `json_decode()` with `JSON_THROW_ON_ERROR` instead of the removed `GuzzleHttp\Utils::jsonDecode()`. Invalid JSON now throws `JsonException` instead of `GuzzleHttp\Exception\InvalidArgumentException`.
+- `CouldNotSendNotification::telegramRespondedWithAnError()` no longer calls `ClientException::hasResponse()` (removed in Guzzle 8); a `ClientException` always carries a response in both Guzzle 7 and 8, so the "no response body found" fallback has been dropped.
 
 ## 7.0 - 2026-03-19
 

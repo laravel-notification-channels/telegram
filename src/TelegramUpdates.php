@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NotificationChannels\Telegram;
 
-use GuzzleHttp\Exception\InvalidArgumentException;
+use JsonException;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -57,7 +57,7 @@ class TelegramUpdates
     /**
      * @return array<string, mixed>
      *
-     * @throws InvalidArgumentException
+     * @throws JsonException
      */
     public function get(): array
     {

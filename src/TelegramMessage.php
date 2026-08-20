@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace NotificationChannels\Telegram;
 
-use GuzzleHttp\Exception\InvalidArgumentException;
 use Illuminate\Support\Facades\View;
+use JsonException;
 use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Enums\ParseMode;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
@@ -125,7 +125,7 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
      * @return array<int, array<string, mixed>>|ResponseInterface|null
      *
      * @throws CouldNotSendNotification
-     * @throws InvalidArgumentException
+     * @throws JsonException
      */
     public function send(): array|ResponseInterface|null
     {
@@ -142,7 +142,7 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
      * @return array<int, array<string, mixed>>
      *
      * @throws CouldNotSendNotification
-     * @throws InvalidArgumentException
+     * @throws JsonException
      */
     private function sendChunkedMessage(array $params): array
     {

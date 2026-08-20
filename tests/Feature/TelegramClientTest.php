@@ -4,9 +4,9 @@ namespace NotificationChannels\Telegram\Tests\Feature;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\InvalidArgumentException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use JsonException;
 use Mockery;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Telegram\Telegram;
@@ -24,11 +24,11 @@ it('decodes valid telegram responses', function () {
     ]);
 });
 
-it('throws a guzzle exception when response json is invalid', function () {
+it('throws a json exception when response json is invalid', function () {
     $response = new Response(200, [], '{invalid json');
 
     Telegram::decodeResponse($response);
-})->throws(InvalidArgumentException::class);
+})->throws(JsonException::class);
 
 it('uses the default api base uri when none is provided', function () {
     $telegram = new Telegram;
