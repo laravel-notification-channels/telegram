@@ -17,6 +17,7 @@ enum FileType: string
     case Voice = 'voice';
     case VideoNote = 'video_note';
     case Sticker = 'sticker';
+    case LivePhoto = 'live_photo';
 
     /**
      * Get the mime type associated with this file type.
@@ -32,6 +33,7 @@ enum FileType: string
             self::Voice => 'audio/ogg',
             self::VideoNote => 'video/mp4',
             self::Sticker => 'image/webp',
+            self::LivePhoto => 'image/jpeg',
         };
     }
 
@@ -51,6 +53,7 @@ enum FileType: string
             self::Voice => ['ogg', 'mp3'],
             self::VideoNote => ['mp4'],
             self::Sticker => ['png', 'webp', 'tgs', 'webm'],
+            self::LivePhoto => ['jpg', 'jpeg', 'png', 'webp'],
         };
     }
 

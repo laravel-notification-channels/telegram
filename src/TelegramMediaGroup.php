@@ -81,6 +81,16 @@ class TelegramMediaGroup extends TelegramBase implements TelegramSenderContract
         return $this->addMedia(FileType::Document, $media, $caption, $filename);
     }
 
+    /**
+     * @param  resource|StreamInterface|string  $media
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function livePhoto(mixed $media, ?string $caption = null, ?string $filename = null): self
+    {
+        return $this->addMedia(FileType::LivePhoto, $media, $caption, $filename);
+    }
+
     public function hasAttachments(): bool
     {
         return $this->attachments !== [];
@@ -122,7 +132,7 @@ class TelegramMediaGroup extends TelegramBase implements TelegramSenderContract
         ?string $caption = null,
         ?string $filename = null
     ): self {
-        if (! in_array($type, [FileType::Photo, FileType::Video, FileType::Audio, FileType::Document], true)) {
+        if (! in_array($type, [FileType::Photo, FileType::Video, FileType::Audio, FileType::Document, FileType::LivePhoto], true)) {
             throw CouldNotSendNotification::invalidFileIdentifier($type->value);
         }
 

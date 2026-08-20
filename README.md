@@ -198,6 +198,9 @@ class InvoicePaid extends Notification
         // ->buttonWithCallback('Confirm', 'confirm_invoice '.$this->invoice->id)
         // ->buttonWithCallback('Delete', 'delete', style: 'danger')
         // ->buttonWithCallback('Approve', 'approve', style: 'success')
+        // ->button('Details', $url, iconCustomEmojiId: '5368324170671202286')
+        // ->receiverUserId($notifiable->telegram_user_id)
+        // ->callbackQueryId($callbackQueryId)
     }
 }
 ```
@@ -262,6 +265,22 @@ public function toTelegram($notifiable)
         ->to($notifiable->telegram_user_id)
         ->question('Which is your favorite Laravel Notification Channel?')
         ->choices(['Telegram', 'Facebook', 'Slack']);
+
+    // Other fluent helpers are also available:
+    // ->description('Voting closes in an hour')
+    // ->quiz(0)
+    // ->explanation('Telegram, of course!')
+    // ->isAnonymous(false)
+    // ->allowsMultipleAnswers()
+    // ->allowsRevoting()
+    // ->shuffleOptions()
+    // ->allowAddingOptions()
+    // ->hideResultsUntilCloses()
+    // ->membersOnly()
+    // ->countryCodes(['US', 'GB'])
+    // ->openPeriod(600)
+    // ->closeDate(now()->addHour()->getTimestamp())
+    // ->media(['type' => 'photo', 'media' => $url])
 }
 ```
 
@@ -719,9 +738,9 @@ For more information on supported parameters, check out these [docs](https://cor
 - `token(string $token)` - Override default bot token.
 - `parseMode(enum ParseMode $mode)` - Set message parse mode (or `normal()` to unset). Default is `ParseMode::Markdown`.
 - `keyboard(string $text, int $columns = 2, bool $requestContact = false, bool $requestLocation = false)` - Add regular keyboard. You can add as many as you want, and they'll be placed 2 in a row by default.
-- `button(string $text, string $url, int $columns = 2, ?string $style = null)` - Add inline CTA button. Optional `style`: `'danger'` (red), `'success'` (green), `'primary'` (blue).
-- `buttonWithCallback(string $text, string $callbackData, int $columns = 2, ?string $style = null)` - Add inline button with callback.
-- `buttonWithWebApp(string $text, string $url, int $columns = 2, ?string $style = null)` - Add inline web app button.
+- `button(string $text, string $url, int $columns = 2, ?string $style = null, ?string $iconCustomEmojiId = null)` - Add inline CTA button. Optional `style`: `'danger'` (red), `'success'` (green), `'primary'` (blue). Optional `iconCustomEmojiId`: custom emoji identifier shown as the button icon.
+- `buttonWithCallback(string $text, string $callbackData, int $columns = 2, ?string $style = null, ?string $iconCustomEmojiId = null)` - Add inline button with callback.
+- `buttonWithWebApp(string $text, string $url, int $columns = 2, ?string $style = null, ?string $iconCustomEmojiId = null)` - Add inline web app button.
 - `disableNotification(bool $disableNotification = true)` - Send silently (notification without sound).
 - `businessConnectionId(string $businessConnectionId)` - Send on behalf of a connected business account.
 - `messageThreadId(int $messageThreadId)` - Send to a forum / topic thread.
@@ -729,6 +748,8 @@ For more information on supported parameters, check out these [docs](https://cor
 - `protectContent(bool $protect = true)` - Protect content from forwarding and saving.
 - `allowPaidBroadcast(bool $allow = true)` - Allow paid high-throughput broadcasts.
 - `messageEffectId(string $messageEffectId)` - Add a private-chat message effect.
+- `receiverUserId(int $userId)` - Send an ephemeral message that is visible only to the given user.
+- `callbackQueryId(string $callbackQueryId)` - Send an ephemeral message in response to the given callback query.
 - `replyParameters(array $replyParameters)` - Set structured reply parameters.
 - `suggestedPostParameters(array $suggestedPostParameters)` - Set suggested post parameters for supported direct message topics.
 - `options(array $options)` - Add/override payload parameters.
@@ -788,7 +809,7 @@ For more information on supported parameters, check out these [docs](https://cor
 - `view(string $view, array $data = [], array $mergeData = [])` - Use Blade template for caption.
 - `captionEntities(array $captionEntities)` - Set explicit caption entities.
 - `showCaptionAboveMedia(bool $show = true)` - Show caption above supported media types.
-- `file(string|resource|StreamInterface $file, FileType|string $type, string $filename = null)` - Attach a local path, remote URL, Telegram file ID, stream/resource, or raw file contents. Types: `photo`, `audio`, `document`, `video`, `animation`, `voice`, `video_note`, `sticker` (use `Enums\FileType`). Pass a filename when the string represents raw file contents.
+- `file(string|resource|StreamInterface $file, FileType|string $type, string $filename = null)` - Attach a local path, remote URL, Telegram file ID, stream/resource, or raw file contents. Types: `photo`, `audio`, `document`, `video`, `animation`, `voice`, `video_note`, `sticker`, `live_photo` (use `Enums\FileType`). Pass a filename when the string represents raw file contents.
 
 #### Helper Methods:
 
@@ -800,15 +821,17 @@ For more information on supported parameters, check out these [docs](https://cor
 - `voice(string $file)` - Send voice note (OGG/OPUS).
 - `videoNote(string $file)` - Send video note (≤1min, rounded square video).
 - `sticker(string $file)` - Send sticker (static PNG/WEBP, animated .TGS, or video .WEBM stickers).
+- `livePhoto(string $file)` - Send live photo.
 
 ### Telegram Media Group Methods
 
-> Telegram media groups are albums of `photo`, `video`, `audio`, or `document` items sent as a single notification.
+> Telegram media groups are albums of `photo`, `video`, `audio`, `document`, or `live_photo` items sent as a single notification.
 
 - `photo(string|resource|StreamInterface $media, string $caption = null, string $filename = null)` - Add a photo to the group.
 - `video(string|resource|StreamInterface $media, string $caption = null, string $filename = null)` - Add a video to the group.
 - `audio(string|resource|StreamInterface $media, string $caption = null, string $filename = null)` - Add an audio file to the group.
 - `document(string|resource|StreamInterface $media, string $caption = null, string $filename = null)` - Add a document to the group.
+- `livePhoto(string|resource|StreamInterface $media, string $caption = null, string $filename = null)` - Add a live photo to the group.
 - `hasAttachments()` - Determine if the group contains uploaded files and requires multipart transport.
 
 Each media item may be a Telegram file ID, a URL, a local path, a stream/resource, or raw file contents when paired with a filename.
@@ -833,7 +856,27 @@ Each media item may be a Telegram file ID, a URL, a local path, a stream/resourc
 > Telegram polls are a type of interactive message that allows users to vote on a question. Polls can be used to gather feedback, make decisions, or even run contests.
 
 - `question(string $question)` - Set poll question.
-- `choices(array $choices)` - Set poll choices.
+- `choices(array $choices)` - Set poll choices. Each choice may be a string or an [`InputPollOption`](https://core.telegram.org/bots/api#inputpolloption) array such as `['text' => 'Yes', 'media' => [...]]`.
+- `description(string $description)` - Set poll description.
+- `descriptionParseMode(enum ParseMode|string $mode)` - Set the parse mode of the description.
+- `descriptionEntities(array $entities)` - Set explicit description entities instead of using a parse mode.
+- `type(string $type)` - Set poll type (`regular` or `quiz`).
+- `quiz(int|array $correctOptionIds)` - Turn the poll into a quiz and set the zero based index(es) of the correct choice(s).
+- `explanation(string $explanation)` - Set the text shown when a user chooses an incorrect quiz answer.
+- `explanationParseMode(enum ParseMode|string $mode)` - Set the parse mode of the explanation.
+- `explanationEntities(array $entities)` - Set explicit explanation entities instead of using a parse mode.
+- `isAnonymous(bool $anonymous = true)` - Make the poll anonymous.
+- `allowsMultipleAnswers(bool $allow = true)` - Allow multiple answers.
+- `allowsRevoting(bool $allow = true)` - Allow users to change their vote.
+- `shuffleOptions(bool $shuffle = true)` - Shuffle the choices for each user.
+- `allowAddingOptions(bool $allow = true)` - Allow users to add their own choices.
+- `hideResultsUntilCloses(bool $hide = true)` - Hide the results until the poll is closed.
+- `membersOnly(bool $membersOnly = true)` - Restrict voting to the members of the chat.
+- `countryCodes(array $codes)` - Restrict voting to users from the given two letter country codes.
+- `openPeriod(int $seconds)` - Set how long the poll stays open after creation.
+- `closeDate(int $timestamp)` - Set the Unix timestamp at which the poll closes automatically.
+- `media(array $media)` - Set the [`InputPollMedia`](https://core.telegram.org/bots/api#inputpollmedia) shown with the question.
+- `explanationMedia(array $media)` - Set the [`InputPollMedia`](https://core.telegram.org/bots/api#inputpollmedia) shown with the quiz explanation.
 
 ## Alternatives
 

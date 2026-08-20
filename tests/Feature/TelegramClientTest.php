@@ -74,6 +74,30 @@ it('sends dice requests through the correct endpoint', function () {
     ]))->toBeInstanceOf(Response::class);
 });
 
+it('resolves the send endpoint from the file type', function (string $type, string $endpoint) {
+    $http = Mockery::mock(HttpClient::class);
+    $http->shouldReceive('post')
+        ->once()
+        ->with('https://api.telegram.org/bottoken/'.$endpoint, [
+            'form_params' => [
+                'chat_id' => 12345,
+                $type => 'https://example.com/file',
+            ],
+        ])
+        ->andReturn(new Response(200, [], json_encode(['ok' => true])));
+
+    $telegram = new Telegram('token', $http);
+
+    expect($telegram->sendFile([
+        'chat_id' => 12345,
+        $type => 'https://example.com/file',
+    ], $type))->toBeInstanceOf(Response::class);
+})->with([
+    ['photo', 'sendPhoto'],
+    ['video_note', 'sendVideoNote'],
+    ['live_photo', 'sendLivePhoto'],
+]);
+
 it('sends media groups with multipart payloads when requested', function () {
     $http = Mockery::mock(HttpClient::class);
     $http->shouldReceive('post')

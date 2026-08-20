@@ -72,6 +72,68 @@ it('normalizes invalid inline button column counts', function () {
     ]);
 });
 
+it('can add an icon custom emoji id to inline buttons', function () {
+    $message = new TelegramBase;
+    $message->button('Docs', 'https://example.com/docs', 1, 'primary', '5368324170671202286')
+        ->buttonWithCallback('Confirm', 'confirm', 1, iconCustomEmojiId: '5368324170671202287')
+        ->buttonWithWebApp('Open', 'https://example.com/app', 1, iconCustomEmojiId: '5368324170671202288');
+
+    $replyMarkup = json_decode((string) $message->getPayloadValue('reply_markup'), true, 512, JSON_THROW_ON_ERROR);
+
+    expect($replyMarkup)->toBe([
+        'inline_keyboard' => [
+            [
+                [
+                    'text' => 'Docs',
+                    'url' => 'https://example.com/docs',
+                    'style' => 'primary',
+                    'icon_custom_emoji_id' => '5368324170671202286',
+                ],
+            ],
+            [
+                [
+                    'text' => 'Confirm',
+                    'callback_data' => 'confirm',
+                    'icon_custom_emoji_id' => '5368324170671202287',
+                ],
+            ],
+            [
+                [
+                    'text' => 'Open',
+                    'web_app' => ['url' => 'https://example.com/app'],
+                    'icon_custom_emoji_id' => '5368324170671202288',
+                ],
+            ],
+        ],
+    ]);
+});
+
+it('omits the icon custom emoji id when it is not given', function () {
+    $message = new TelegramBase;
+    $message->button('Docs', 'https://example.com/docs', 1, 'danger');
+
+    $replyMarkup = json_decode((string) $message->getPayloadValue('reply_markup'), true, 512, JSON_THROW_ON_ERROR);
+
+    expect($replyMarkup['inline_keyboard'][0][0])->toBe([
+        'text' => 'Docs',
+        'url' => 'https://example.com/docs',
+        'style' => 'danger',
+    ]);
+});
+
+it('can set ephemeral message parameters', function () {
+    $message = new TelegramBase;
+    $message->to(12345)
+        ->receiverUserId(6789)
+        ->callbackQueryId('callback-query-id');
+
+    expect($message->toArray())->toBe([
+        'chat_id' => 12345,
+        'receiver_user_id' => 6789,
+        'callback_query_id' => 'callback-query-id',
+    ]);
+});
+
 it('supports non closure error handlers and send conditions', function () {
     $message = new TelegramBase;
     $message->onError(new TestCallableHandler)

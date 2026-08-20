@@ -158,6 +158,14 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
     }
 
     /**
+     * Attach a live photo.
+     */
+    public function livePhoto(string $file): self
+    {
+        return $this->file($file, FileType::LivePhoto);
+    }
+
+    /**
      * Use a Laravel Blade view as the content.
      *
      * @param  array<string, mixed>  $data

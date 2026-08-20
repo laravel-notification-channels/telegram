@@ -152,6 +152,23 @@ it('can add a sticker', function () {
         ->and($this->telegramFile->getPayloadValue(FileType::Sticker->value))->toBe($url);
 });
 
+it('can add a live photo', function () {
+    $url = 'https://example.com/live.jpg';
+    $this->telegramFile->livePhoto($url);
+
+    expect($this->telegramFile->type)->toBe(FileType::LivePhoto)
+        ->and($this->telegramFile->getPayloadValue(FileType::LivePhoto->value))->toBe($url);
+});
+
+it('exposes live photo metadata on the file type enum', function () {
+    expect(FileType::LivePhoto->value)->toBe('live_photo')
+        ->and(FileType::LivePhoto->getMimeType())->toBe('image/jpeg')
+        ->and(FileType::LivePhoto->getAllowedExtensions())->toBe(['jpg', 'jpeg', 'png', 'webp'])
+        ->and(FileType::LivePhoto->isExtensionAllowed('JPEG'))->toBeTrue()
+        ->and(FileType::LivePhoto->isExtensionAllowed('mp4'))->toBeFalse()
+        ->and(FileType::toArray())->toHaveKey('LivePhoto', 'live_photo');
+});
+
 it('can use a view as content', function () {
     View::shouldReceive('make')
         ->once()
