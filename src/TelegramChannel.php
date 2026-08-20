@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace NotificationChannels\Telegram;
 
-use GuzzleHttp\Exception\InvalidArgumentException;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Notifications\Notification;
+use JsonException;
 use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use Psr\Http\Message\ResponseInterface;
@@ -24,7 +24,7 @@ class TelegramChannel
     /**
      * @return TelegramResponse|null
      *
-     * @throws CouldNotSendNotification|InvalidArgumentException
+     * @throws CouldNotSendNotification|JsonException
      */
     public function send(mixed $notifiable, Notification $notification): ?array
     {

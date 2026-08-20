@@ -7,9 +7,8 @@ namespace NotificationChannels\Telegram;
 use Exception;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\InvalidArgumentException;
-use GuzzleHttp\Utils;
 use Illuminate\Support\Str;
+use JsonException;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use Psr\Http\Message\ResponseInterface;
 
@@ -284,12 +283,12 @@ class Telegram
     /**
      * @return array<string, mixed>
      *
-     * @throws InvalidArgumentException
+     * @throws JsonException
      */
     public static function decodeResponse(ResponseInterface $response): array
     {
         /** @var array<string, mixed> $decodedResponse */
-        $decodedResponse = Utils::jsonDecode($response->getBody()->getContents(), true);
+        $decodedResponse = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
         return $decodedResponse;
     }
@@ -318,13 +317,68 @@ class Telegram
         $apiUri = sprintf('%s/bot%s/%s', $this->apiBaseUri, $this->token, $endpoint);
 
         try {
-            return $this->httpClient()->post($apiUri, [
-                $multipart ? 'multipart' : 'form_params' => $params,
-            ]);
+            if ($multipart) {
+                return $this->httpClient()->post($apiUri, ['multipart' => $this->multipartParams($params)]);
+            }
+
+            return $this->httpClient()->post($apiUri, ['form_params' => $this->formParams($params)]);
         } catch (ClientException $exception) {
             throw CouldNotSendNotification::telegramRespondedWithAnError($exception);
         } catch (Exception $exception) {
             throw CouldNotSendNotification::couldNotCommunicateWithTelegram($exception->getMessage());
         }
+    }
+
+    /**
+     * Normalize the params into Guzzle's `form_params` shape.
+     *
+     * Values that cannot be url-encoded (objects, resources) are dropped.
+     *
+     * @param  array<string, mixed>|list<array{name: string, contents: mixed, filename?: string}>  $params
+     * @return array<string, array<mixed>|bool|float|int|string|null>
+     */
+    private function formParams(array $params): array
+    {
+        $formParams = [];
+
+        foreach ($params as $key => $value) {
+            if (is_scalar($value) || is_array($value) || $value === null) {
+                $formParams[(string) $key] = $value;
+            }
+        }
+
+        return $formParams;
+    }
+
+    /**
+     * Normalize the params into Guzzle's `multipart` shape.
+     *
+     * Already normalized items are passed through untouched, any other
+     * key/value pair is turned into a multipart item.
+     *
+     * @param  array<string, mixed>|list<array{name: string, contents: mixed, filename?: string}>  $params
+     * @return list<array{name: string, contents: mixed, filename?: string}>
+     */
+    private function multipartParams(array $params): array
+    {
+        $multipart = [];
+
+        foreach ($params as $key => $value) {
+            if (is_array($value) && is_string($value['name'] ?? null) && array_key_exists('contents', $value)) {
+                $item = ['name' => $value['name'], 'contents' => $value['contents']];
+
+                if (is_string($value['filename'] ?? null)) {
+                    $item['filename'] = $value['filename'];
+                }
+
+                $multipart[] = $item;
+
+                continue;
+            }
+
+            $multipart[] = ['name' => (string) $key, 'contents' => $value];
+        }
+
+        return $multipart;
     }
 }
