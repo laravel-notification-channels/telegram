@@ -6,11 +6,16 @@ All notable changes to `telegram` will be documented in this file
 
 ### Added
 
+- `TelegramRichMessage` for the `sendRichMessage` API method (Telegram Bot API 10.1/10.2). Supports Markdown / HTML content (`markdown()`, `html()`, `view()`), attached media referenced with `tg://photo?id=` style links (`media()`), the `is_rtl` and `skip_entity_detection` flags, and fluent builders for every documented `InputRichBlock` type (`paragraph()`, `heading()`, `preformatted()`, `footer()`, `divider()`, `math()`, `anchor()`, `blockquote()`, `pullquote()`, `details()`, `table()`, `listBlock()`, `thinking()`, `map()`, `photoBlock()`, `videoBlock()`, `audioBlock()`, `animationBlock()`, `voiceNoteBlock()`) plus a `block()` escape hatch for raw blocks such as `collage` and `slideshow`.
+- `TelegramRichMessageDraft` for the `sendRichMessageDraft` API method. Extends `TelegramRichMessage` (so every content and block builder is available) and adds `draftId()`, a `send()` that streams the current content into the draft, and `finalize()` which turns the draft into a permanent message via `sendRichMessage`. Useful for streaming an AI generated answer as it is produced: repeated `send()` calls with the same draft id animate the replacement of the content. Drafts are limited to private chats and the draft id must be non-zero.
+- `CouldNotSendNotification::invalidRichMessageDraftId()` and `CouldNotSendNotification::richMessageDraftIdNotProvided()` exception constructors.
+- `Telegram::sendRichMessage()` and `Telegram::sendRichMessageDraft()` client methods.
 - Optional `style` parameter (`'danger'`, `'success'`, `'primary'`) on `button()`, `buttonWithCallback()`, and `buttonWithWebApp()` methods for colored inline keyboard buttons (Telegram Bot API 9.4).
 - Support for `guzzlehttp/guzzle` 8.x alongside 7.x (`^7.8 || ^8.0`).
 
 ### Changed
 
+- `TelegramRichMessage` is no longer `final` and its fluent builders now return `static` instead of `self`, so subclasses (such as `TelegramRichMessageDraft`) keep chainability.
 - `Telegram::decodeResponse()` and `CouldNotSendNotification::telegramRespondedWithAnError()` now use PHP's `json_decode()` with `JSON_THROW_ON_ERROR` instead of the removed `GuzzleHttp\Utils::jsonDecode()`. Invalid JSON now throws `JsonException` instead of `GuzzleHttp\Exception\InvalidArgumentException`.
 - `CouldNotSendNotification::telegramRespondedWithAnError()` no longer calls `ClientException::hasResponse()` (removed in Guzzle 8); a `ClientException` always carries a response in both Guzzle 7 and 8, so the "no response body found" fallback has been dropped.
 
