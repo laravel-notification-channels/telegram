@@ -17,6 +17,7 @@ use stdClass;
  * Builds an `InputRichMessage` for the `sendRichMessage` API method.
  *
  * @see https://core.telegram.org/bots/api#sendrichmessage
+ * @see TelegramRichMessageDraft For streaming the same content into a draft first.
  *
  * @phpstan-type RichText string|array<mixed>
  * @phpstan-type RichBlock array<string, mixed>
@@ -29,7 +30,7 @@ use stdClass;
  *     skip_entity_detection?: bool
  * }
  */
-final class TelegramRichMessage extends TelegramBase implements TelegramSenderContract
+class TelegramRichMessage extends TelegramBase implements TelegramSenderContract
 {
     /** Pattern every `InputRichMessageMedia` identifier must match. */
     private const string MEDIA_ID_PATTERN = '/^[A-Za-z0-9_-]{1,64}$/';
@@ -57,7 +58,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      * Media can be referenced with `tg://photo?id=`, `tg://video?id=`
      * and `tg://audio?id=` links.
      */
-    public function markdown(string $markdown): self
+    public function markdown(string $markdown): static
     {
         $this->richMessage['markdown'] = $markdown;
 
@@ -70,7 +71,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      * Media can be referenced with `tg://photo?id=`, `tg://video?id=`
      * and `tg://audio?id=` links.
      */
-    public function html(string $html): self
+    public function html(string $html): static
     {
         $this->richMessage['html'] = $html;
 
@@ -83,7 +84,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      * @param  array<string, mixed>  $data
      * @param  array<string, mixed>  $mergeData
      */
-    public function view(string $view, array $data = [], array $mergeData = []): self
+    public function view(string $view, array $data = [], array $mergeData = []): static
     {
         return $this->html(View::make($view, $data, $mergeData)->render());
     }
@@ -91,7 +92,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
     /**
      * Render the rich message right-to-left.
      */
-    public function rtl(bool $rtl = true): self
+    public function rtl(bool $rtl = true): static
     {
         $this->richMessage['is_rtl'] = $rtl;
 
@@ -101,7 +102,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
     /**
      * Skip automatic detection of entities such as links and mentions.
      */
-    public function skipEntityDetection(bool $skip = true): self
+    public function skipEntityDetection(bool $skip = true): static
     {
         $this->richMessage['skip_entity_detection'] = $skip;
 
@@ -116,7 +117,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      *
      * @throws CouldNotSendNotification When the given ID is invalid
      */
-    public function media(string $id, array $media): self
+    public function media(string $id, array $media): static
     {
         if (preg_match(self::MEDIA_ID_PATTERN, $id) !== 1) {
             throw CouldNotSendNotification::invalidRichMessageMediaId($id);
@@ -135,7 +136,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      *
      * @param  RichText  $text
      */
-    public function paragraph(string|array $text): self
+    public function paragraph(string|array $text): static
     {
         return $this->block(['type' => 'paragraph', 'text' => $text]);
     }
@@ -145,7 +146,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      *
      * @param  RichText  $text
      */
-    public function heading(string|array $text, int $size = 1): self
+    public function heading(string|array $text, int $size = 1): static
     {
         return $this->block(['type' => 'heading', 'text' => $text, 'size' => $size]);
     }
@@ -155,7 +156,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      *
      * @param  RichText  $text
      */
-    public function preformatted(string|array $text, ?string $language = null): self
+    public function preformatted(string|array $text, ?string $language = null): static
     {
         $block = ['type' => 'pre', 'text' => $text];
 
@@ -171,7 +172,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      *
      * @param  RichText  $text
      */
-    public function footer(string|array $text): self
+    public function footer(string|array $text): static
     {
         return $this->block(['type' => 'footer', 'text' => $text]);
     }
@@ -179,7 +180,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
     /**
      * Add a divider block.
      */
-    public function divider(): self
+    public function divider(): static
     {
         return $this->block(['type' => 'divider']);
     }
@@ -187,7 +188,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
     /**
      * Add a mathematical expression block.
      */
-    public function math(string $expression): self
+    public function math(string $expression): static
     {
         return $this->block(['type' => 'mathematical_expression', 'expression' => $expression]);
     }
@@ -195,7 +196,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
     /**
      * Add an anchor block that can be linked to.
      */
-    public function anchor(string $name): self
+    public function anchor(string $name): static
     {
         return $this->block(['type' => 'anchor', 'name' => $name]);
     }
@@ -208,7 +209,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      * @param  list<array<string, mixed>>|array<string, mixed>|string  $blocks
      * @param  RichText|null  $credit
      */
-    public function blockquote(array|string $blocks, string|array|null $credit = null): self
+    public function blockquote(array|string $blocks, string|array|null $credit = null): static
     {
         $block = [
             'type' => 'blockquote',
@@ -228,7 +229,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      * @param  RichText  $text
      * @param  RichText|null  $credit
      */
-    public function pullquote(string|array $text, string|array|null $credit = null): self
+    public function pullquote(string|array $text, string|array|null $credit = null): static
     {
         $block = ['type' => 'pullquote', 'text' => $text];
 
@@ -245,7 +246,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      * @param  RichText  $summary
      * @param  list<array<string, mixed>>  $blocks
      */
-    public function details(string|array $summary, array $blocks, bool $isOpen = false): self
+    public function details(string|array $summary, array $blocks, bool $isOpen = false): static
     {
         return $this->block([
             'type' => 'details',
@@ -261,7 +262,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      * @param  array<int, array<int, array<string, mixed>>>  $cells  Rows of `RichBlockTableCell` arrays
      * @param  RichText|null  $caption
      */
-    public function table(array $cells, bool $bordered = false, bool $striped = false, string|array|null $caption = null): self
+    public function table(array $cells, bool $bordered = false, bool $striped = false, string|array|null $caption = null): static
     {
         $block = [
             'type' => 'table',
@@ -285,7 +286,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      *
      * @param  array<int, string|array<string, mixed>>  $items
      */
-    public function listBlock(array $items): self
+    public function listBlock(array $items): static
     {
         $items = array_map(
             static fn (string|array $item): array => is_string($item)
@@ -302,7 +303,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      *
      * @param  RichText  $text
      */
-    public function thinking(string|array $text): self
+    public function thinking(string|array $text): static
     {
         return $this->block(['type' => 'thinking', 'text' => $text]);
     }
@@ -310,7 +311,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
     /**
      * Add a map block.
      */
-    public function map(float $latitude, float $longitude, int $zoom, int $width, int $height): self
+    public function map(float $latitude, float $longitude, int $zoom, int $width, int $height): static
     {
         return $this->block([
             'type' => 'map',
@@ -327,7 +328,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      * @param  array<string, mixed>  $photo  An `InputMediaPhoto` array
      * @param  array<string, mixed>|null  $caption  A `RichBlockCaption` array
      */
-    public function photoBlock(array $photo, ?array $caption = null): self
+    public function photoBlock(array $photo, ?array $caption = null): static
     {
         return $this->mediaBlock('photo', $photo, $caption);
     }
@@ -338,7 +339,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      * @param  array<string, mixed>  $video  An `InputMediaVideo` array
      * @param  array<string, mixed>|null  $caption  A `RichBlockCaption` array
      */
-    public function videoBlock(array $video, ?array $caption = null): self
+    public function videoBlock(array $video, ?array $caption = null): static
     {
         return $this->mediaBlock('video', $video, $caption);
     }
@@ -349,7 +350,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      * @param  array<string, mixed>  $audio  An `InputMediaAudio` array
      * @param  array<string, mixed>|null  $caption  A `RichBlockCaption` array
      */
-    public function audioBlock(array $audio, ?array $caption = null): self
+    public function audioBlock(array $audio, ?array $caption = null): static
     {
         return $this->mediaBlock('audio', $audio, $caption);
     }
@@ -360,7 +361,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      * @param  array<string, mixed>  $animation  An `InputMediaAnimation` array
      * @param  array<string, mixed>|null  $caption  A `RichBlockCaption` array
      */
-    public function animationBlock(array $animation, ?array $caption = null): self
+    public function animationBlock(array $animation, ?array $caption = null): static
     {
         return $this->mediaBlock('animation', $animation, $caption);
     }
@@ -371,7 +372,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      * @param  array<string, mixed>  $voiceNote  An `InputMediaVoiceNote` array
      * @param  array<string, mixed>|null  $caption  A `RichBlockCaption` array
      */
-    public function voiceNoteBlock(array $voiceNote, ?array $caption = null): self
+    public function voiceNoteBlock(array $voiceNote, ?array $caption = null): static
     {
         return $this->mediaBlock('voice_note', $voiceNote, $caption);
     }
@@ -384,7 +385,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      *
      * @param  RichBlock  $block
      */
-    public function block(array $block): self
+    public function block(array $block): static
     {
         $blocks = $this->richMessage['blocks'] ?? [];
         $blocks[] = $block;
@@ -433,7 +434,7 @@ final class TelegramRichMessage extends TelegramBase implements TelegramSenderCo
      * @param  array<string, mixed>  $media
      * @param  array<string, mixed>|null  $caption
      */
-    private function mediaBlock(string $type, array $media, ?array $caption): self
+    private function mediaBlock(string $type, array $media, ?array $caption): static
     {
         $block = ['type' => $type, $type => $media];
 

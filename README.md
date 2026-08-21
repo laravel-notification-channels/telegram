@@ -21,6 +21,7 @@ This package makes it easy to send Telegram notifications from Laravel via the [
   - [Send a Dice](#send-a-dice)
   - [Send a Poll](#send-a-poll)
   - [Send a Rich Message](#send-a-rich-message)
+    - [Streaming Drafts](#streaming-drafts)
   - [Attach a Contact](#attach-a-contact)
   - [Attach an Audio](#attach-an-audio)
   - [Attach a Photo](#attach-a-photo)
@@ -350,7 +351,36 @@ public function toTelegram($notifiable)
 All the common methods (`to()`, `button()`, `keyboard()`, `disableNotification()`, `replyParameters()`, ...) work as usual and are sent alongside the encoded `rich_message` param.
 
 > [!NOTE]
-> Block types without a dedicated builder (such as `collage` and `slideshow`) can be added with the `block()` escape hatch. Draft streaming and direct file uploads for rich message media are not supported by the notification: reference media by URL or `file_id`. The raw `sendRichMessageDraft` endpoint is available on the [Telegram client](#using-the-telegram-client-directly) if you need it.
+> Block types without a dedicated builder (such as `collage` and `slideshow`) can be added with the `block()` escape hatch. Direct file uploads for rich message media are not supported: reference media by URL or `file_id`.
+
+#### Streaming Drafts
+
+Drafts ([`sendRichMessageDraft`](https://core.telegram.org/bots/api#sendrichmessagedraft)) are temporary messages shown to the user while they're still being written. Sending again with the same `draftId()` animates the replacement of the previous content, which makes `TelegramRichMessageDraft` a good fit for streaming an AI generated answer as it's produced:
+
+```php
+use NotificationChannels\Telegram\TelegramRichMessageDraft;
+
+$draft = TelegramRichMessageDraft::create()
+    ->to($chatId)
+    ->draftId($chatId); // Any non-zero integer, stable for this stream.
+
+$buffer = '';
+
+foreach ($stream as $chunk) {
+    $buffer .= $chunk;
+
+    // Replaces the content of the draft with the answer so far.
+    $draft->markdown($buffer)->send();
+}
+
+// Turns the draft into a permanent message via `sendRichMessage`.
+$draft->markdown($buffer)->finalize();
+```
+
+Every content and block builder of `TelegramRichMessage` is available on the draft, so you can stream blocks instead of Markdown if you prefer.
+
+> [!IMPORTANT]
+> Drafts can only be sent to **private chats** and the `draft_id` must be a **non-zero** integer. Batch your updates (roughly one `send()` every 0.5-1 seconds) instead of sending one per token, otherwise your bot will quickly hit the API rate limits. A draft that's never finalized simply disappears: only `finalize()` leaves a permanent message behind. The endpoint accepts `chat_id`, `message_thread_id`, `draft_id` and `rich_message` only, so buttons and notification flags are applied when the draft is finalized.
 
 ### Attach a Contact
 
@@ -982,6 +1012,14 @@ Each media item may be a Telegram file ID, a URL, a local path, a stream/resourc
 - `animationBlock(array $animation, ?array $caption = null)` - Add an animation block.
 - `voiceNoteBlock(array $voiceNote, ?array $caption = null)` - Add a voice note block.
 - `block(array $block)` - Escape hatch to append any raw `InputRichBlock` array, such as `collage` or `slideshow`.
+
+#### Draft Methods:
+
+> `TelegramRichMessageDraft` extends `TelegramRichMessage`, so every content and block method above is available on a draft as well. See [Streaming Drafts](#streaming-drafts).
+
+- `draftId(int $draftId)` - Set the identifier of the draft. Must be a non-zero integer, otherwise a `CouldNotSendNotification` exception is thrown. Sending repeatedly with the same identifier animates the replacement of the previously sent content.
+- `send()` - Send (or replace) the draft via [`sendRichMessageDraft`](https://core.telegram.org/bots/api#sendrichmessagedraft). Throws a `CouldNotSendNotification` exception when no `draftId()` was given.
+- `finalize()` - Send the current content as a permanent message via `sendRichMessage`, dropping the `draft_id` param. The draft state is left untouched.
 
 ## Alternatives
 

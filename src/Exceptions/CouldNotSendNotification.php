@@ -70,4 +70,20 @@ final class CouldNotSendNotification extends Exception
     {
         return new self("Invalid rich message media identifier: {$id}. It must be 1-64 characters long and contain only letters, digits, underscores and hyphens.");
     }
+
+    /**
+     * Thrown when a rich message draft identifier is invalid.
+     */
+    public static function invalidRichMessageDraftId(int $draftId): self
+    {
+        return new self("Invalid rich message draft identifier: {$draftId}. It must be a non-zero integer.");
+    }
+
+    /**
+     * Thrown when a rich message draft is sent without a draft identifier.
+     */
+    public static function richMessageDraftIdNotProvided(): self
+    {
+        return new self('You must provide a draft identifier with `draftId()` to send a rich message draft.');
+    }
 }
