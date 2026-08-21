@@ -15,6 +15,7 @@ All notable changes to `telegram` will be documented in this file
 
 ### Changed
 
+- Allowed Pest 5 / PHPUnit 13 for the test suite (`pestphp/pest` and `pestphp/pest-plugin-laravel` `^4.0 || ^5.0`). Pest 5 requires PHP 8.4+ and Laravel 13 (via Testbench 11 / PHPUnit 13), so Pest 4 is kept for the PHP 8.3 and Laravel 12 test matrix. No test or configuration changes were required.
 - `TelegramRichMessage` is no longer `final` and its fluent builders now return `static` instead of `self`, so subclasses (such as `TelegramRichMessageDraft`) keep chainability.
 - `Telegram::decodeResponse()` and `CouldNotSendNotification::telegramRespondedWithAnError()` now use PHP's `json_decode()` with `JSON_THROW_ON_ERROR` instead of the removed `GuzzleHttp\Utils::jsonDecode()`. Invalid JSON now throws `JsonException` instead of `GuzzleHttp\Exception\InvalidArgumentException`.
 - `CouldNotSendNotification::telegramRespondedWithAnError()` no longer calls `ClientException::hasResponse()` (removed in Guzzle 8); a `ClientException` always carries a response in both Guzzle 7 and 8, so the "no response body found" fallback has been dropped.
