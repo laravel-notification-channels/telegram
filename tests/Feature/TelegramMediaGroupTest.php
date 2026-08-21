@@ -53,6 +53,17 @@ it('creates multipart payloads for uploaded media', function () {
         ]);
 });
 
+it('can add live photos to a media group', function () {
+    $group = TelegramMediaGroup::create()
+        ->to(12345)
+        ->livePhoto('https://example.com/live.jpg', 'A live photo');
+
+    expect($group->hasAttachments())->toBeFalse()
+        ->and($group->toArray()['media'])->toBe(
+            '[{"type":"live_photo","media":"https:\/\/example.com\/live.jpg","caption":"A live photo","parse_mode":"Markdown"}]'
+        );
+});
+
 it('can apply common telegram send options to media groups', function () {
     $group = TelegramMediaGroup::create()
         ->to(12345)

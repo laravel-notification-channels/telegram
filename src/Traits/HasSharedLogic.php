@@ -127,10 +127,11 @@ trait HasSharedLogic
      * @param  string  $url  The URL to open when button is pressed
      * @param  int  $columns  Number of columns for button layout
      * @param  ?string  $style  Button style: 'danger' (red), 'success' (green), 'primary' (blue)
+     * @param  ?string  $iconCustomEmojiId  Custom emoji identifier to show as the button icon
      *
      * @throws JsonException When JSON encoding fails
      */
-    public function button(string $text, string $url, int $columns = 2, ?string $style = null): static
+    public function button(string $text, string $url, int $columns = 2, ?string $style = null, ?string $iconCustomEmojiId = null): static
     {
         $button = [
             'text' => $text,
@@ -139,6 +140,10 @@ trait HasSharedLogic
 
         if ($style !== null) {
             $button['style'] = $style;
+        }
+
+        if ($iconCustomEmojiId !== null) {
+            $button['icon_custom_emoji_id'] = $iconCustomEmojiId;
         }
 
         $this->buttons[] = $button;
@@ -153,10 +158,11 @@ trait HasSharedLogic
      * @param  string  $callbackData  The data to send when button is pressed
      * @param  int  $columns  Number of columns for button layout
      * @param  ?string  $style  Button style: 'danger' (red), 'success' (green), 'primary' (blue)
+     * @param  ?string  $iconCustomEmojiId  Custom emoji identifier to show as the button icon
      *
      * @throws JsonException When JSON encoding fails
      */
-    public function buttonWithCallback(string $text, string $callbackData, int $columns = 2, ?string $style = null): static
+    public function buttonWithCallback(string $text, string $callbackData, int $columns = 2, ?string $style = null, ?string $iconCustomEmojiId = null): static
     {
         $button = [
             'text' => $text,
@@ -165,6 +171,10 @@ trait HasSharedLogic
 
         if ($style !== null) {
             $button['style'] = $style;
+        }
+
+        if ($iconCustomEmojiId !== null) {
+            $button['icon_custom_emoji_id'] = $iconCustomEmojiId;
         }
 
         $this->buttons[] = $button;
@@ -179,10 +189,11 @@ trait HasSharedLogic
      * @param  string  $url  The URL of the Web App to open
      * @param  int  $columns  Number of columns for button layout
      * @param  ?string  $style  Button style: 'danger' (red), 'success' (green), 'primary' (blue)
+     * @param  ?string  $iconCustomEmojiId  Custom emoji identifier to show as the button icon
      *
      * @throws JsonException When JSON encoding fails
      */
-    public function buttonWithWebApp(string $text, string $url, int $columns = 2, ?string $style = null): static
+    public function buttonWithWebApp(string $text, string $url, int $columns = 2, ?string $style = null, ?string $iconCustomEmojiId = null): static
     {
         $button = [
             'text' => $text,
@@ -191,6 +202,10 @@ trait HasSharedLogic
 
         if ($style !== null) {
             $button['style'] = $style;
+        }
+
+        if ($iconCustomEmojiId !== null) {
+            $button['icon_custom_emoji_id'] = $iconCustomEmojiId;
         }
 
         $this->buttons[] = $button;
@@ -248,6 +263,30 @@ trait HasSharedLogic
     public function messageEffectId(string $messageEffectId): static
     {
         $this->payload['message_effect_id'] = $messageEffectId;
+
+        return $this;
+    }
+
+    /**
+     * Send the message as an ephemeral message visible only to the given user.
+     *
+     * @param  int  $userId  Unique identifier of the user that will see the message
+     */
+    public function receiverUserId(int $userId): static
+    {
+        $this->payload['receiver_user_id'] = $userId;
+
+        return $this;
+    }
+
+    /**
+     * Send the message as an ephemeral message in response to a callback query.
+     *
+     * @param  string  $callbackQueryId  Unique identifier of the answered callback query
+     */
+    public function callbackQueryId(string $callbackQueryId): static
+    {
+        $this->payload['callback_query_id'] = $callbackQueryId;
 
         return $this;
     }
@@ -400,7 +439,7 @@ trait HasSharedLogic
     }
 
     /**
-     * @param  array<string, mixed>|list<array<string, mixed>>  $value
+     * @param  array<array-key, mixed>  $value
      *
      * @throws JsonException
      */
