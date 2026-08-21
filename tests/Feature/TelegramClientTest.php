@@ -74,6 +74,29 @@ it('sends dice requests through the correct endpoint', function () {
     ]))->toBeInstanceOf(Response::class);
 });
 
+it('sends rich messages through the correct endpoints', function (string $method, string $endpoint) {
+    $http = Mockery::mock(HttpClient::class);
+    $http->shouldReceive('post')
+        ->once()
+        ->with('https://api.telegram.org/bottoken/'.$endpoint, [
+            'form_params' => [
+                'chat_id' => 12345,
+                'rich_message' => '{"blocks":[{"type":"divider"}]}',
+            ],
+        ])
+        ->andReturn(new Response(200, [], json_encode(['ok' => true])));
+
+    $telegram = new Telegram('token', $http);
+
+    expect($telegram->{$method}([
+        'chat_id' => 12345,
+        'rich_message' => '{"blocks":[{"type":"divider"}]}',
+    ]))->toBeInstanceOf(Response::class);
+})->with([
+    ['sendRichMessage', 'sendRichMessage'],
+    ['sendRichMessageDraft', 'sendRichMessageDraft'],
+]);
+
 it('resolves the send endpoint from the file type', function (string $type, string $endpoint) {
     $http = Mockery::mock(HttpClient::class);
     $http->shouldReceive('post')

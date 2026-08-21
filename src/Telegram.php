@@ -121,6 +121,42 @@ class Telegram
     }
 
     /**
+     * Send a Rich Message.
+     *
+     * <code>
+     * $params = [
+     *   'chat_id'      => '',
+     *   'rich_message' => '',
+     *   'reply_markup' => '',
+     * ];
+     * </code>
+     *
+     * @see https://core.telegram.org/bots/api#sendrichmessage
+     *
+     * @param  array<string, mixed>  $params
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function sendRichMessage(array $params): ?ResponseInterface
+    {
+        return $this->sendRequest('sendRichMessage', $params);
+    }
+
+    /**
+     * Send a Rich Message Draft.
+     *
+     * @see https://core.telegram.org/bots/api#sendrichmessagedraft
+     *
+     * @param  array<string, mixed>  $params
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function sendRichMessageDraft(array $params): ?ResponseInterface
+    {
+        return $this->sendRequest('sendRichMessageDraft', $params);
+    }
+
+    /**
      * Send a Poll.
      *
      * @param  array<string, mixed>  $params

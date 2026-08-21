@@ -6,6 +6,8 @@ All notable changes to `telegram` will be documented in this file
 
 ### Added
 
+- `TelegramRichMessage` for the `sendRichMessage` API method (Telegram Bot API 10.1/10.2). Supports Markdown / HTML content (`markdown()`, `html()`, `view()`), attached media referenced with `tg://photo?id=` style links (`media()`), the `is_rtl` and `skip_entity_detection` flags, and fluent builders for every documented `InputRichBlock` type (`paragraph()`, `heading()`, `preformatted()`, `footer()`, `divider()`, `math()`, `anchor()`, `blockquote()`, `pullquote()`, `details()`, `table()`, `listBlock()`, `thinking()`, `map()`, `photoBlock()`, `videoBlock()`, `audioBlock()`, `animationBlock()`, `voiceNoteBlock()`) plus a `block()` escape hatch for raw blocks such as `collage` and `slideshow`.
+- `Telegram::sendRichMessage()` and `Telegram::sendRichMessageDraft()` client methods.
 - Optional `style` parameter (`'danger'`, `'success'`, `'primary'`) on `button()`, `buttonWithCallback()`, and `buttonWithWebApp()` methods for colored inline keyboard buttons (Telegram Bot API 9.4).
 - Support for `guzzlehttp/guzzle` 8.x alongside 7.x (`^7.8 || ^8.0`).
 

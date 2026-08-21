@@ -62,4 +62,12 @@ final class CouldNotSendNotification extends Exception
     {
         return new self("Invalid file identifier: {$file}");
     }
+
+    /**
+     * Thrown when a rich message media identifier is invalid.
+     */
+    public static function invalidRichMessageMediaId(string $id): self
+    {
+        return new self("Invalid rich message media identifier: {$id}. It must be 1-64 characters long and contain only letters, digits, underscores and hyphens.");
+    }
 }

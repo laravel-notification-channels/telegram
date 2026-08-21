@@ -20,6 +20,7 @@ This package makes it easy to send Telegram notifications from Laravel via the [
   - [Send with Keyboard](#send-with-keyboard)
   - [Send a Dice](#send-a-dice)
   - [Send a Poll](#send-a-poll)
+  - [Send a Rich Message](#send-a-rich-message)
   - [Attach a Contact](#attach-a-contact)
   - [Attach an Audio](#attach-an-audio)
   - [Attach a Photo](#attach-a-photo)
@@ -48,6 +49,7 @@ This package makes it easy to send Telegram notifications from Laravel via the [
   - [Telegram Contact Methods](#telegram-contact-methods)
   - [Telegram Dice Methods](#telegram-dice-methods)
   - [Telegram Poll Methods](#telegram-poll-methods)
+  - [Telegram Rich Message Methods](#telegram-rich-message-methods)
 - [Alternatives](#alternatives)
 - [Changelog](#changelog)
 - [Testing](#testing)
@@ -287,6 +289,68 @@ public function toTelegram($notifiable)
 Preview:
 
 ![Laravel Telegram Poll Example](https://github.com/user-attachments/assets/7324ccc5-9370-414a-9337-10c4e7446f5c)
+
+### Send a Rich Message
+
+Rich messages ([Bot API 10.1](https://core.telegram.org/bots/api#sendrichmessage)) let you send long-form, formatted posts built from blocks or from a single Markdown / HTML document.
+
+The simplest way is to pass Markdown (or HTML) content, referencing any attached media with `tg://photo?id=`, `tg://video?id=` or `tg://audio?id=` links:
+
+```php
+use NotificationChannels\Telegram\TelegramRichMessage;
+
+public function toTelegram($notifiable)
+{
+    return TelegramRichMessage::create()
+        ->to($notifiable->telegram_user_id)
+        ->markdown(<<<'MD'
+            # Invoice #1234 Paid
+
+            Thanks for your payment, we've credited your account.
+
+            [](tg://photo?id=receipt)
+            MD)
+        ->media('receipt', ['type' => 'photo', 'media' => 'https://example.com/receipt.jpg'])
+        ->button('View Invoice', url('/invoice/1234'));
+
+    // Or render a Blade view as the HTML content instead:
+    // ->view('invoices.telegram', ['invoice' => $notifiable->invoice])
+}
+```
+
+For full control over the layout, build the message out of blocks:
+
+```php
+public function toTelegram($notifiable)
+{
+    return TelegramRichMessage::create()
+        ->to($notifiable->telegram_user_id)
+        ->heading('Invoice #1234 Paid')
+        ->paragraph(['Thanks for your payment, ', ['type' => 'bold', 'text' => $notifiable->name], '!'])
+        ->photoBlock(
+            ['type' => 'photo', 'media' => 'https://example.com/receipt.jpg'],
+            ['text' => 'Your receipt', 'credit' => 'Billing']
+        )
+        ->listBlock(['Plan: Pro', 'Amount: $49.00', 'Next renewal: in 30 days'])
+        ->table(
+            cells: [
+                [['blocks' => [['type' => 'paragraph', 'text' => 'Item']]], ['blocks' => [['type' => 'paragraph', 'text' => 'Total']]]],
+                [['blocks' => [['type' => 'paragraph', 'text' => 'Pro plan']]], ['blocks' => [['type' => 'paragraph', 'text' => '$49.00']]]],
+            ],
+            bordered: true,
+            striped: true,
+            caption: 'Invoice summary'
+        )
+        ->divider()
+        ->footer('Questions? Just reply to this message.')
+        ->button('Download Invoice', url('/invoice/1234/download'));
+}
+```
+
+All the common methods (`to()`, `button()`, `keyboard()`, `disableNotification()`, `replyParameters()`, ...) work as usual and are sent alongside the encoded `rich_message` param.
+
+> [!NOTE]
+> Block types without a dedicated builder (such as `collage` and `slideshow`) can be added with the `block()` escape hatch. Draft streaming and direct file uploads for rich message media are not supported by the notification: reference media by URL or `file_id`. The raw `sendRichMessageDraft` endpoint is available on the [Telegram client](#using-the-telegram-client-directly) if you need it.
 
 ### Attach a Contact
 
@@ -712,6 +776,8 @@ Available direct client helpers currently include:
 - `sendFile(array $params, string $type, bool $multipart = false)`
 - `sendMediaGroup(array $params, bool $multipart = false)`
 - `sendPoll(array $params)`
+- `sendRichMessage(array $params)`
+- `sendRichMessageDraft(array $params)`
 - `sendContact(array $params)`
 - `sendLocation(array $params)`
 - `sendVenue(array $params)`
@@ -877,6 +943,45 @@ Each media item may be a Telegram file ID, a URL, a local path, a stream/resourc
 - `closeDate(int $timestamp)` - Set the Unix timestamp at which the poll closes automatically.
 - `media(array $media)` - Set the [`InputPollMedia`](https://core.telegram.org/bots/api#inputpollmedia) shown with the question.
 - `explanationMedia(array $media)` - Set the [`InputPollMedia`](https://core.telegram.org/bots/api#inputpollmedia) shown with the quiz explanation.
+
+### Telegram Rich Message Methods
+
+> Telegram rich messages are long-form posts built from an [`InputRichMessage`](https://core.telegram.org/bots/api#inputrichmessage). You can either provide Markdown / HTML content or compose the message out of blocks (or both). Every `RichText` parameter accepts a plain string or a rich text array, which is passed through to the API untouched.
+
+#### Content Methods:
+
+- `markdown(string $markdown)` - Set the Markdown content of the message. Also settable via the constructor / `create()`.
+- `html(string $html)` - Set the HTML content of the message.
+- `view(string $view, array $data = [], array $mergeData = [])` - Render a Blade template as the HTML content.
+- `media(string $id, array $media)` - Attach an [`InputRichMessageMedia`](https://core.telegram.org/bots/api#inputrichmessagemedia) item that can be referenced from the content with `tg://photo?id=`, `tg://video?id=` or `tg://audio?id=` links. The `$id` must be 1-64 characters long and contain only letters, digits, underscores and hyphens, otherwise a `CouldNotSendNotification` exception is thrown.
+- `rtl(bool $rtl = true)` - Render the message right-to-left (`is_rtl`).
+- `skipEntityDetection(bool $skip = true)` - Skip automatic detection of entities such as links and mentions.
+- `getRichMessage()` - Get the `InputRichMessage` array built so far.
+
+#### Block Methods:
+
+> Each of these appends an [`InputRichBlock`](https://core.telegram.org/bots/api#inputrichblock) to the message, in the order they are called.
+
+- `paragraph(string|array $text)` - Add a paragraph.
+- `heading(string|array $text, int $size = 1)` - Add a heading of the given size.
+- `preformatted(string|array $text, ?string $language = null)` - Add a preformatted (`pre`) block with optional syntax highlighting language.
+- `footer(string|array $text)` - Add a footer.
+- `divider()` - Add a horizontal divider.
+- `math(string $expression)` - Add a mathematical expression.
+- `anchor(string $name)` - Add a named anchor that can be linked to.
+- `blockquote(array|string $blocks, string|array|null $credit = null)` - Add a blockquote. A string is wrapped into a single paragraph block.
+- `pullquote(string|array $text, string|array|null $credit = null)` - Add a pullquote.
+- `details(string|array $summary, array $blocks, bool $isOpen = false)` - Add a collapsible details block.
+- `table(array $cells, bool $bordered = false, bool $striped = false, string|array|null $caption = null)` - Add a table from rows of [`RichBlockTableCell`](https://core.telegram.org/bots/api#richblocktablecell) arrays.
+- `listBlock(array $items)` - Add a list. Each item may be a string (wrapped into a single paragraph block) or an [`InputRichBlockListItem`](https://core.telegram.org/bots/api#inputrichblocklistitem) array (`blocks`, `has_checkbox`, `is_checked`, `value`, `type`).
+- `thinking(string|array $text)` - Add a thinking block.
+- `map(float $latitude, float $longitude, int $zoom, int $width, int $height)` - Add a map block.
+- `photoBlock(array $photo, ?array $caption = null)` - Add a photo block from an `InputMediaPhoto` array with an optional [`RichBlockCaption`](https://core.telegram.org/bots/api#richblockcaption).
+- `videoBlock(array $video, ?array $caption = null)` - Add a video block.
+- `audioBlock(array $audio, ?array $caption = null)` - Add an audio block.
+- `animationBlock(array $animation, ?array $caption = null)` - Add an animation block.
+- `voiceNoteBlock(array $voiceNote, ?array $caption = null)` - Add a voice note block.
+- `block(array $block)` - Escape hatch to append any raw `InputRichBlock` array, such as `collage` or `slideshow`.
 
 ## Alternatives
 
