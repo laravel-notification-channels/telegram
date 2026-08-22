@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -46,7 +46,7 @@ jobs:
           composer config --global github-protocols https
 
       - name: Cache Composer
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ env.COMPOSER_CACHE_DIR }}
           key: composer-${{ runner.os }}-${{ matrix.php }}-${{ matrix.laravel }}-${{ matrix.stability }}-${{ hashFiles('composer.json') }}
@@ -58,7 +58,7 @@ jobs:
             composer-${{ runner.os }}-
 
       - name: Install Dependencies (with retry)
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 3
