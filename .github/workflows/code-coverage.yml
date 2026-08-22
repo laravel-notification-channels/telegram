@@ -3,7 +3,19 @@ name: Unit test coverage
 on:
   push:
     branches: [master]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'composer.json'
+      - 'phpunit.xml.dist'
+      - '.github/workflows/code-coverage.yml'
   pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'composer.json'
+      - 'phpunit.xml.dist'
+      - '.github/workflows/code-coverage.yml'
 
 jobs:
   coverage:

@@ -2,10 +2,20 @@ name: Mutation tests
 
 on:
   push:
+    branches: [master]
     paths:
-      - '**.php'
+      - 'src/**'
+      - 'tests/**'
+      - 'composer.json'
+      - 'phpunit.xml.dist'
       - '.github/workflows/mutation.yml'
   pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'composer.json'
+      - 'phpunit.xml.dist'
+      - '.github/workflows/mutation.yml'
 
 jobs:
   mutation:
