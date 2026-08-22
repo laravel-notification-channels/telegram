@@ -14,7 +14,7 @@ jobs:
 
     env:
       COMPOSER_CACHE_DIR: ~/.composer/cache
-      LARAVEL_VERSION: '12.*'
+      LARAVEL_VERSION: '13.*'
 
     steps:
       - name: Checkout
@@ -23,7 +23,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '8.5'
           tools: composer:v2
           coverage: pcov
           extensions: mbstring, curl, fileinfo
@@ -43,5 +43,8 @@ jobs:
           composer require laravel/framework:${{ env.LARAVEL_VERSION }} --no-interaction --no-update
           composer update --prefer-dist --no-interaction --no-progress
 
+      # --parallel is deliberately NOT used: parallel runs lose the
+      # mutant-to-covering-test mapping and report covered mutants as
+      # "untested" (score drops to ~89% with identical code and tests).
       - name: Run mutation tests
-        run: vendor/bin/pest --mutate --everything --covered-only --parallel --min=100
+        run: vendor/bin/pest --mutate --everything --covered-only --min=100
