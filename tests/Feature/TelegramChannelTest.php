@@ -103,3 +103,77 @@ it('returns null when no telegram recipient can be resolved', function () {
 
     expect($result)->toBeNull();
 });
+
+it('wraps a plain string returned from toTelegram into a message', function () {
+    $notifiable = new class
+    {
+        public function routeNotificationFor(string $driver, Notification $notification): int|false
+        {
+            return $driver === 'telegram' ? 67890 : false;
+        }
+    };
+
+    $notification = new class extends Notification
+    {
+        public function toTelegram($notifiable): string
+        {
+            return 'Hello from a plain string!';
+        }
+    };
+
+    $expectedResponse = ['ok' => true, 'result' => ['message_id' => 123, 'chat' => ['id' => 67890]]];
+
+    $this->telegram
+        ->shouldReceive('sendMessage')
+        ->with([
+            'text' => 'Hello from a plain string!',
+            'parse_mode' => 'Markdown',
+            'chat_id' => 67890,
+        ])
+        ->once()
+        ->andReturn(new Response(200, [], json_encode($expectedResponse)));
+
+    expect($this->channel->send($notifiable, $notification))->toBe($expectedResponse);
+});
+
+it('returns null when toTelegram returns an unsupported type', function () {
+    $notification = new class extends Notification
+    {
+        public function toTelegram($notifiable): array
+        {
+            return ['not' => 'a message'];
+        }
+    };
+
+    expect($this->channel->send(new TestNotifiable, $notification))->toBeNull();
+});
+
+it('returns null when the notifiable cannot route notifications', function () {
+    $result = $this->channel->send(new \stdClass, new TestNotificationNoChatId);
+
+    expect($result)->toBeNull();
+});
+
+it('overrides the bot token when set on the message', function () {
+    $notification = new class extends Notification
+    {
+        public function toTelegram($notifiable): TelegramMessage
+        {
+            return TelegramMessage::create('Custom bot')->to(12345)->token('custom-token');
+        }
+    };
+
+    $expectedResponse = ['ok' => true, 'result' => ['message_id' => 123]];
+
+    $this->telegram
+        ->shouldReceive('setToken')
+        ->with('custom-token')
+        ->once();
+
+    $this->telegram
+        ->shouldReceive('sendMessage')
+        ->once()
+        ->andReturn(new Response(200, [], json_encode($expectedResponse)));
+
+    expect($this->channel->send(new TestNotifiable, $notification))->toBe($expectedResponse);
+});

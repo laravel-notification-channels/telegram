@@ -13,7 +13,6 @@ This package makes it easy to send Telegram notifications from Laravel via the [
 - [Installation](#installation)
   - [Setting up your Telegram Bot](#setting-up-your-telegram-bot)
   - [Retrieving Chat ID](#retrieving-chat-id)
-  - [Using in Lumen](#using-in-lumen)
   - [Proxy or Bridge Support](#proxy-or-bridge-support)
 - [Usage](#usage)
   - [Text Notification](#text-notification)
@@ -78,8 +77,17 @@ Then, configure your Telegram Bot API token:
 
 'telegram' => [
     'token' => env('TELEGRAM_BOT_TOKEN', 'YOUR BOT TOKEN HERE'),
+
     // Optional bridge / self-hosted Bot API server
     // 'base_uri' => env('TELEGRAM_API_BASE_URI'),
+
+    // Optional Guzzle HTTP client options.
+    // Defaults: 30s request timeout, 10s connection timeout.
+    // 'http' => [
+    //     'timeout' => 30,
+    //     'connect_timeout' => 10,
+    //     'proxy' => env('TELEGRAM_HTTP_PROXY'),
+    // ],
 ],
 ```
 
@@ -130,28 +138,13 @@ if ($updates['ok']) {
 
 For the full list of supported `options()`, see the [Telegram Bot API docs][link-telegram-docs-getupdates].
 
-## Using in Lumen
-
-If you're using this notification channel in your Lumen project, you will have to add the below code in your `bootstrap/app.php` file.
-
-```php
-# bootstrap/app.php
-
-// Make sure to create a "config/services.php" file and add the config from the above step.
-$app->configure('services');
-
-# Register the notification service providers.
-$app->register(Illuminate\Notifications\NotificationServiceProvider::class);
-$app->register(NotificationChannels\Telegram\TelegramServiceProvider::class);
-```
-
 ## Proxy or Bridge Support
 
 You may not be able to send notifications directly if the Telegram Bot API is blocked in your region.
 In that case, you can either configure a proxy by following the Guzzle instructions [here](http://docs.guzzlephp.org/en/stable/quickstart.html#environment-variables) or
 point the package at a bridge or self-hosted Bot API server by setting the `base_uri` config shown above.
 
-You can also set `HTTPS_PROXY` in your `.env` file.
+You can also set `HTTPS_PROXY` in your `.env` file, or set the `proxy` key (or any other Guzzle request option, such as `timeout`) in the `services.telegram.http` config array shown above.
 
 ## Usage
 
@@ -180,7 +173,7 @@ class InvoicePaid extends Notification
             ->content('Hello there!')
             ->line('Your invoice has been *PAID*')
             ->lineIf($notifiable->amount > 0, "Amount paid: {$notifiable->amount}")
-            ->line('Thank you, '.TelegramMessage::escapeMarkdown($user).'!')
+            ->escapedLine("Thank you, {$user}!")
             // ->view('notification', ['url' => $url])
             ->button('View Invoice', $url)
             ->button('Download Invoice', $url);
@@ -436,6 +429,18 @@ You can also use a helper method with a remote file or Telegram file ID:
 ```php
 TelegramFile::create()
     ->photo('https://samples-files.com/samples/images/jpg/1280-720-sample.jpg');
+```
+
+If you already know whether you're dealing with a URL or a Telegram file ID, use the explicit methods instead — they validate the input and skip the detection heuristics:
+
+```php
+use NotificationChannels\Telegram\Enums\FileType;
+
+TelegramFile::create()
+    ->url('https://samples-files.com/samples/images/jpg/1280-720-sample.jpg', FileType::Photo);
+
+TelegramFile::create()
+    ->fileId('AgACAgQAAxkDAAIBLGV3', FileType::Photo);
 ```
 
 Preview:
@@ -752,7 +757,7 @@ Using the [notification facade][link-notification-facade], you can send a notifi
 >
 > Also note that your bot will not be able to send more than 20 messages per minute to the same group.
 >
-> If you go over the limit, you'll start getting `429` errors. For more details, refer Telegram Bots [FAQ](https://core.telegram.org/bots/faq#broadcasting-to-users).
+> If you go over the limit, you'll start getting `429` errors. The package automatically waits for the `retry_after` duration reported by Telegram and retries once (skipped when `retry_after` exceeds 60 seconds), but sustained bursts will still fail. For more details, refer Telegram Bots [FAQ](https://core.telegram.org/bots/faq#broadcasting-to-users).
 
 ```php
 use Illuminate\Support\Facades\Notification;
@@ -763,7 +768,18 @@ Notification::send($recipients, new InvoicePaid());
 
 ### Using the Telegram Client Directly
 
-If you need lower-level Bot API access, you can resolve the `Telegram` client directly from the container:
+If you need lower-level Bot API access, you can use the `Telegram` facade:
+
+```php
+use NotificationChannels\Telegram\Facades\Telegram;
+
+Telegram::sendChatAction([
+    'chat_id' => $chatId,
+    'action' => 'typing',
+]);
+```
+
+Or resolve the `Telegram` client directly from the container:
 
 ```php
 use NotificationChannels\Telegram\Telegram;
@@ -848,7 +864,7 @@ For more information on supported parameters, check out these [docs](https://cor
 - `callbackQueryId(string $callbackQueryId)` - Send an ephemeral message in response to the given callback query.
 - `replyParameters(array $replyParameters)` - Set structured reply parameters.
 - `suggestedPostParameters(array $suggestedPostParameters)` - Set suggested post parameters for supported direct message topics.
-- `options(array $options)` - Add/override payload parameters.
+- `options(array $options)` - Add/override payload parameters. Array values are JSON encoded automatically when the request is sent.
 - `sendWhen(bool $condition)` - Set condition for sending. If the condition is true, the notification will be sent; otherwise, it will not.
 - `onError(callable $callback)` - Set error handler (receives a data array with `to`, `request`, `exception` keys).
 - `getPayloadValue(string $key)` - Get specific payload value.
@@ -860,18 +876,21 @@ For more information on supported parameters, check out these [docs](https://cor
 - `content(string $content, int $limit = null)` - Set message content with optional length limit. Supports markdown.
 - `line(string $content)` - Add new line of content.
 - `lineIf(bool $condition, string $content)` - Conditionally add new line.
-- `escapedLine(string $content)` - Add escaped content line (for Markdown).
+- `escapedLine(string $content)` - Add a line escaped for the currently set parse mode: the full special character set for `MarkdownV2`, only `_`, `*`, `` ` `` and `[` for the default legacy `Markdown` mode, and no escaping for `HTML` or when no parse mode is set. Set the parse mode before calling this method.
 - `view(string $view, array $data = [], array $mergeData = [])` - Use Blade template with Telegram supported HTML or Markdown syntax content if you wish to use a view file instead of the `content()` method.
 - `entities(array $entities)` - Set explicit message entities instead of using `parse_mode`.
 - `linkPreviewOptions(array $linkPreviewOptions)` - Set Telegram link preview options.
-- `chunk(int $limit = 4096)` - Split long messages (rate limited to 1/second).
+- `chunk(int $limit = 4096)` - Split long messages into chunks of at most `$limit` UTF-8 characters (Telegram's limit is 4096). The splitter prefers breaking at the last newline within a chunk, then the last space, and only hard-splits when neither is available.
 
 > [!NOTE]
-> Chunked messages will be rate limited to one message per second to comply with rate limitation requirements from Telegram.
+> A one second pause is added between chunks to comply with Telegram's rate limits.
+>
+> A chunk boundary can still land inside a Markdown entity (e.g. an unclosed `*bold*`), which Telegram rejects. Prefer chunk-sized paragraphs, or disable the parse mode with `normal()` for machine-generated content.
 
 #### Helper Methods:
 
-- `escapeMarkdown(string $content)` - Escape a string to make it safe for the `markdownv2` parse mode
+- `escapeMarkdown(string $content)` - Escape a string to make it safe for the `MarkdownV2` parse mode.
+- `escapeLegacyMarkdown(string $content)` - Escape the characters supported by the legacy `Markdown` parse mode (`_`, `*`, `` ` ``, `[`).
 
 ### Telegram Location Methods
 
@@ -905,7 +924,9 @@ For more information on supported parameters, check out these [docs](https://cor
 - `view(string $view, array $data = [], array $mergeData = [])` - Use Blade template for caption.
 - `captionEntities(array $captionEntities)` - Set explicit caption entities.
 - `showCaptionAboveMedia(bool $show = true)` - Show caption above supported media types.
-- `file(string|resource|StreamInterface $file, FileType|string $type, string $filename = null)` - Attach a local path, remote URL, Telegram file ID, stream/resource, or raw file contents. Types: `photo`, `audio`, `document`, `video`, `animation`, `voice`, `video_note`, `sticker`, `live_photo` (use `Enums\FileType`). Pass a filename when the string represents raw file contents.
+- `file(string|resource|StreamInterface $file, FileType|string $type, string $filename = null)` - Attach a local path, remote URL, Telegram file ID, stream/resource, or raw file contents. Types: `photo`, `audio`, `document`, `video`, `animation`, `voice`, `video_note`, `sticker`, `live_photo` (use `Enums\FileType`). Pass a filename when the string represents raw file contents. An unknown type string throws `CouldNotSendNotification::invalidFileType()`.
+- `fileId(string $fileId, FileType|string $type = FileType::Document)` - Attach an existing Telegram file by its file ID, bypassing the local-file/URL detection heuristics of `file()`.
+- `url(string $url, FileType|string $type = FileType::Document)` - Attach a remote file by its URL, bypassing the detection heuristics of `file()`.
 
 #### Helper Methods:
 
@@ -1032,7 +1053,17 @@ Please see [CHANGELOG](CHANGELOG.md) for details about recent changes.
 ## Testing
 
 ```bash
+# Run the test suite
 $ composer test
+
+# Run static analysis
+$ composer analyse
+
+# Fix code style
+$ composer format
+
+# Run mutation testing (requires Xdebug or PCOV)
+$ composer test-mutation
 ```
 
 ## Security

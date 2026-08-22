@@ -133,22 +133,10 @@ trait HasSharedLogic
      */
     public function button(string $text, string $url, int $columns = 2, ?string $style = null, ?string $iconCustomEmojiId = null): static
     {
-        $button = [
+        return $this->addInlineButton([
             'text' => $text,
             'url' => $url,
-        ];
-
-        if ($style !== null) {
-            $button['style'] = $style;
-        }
-
-        if ($iconCustomEmojiId !== null) {
-            $button['icon_custom_emoji_id'] = $iconCustomEmojiId;
-        }
-
-        $this->buttons[] = $button;
-
-        return $this->updateInlineKeyboard($columns);
+        ], $columns, $style, $iconCustomEmojiId);
     }
 
     /**
@@ -164,22 +152,10 @@ trait HasSharedLogic
      */
     public function buttonWithCallback(string $text, string $callbackData, int $columns = 2, ?string $style = null, ?string $iconCustomEmojiId = null): static
     {
-        $button = [
+        return $this->addInlineButton([
             'text' => $text,
             'callback_data' => $callbackData,
-        ];
-
-        if ($style !== null) {
-            $button['style'] = $style;
-        }
-
-        if ($iconCustomEmojiId !== null) {
-            $button['icon_custom_emoji_id'] = $iconCustomEmojiId;
-        }
-
-        $this->buttons[] = $button;
-
-        return $this->updateInlineKeyboard($columns);
+        ], $columns, $style, $iconCustomEmojiId);
     }
 
     /**
@@ -195,11 +171,21 @@ trait HasSharedLogic
      */
     public function buttonWithWebApp(string $text, string $url, int $columns = 2, ?string $style = null, ?string $iconCustomEmojiId = null): static
     {
-        $button = [
+        return $this->addInlineButton([
             'text' => $text,
             'web_app' => ['url' => $url],
-        ];
+        ], $columns, $style, $iconCustomEmojiId);
+    }
 
+    /**
+     * Add an inline button and rebuild the inline keyboard markup.
+     *
+     * @param  array{text: string} & array<string, mixed>  $button
+     *
+     * @throws JsonException When JSON encoding fails
+     */
+    private function addInlineButton(array $button, int $columns, ?string $style, ?string $iconCustomEmojiId): static
+    {
         if ($style !== null) {
             $button['style'] = $style;
         }
@@ -354,7 +340,7 @@ trait HasSharedLogic
      *
      * @param  callable  $callback  The closure that will handle exceptions.
      */
-    public function onError(callable $callback): self
+    public function onError(callable $callback): static
     {
         $this->exceptionHandler = $callback instanceof Closure
             ? $callback

@@ -28,6 +28,7 @@
     },
     "require-dev": {
         "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.18",
         "mockery/mockery": "^1.4.4",
         "orchestra/testbench": "^10.0 || ^11.0",
         "pestphp/pest": "^4.0 || ^5.0",
@@ -65,7 +66,10 @@
     "scripts": {
         "post-autoload-dump": "@php ./vendor/bin/testbench package:discover --ansi",
         "analyse": "phpstan analyse",
+        "format": "pint",
+        "format-test": "pint --test",
         "test": "pest",
-        "test-coverage": "pest --coverage"
+        "test-coverage": "pest --coverage",
+        "test-mutation": "pest --mutate --everything --covered-only --min=100"
     }
 }

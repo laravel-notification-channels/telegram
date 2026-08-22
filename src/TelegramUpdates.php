@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace NotificationChannels\Telegram;
 
 use JsonException;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class TelegramUpdates.
@@ -15,11 +14,14 @@ class TelegramUpdates
     /**
      * @param  array<string, mixed>  $payload
      */
-    public function __construct(protected array $payload = []) {}
+    public function __construct(
+        protected array $payload = [],
+        protected ?Telegram $telegram = null
+    ) {}
 
-    public static function create(): self
+    public static function create(?Telegram $telegram = null): self
     {
-        return new self;
+        return new self(telegram: $telegram);
     }
 
     /**
@@ -42,7 +44,7 @@ class TelegramUpdates
      */
     public function options(array $options): self
     {
-        $this->payload = array_merge($this->payload, $options);
+        $this->payload = [...$this->payload, ...$options];
 
         return $this;
     }
@@ -61,13 +63,11 @@ class TelegramUpdates
      */
     public function get(): array
     {
-        $response = app(Telegram::class)->getUpdates($this->payload);
+        $telegram = $this->telegram ?? app(Telegram::class);
 
-        if (! $response instanceof ResponseInterface) {
-            return [];
-        }
-
-        return Telegram::decodeResponse($response);
+        return Telegram::decodeResponse(
+            $telegram->getUpdates($this->payload)
+        );
     }
 
     /**

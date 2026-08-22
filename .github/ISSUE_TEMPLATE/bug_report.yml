@@ -1,0 +1,60 @@
+name: Bug Report
+description: Report a problem with the Telegram notification channel
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before opening an issue, please search existing issues and pull requests for a fix in progress.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Minimal code or steps that reproduce the problem.
+      placeholder: |
+        1. Create a notification with `TelegramMessage::create()...`
+        2. Send it via `Notification::route('telegram', $chatId)->notify(...)`
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include the full exception message and stack trace if applicable.
+    validations:
+      required: true
+  - type: input
+    id: package-version
+    attributes:
+      label: Package version
+      placeholder: e.g. 8.0.0
+    validations:
+      required: true
+  - type: input
+    id: laravel-version
+    attributes:
+      label: Laravel version
+      placeholder: e.g. 13.1.0
+    validations:
+      required: true
+  - type: input
+    id: php-version
+    attributes:
+      label: PHP version
+      placeholder: e.g. 8.4.2
+    validations:
+      required: true

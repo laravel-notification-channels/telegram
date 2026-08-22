@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question / Support
+    url: https://t.me/PHPChatCo
+    about: Ask questions in the PHP Chat Telegram group.
+  - name: Security Vulnerability
+    url: https://github.com/laravel-notification-channels/telegram/blob/master/README.md#security
+    about: Please email the maintainer instead of using the issue tracker.

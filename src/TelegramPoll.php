@@ -304,7 +304,7 @@ class TelegramPoll extends TelegramBase implements TelegramSenderContract
     /**
      * @throws CouldNotSendNotification
      */
-    public function send(): ?ResponseInterface
+    public function send(): ResponseInterface
     {
         return $this->telegram->sendPoll($this->toArray());
     }

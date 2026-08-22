@@ -34,7 +34,7 @@ class TelegramDice extends TelegramBase implements TelegramSenderContract
     /**
      * @throws CouldNotSendNotification
      */
-    public function send(): ?ResponseInterface
+    public function send(): ResponseInterface
     {
         return $this->telegram->sendDice($this->toArray());
     }

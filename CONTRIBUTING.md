@@ -40,7 +40,7 @@ Before submitting a pull request:
 
 If the project maintainer has any additional requirements, you will find them listed here.
 
-- **Code Styling** - The repository uses GitHub Action to automatically apply the standard code styling.
+- **Code Styling** - The repository uses [Laravel Pint](https://laravel.com/docs/pint) with the `laravel` preset (see `pint.json`). Run `composer format` before submitting (or `composer format-test` to check without fixing); a GitHub Action also applies the styling automatically.
 
 - **Add tests!** - Your patch won't be accepted if it doesn't have tests.
 

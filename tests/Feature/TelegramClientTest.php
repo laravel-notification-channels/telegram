@@ -4,13 +4,36 @@ namespace NotificationChannels\Telegram\Tests\Feature;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use JsonException;
 use Mockery;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Telegram\Telegram;
+use ReflectionProperty;
 use RuntimeException;
+
+function telegramGuzzleConfig(Telegram $telegram): array
+{
+    $client = (new ReflectionProperty(Telegram::class, 'http'))->getValue($telegram);
+
+    return (new ReflectionProperty(HttpClient::class, 'config'))->getValue($client);
+}
+
+function telegramTooManyRequestsException(int $retryAfter): ClientException
+{
+    return new ClientException(
+        'Too Many Requests',
+        new Request('POST', 'https://api.telegram.org/bottoken/sendMessage'),
+        new Response(429, [], json_encode([
+            'ok' => false,
+            'error_code' => 429,
+            'description' => 'Too Many Requests: retry after '.$retryAfter,
+            'parameters' => ['retry_after' => $retryAfter],
+        ]))
+    );
+}
 
 it('decodes valid telegram responses', function () {
     $response = new Response(200, [], json_encode([
@@ -210,7 +233,7 @@ it('supports edit methods and message deletion endpoints', function () {
         ->with('https://api.telegram.org/bottoken/deleteMessages', [
             'form_params' => [
                 'chat_id' => 12345,
-                'message_ids' => [1, 2],
+                'message_ids' => '[1,2]',
             ],
         ])
         ->andReturn(new Response(200, [], json_encode(['ok' => true])));
@@ -293,6 +316,132 @@ it('supports chat action and media editing endpoints', function () {
         ], true))->toBeInstanceOf(Response::class);
 });
 
+it('json encodes array params for form requests', function () {
+    $http = Mockery::mock(HttpClient::class);
+    $http->shouldReceive('post')
+        ->once()
+        ->with('https://api.telegram.org/bottoken/sendMessage', [
+            'form_params' => [
+                'chat_id' => 12345,
+                'text' => 'Hello',
+                'reply_parameters' => '{"message_id":99}',
+            ],
+        ])
+        ->andReturn(new Response(200, [], json_encode(['ok' => true])));
+
+    $telegram = new Telegram('token', $http);
+
+    expect($telegram->sendMessage([
+        'chat_id' => 12345,
+        'text' => 'Hello',
+        'reply_parameters' => ['message_id' => 99],
+    ]))->toBeInstanceOf(Response::class);
+});
+
+it('sends requests through the remaining client endpoints', function (string $method, string $endpoint) {
+    $http = Mockery::mock(HttpClient::class);
+    $http->shouldReceive('post')
+        ->once()
+        ->with('https://api.telegram.org/bottoken/'.$endpoint, [
+            'form_params' => [
+                'chat_id' => 12345,
+            ],
+        ])
+        ->andReturn(new Response(200, [], json_encode(['ok' => true])));
+
+    $telegram = new Telegram('token', $http);
+
+    expect($telegram->{$method}(['chat_id' => 12345]))->toBeInstanceOf(Response::class);
+})->with([
+    ['sendPoll', 'sendPoll'],
+    ['sendContact', 'sendContact'],
+    ['getUpdates', 'getUpdates'],
+    ['sendLocation', 'sendLocation'],
+    ['sendVenue', 'sendVenue'],
+]);
+
+it('defaults the retry delay when the 429 response has no parameters', function () {
+    $calls = 0;
+    $http = Mockery::mock(HttpClient::class);
+    $http->shouldReceive('post')
+        ->twice()
+        ->andReturnUsing(function () use (&$calls) {
+            if (++$calls === 1) {
+                throw new ClientException(
+                    'Too Many Requests',
+                    new Request('POST', 'https://api.telegram.org/bottoken/sendMessage'),
+                    new Response(429, [], json_encode(['ok' => false]))
+                );
+            }
+
+            return new Response(200, [], json_encode(['ok' => true]));
+        });
+
+    $telegram = new Telegram('token', $http);
+
+    expect($telegram->sendMessage([
+        'chat_id' => 12345,
+        'text' => 'Hello',
+    ]))->toBeInstanceOf(Response::class);
+});
+
+it('defaults the retry delay when retry_after is malformed', function () {
+    $calls = 0;
+    $http = Mockery::mock(HttpClient::class);
+    $http->shouldReceive('post')
+        ->twice()
+        ->andReturnUsing(function () use (&$calls) {
+            if (++$calls === 1) {
+                throw new ClientException(
+                    'Too Many Requests',
+                    new Request('POST', 'https://api.telegram.org/bottoken/sendMessage'),
+                    new Response(429, [], json_encode([
+                        'ok' => false,
+                        'parameters' => ['retry_after' => 'soon'],
+                    ]))
+                );
+            }
+
+            return new Response(200, [], json_encode(['ok' => true]));
+        });
+
+    $telegram = new Telegram('token', $http);
+
+    expect($telegram->sendMessage([
+        'chat_id' => 12345,
+        'text' => 'Hello',
+    ]))->toBeInstanceOf(Response::class);
+});
+
+it('normalizes plain key value pairs into multipart items', function () {
+    $http = Mockery::mock(HttpClient::class);
+    $http->shouldReceive('post')
+        ->once()
+        ->with('https://api.telegram.org/bottoken/sendMediaGroup', [
+            'multipart' => [
+                [
+                    'name' => 'chat_id',
+                    'contents' => 12345,
+                ],
+                [
+                    'name' => 'media',
+                    'contents' => '[{"type":"photo","media":"attach://file0"}]',
+                ],
+            ],
+        ])
+        ->andReturn(new Response(200, [], json_encode(['ok' => true])));
+
+    $telegram = new Telegram('token', $http);
+
+    expect($telegram->sendMediaGroup([
+        'chat_id' => 12345,
+        [
+            'name' => 'media',
+            'contents' => '[{"type":"photo","media":"attach://file0"}]',
+        ],
+    ], true))->toBeInstanceOf(Response::class);
+});
+
 it('throws when the bot token is missing', function () {
     $telegram = new Telegram;
 
@@ -322,6 +471,83 @@ it('wraps client exceptions from telegram', function () {
         'text' => 'Hello',
     ]);
 })->throws(CouldNotSendNotification::class, 'Telegram responded with an error `400 - chat not found`');
+
+it('configures sane default http timeouts', function () {
+    $config = telegramGuzzleConfig(new Telegram);
+
+    expect($config['timeout'])->toBe(Telegram::DEFAULT_TIMEOUT)
+        ->and($config['connect_timeout'])->toBe(Telegram::DEFAULT_CONNECT_TIMEOUT);
+});
+
+it('wraps server exceptions from telegram', function () {
+    $http = Mockery::mock(HttpClient::class);
+    $http->shouldReceive('post')
+        ->once()
+        ->andThrow(new ServerException(
+            'Bad Gateway',
+            new Request('POST', 'https://api.telegram.org/bottoken/sendMessage'),
+            new Response(502, [], json_encode([
+                'ok' => false,
+                'description' => 'Bad Gateway',
+            ]))
+        ));
+
+    $telegram = new Telegram('token', $http);
+
+    $telegram->sendMessage([
+        'chat_id' => 12345,
+        'text' => 'Hello',
+    ]);
+})->throws(CouldNotSendNotification::class, 'Telegram responded with an error `502 - Bad Gateway`');
+
+it('retries the request when telegram responds with 429', function () {
+    $calls = 0;
+    $http = Mockery::mock(HttpClient::class);
+    $http->shouldReceive('post')
+        ->twice()
+        ->andReturnUsing(function () use (&$calls) {
+            if (++$calls === 1) {
+                throw telegramTooManyRequestsException(0);
+            }
+
+            return new Response(200, [], json_encode(['ok' => true]));
+        });
+
+    $telegram = new Telegram('token', $http);
+
+    expect($telegram->sendMessage([
+        'chat_id' => 12345,
+        'text' => 'Hello',
+    ]))->toBeInstanceOf(Response::class);
+});
+
+it('throws when telegram keeps responding with 429', function () {
+    $http = Mockery::mock(HttpClient::class);
+    $http->shouldReceive('post')
+        ->twice()
+        ->andReturnUsing(fn () => throw telegramTooManyRequestsException(0));
+
+    $telegram = new Telegram('token', $http);
+
+    $telegram->sendMessage([
+        'chat_id' => 12345,
+        'text' => 'Hello',
+    ]);
+})->throws(CouldNotSendNotification::class, 'Telegram responded with an error `429');
+
+it('does not retry when retry_after exceeds the wait cap', function () {
+    $http = Mockery::mock(HttpClient::class);
+    $http->shouldReceive('post')
+        ->once()
+        ->andReturnUsing(fn () => throw telegramTooManyRequestsException(3600));
+
+    $telegram = new Telegram('token', $http);
+
+    $telegram->sendMessage([
+        'chat_id' => 12345,
+        'text' => 'Hello',
+    ]);
+})->throws(CouldNotSendNotification::class, 'Telegram responded with an error `429');
 
 it('wraps generic communication exceptions', function () {
     $http = Mockery::mock(HttpClient::class);

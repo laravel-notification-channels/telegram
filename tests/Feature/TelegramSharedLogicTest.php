@@ -151,6 +151,23 @@ it('supports non closure error handlers and send conditions', function () {
     expect($message->canSend())->toBeTrue();
 });
 
+it('keeps closure error handlers as-is', function () {
+    $closure = function (array $data): string {
+        return 'closure-handled';
+    };
+
+    $message = new TelegramBase;
+    $message->onError($closure);
+
+    expect($message->exceptionHandler)->toBe($closure);
+});
+
+it('declares a static return type on onError for fluent subclass chaining', function () {
+    $returnType = (new \ReflectionMethod(TelegramBase::class, 'onError'))->getReturnType();
+
+    expect((string) $returnType)->toBe('static');
+});
+
 it('reports token state and default sendability', function () {
     $message = new TelegramBase;
 

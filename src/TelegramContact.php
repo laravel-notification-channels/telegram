@@ -73,7 +73,7 @@ class TelegramContact extends TelegramBase implements TelegramSenderContract
     /**
      * @throws CouldNotSendNotification
      */
-    public function send(): ?ResponseInterface
+    public function send(): ResponseInterface
     {
         return $this->telegram->sendContact($this->toArray());
     }

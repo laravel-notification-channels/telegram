@@ -12,9 +12,9 @@ interface TelegramSenderContract
     /**
      * Send the message.
      *
-     * @return ResponseInterface|array<int, array<string, mixed>>|null
+     * @return ResponseInterface|array<int, array<string, mixed>>
      *
      * @throws CouldNotSendNotification
      */
-    public function send(): ResponseInterface|array|null;
+    public function send(): ResponseInterface|array;
 }
