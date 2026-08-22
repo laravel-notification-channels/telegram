@@ -342,9 +342,7 @@ trait HasSharedLogic
      */
     public function onError(callable $callback): static
     {
-        $this->exceptionHandler = $callback instanceof Closure
-            ? $callback
-            : Closure::fromCallable($callback);
+        $this->exceptionHandler = Closure::fromCallable($callback);
 
         return $this;
     }

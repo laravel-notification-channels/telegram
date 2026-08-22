@@ -95,8 +95,10 @@ it('can add live photos to a media group', function () {
 it('can apply common telegram send options to media groups', function () {
     $group = TelegramMediaGroup::create()
         ->to(12345)
+        ->businessConnectionId('biz-1')
         ->messageThreadId(77)
         ->directMessagesTopicId(12)
+        ->disableNotification()
         ->protectContent()
         ->allowPaidBroadcast()
         ->messageEffectId('effect-1')
@@ -106,8 +108,10 @@ it('can apply common telegram send options to media groups', function () {
 
     expect($group->toArray())->toMatchArray([
         'chat_id' => 12345,
+        'business_connection_id' => 'biz-1',
         'message_thread_id' => 77,
         'direct_messages_topic_id' => 12,
+        'disable_notification' => true,
         'protect_content' => true,
         'allow_paid_broadcast' => true,
         'message_effect_id' => 'effect-1',

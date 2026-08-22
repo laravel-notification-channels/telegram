@@ -35,6 +35,12 @@ test('the options can be set for the question', function () {
     expect($message->getPayloadValue('options'))->toEqual('[{"text":"Yes"},{"text":"No"}]');
 });
 
+test('the options are re-indexed as a list for string keyed choices', function () {
+    $message = new TelegramPoll;
+    $message->choices(['y' => 'Yes', 'n' => 'No']);
+    expect($message->getPayloadValue('options'))->toEqual('[{"text":"Yes"},{"text":"No"}]');
+});
+
 test('the options accept input poll option arrays', function () {
     $message = new TelegramPoll;
     $message->choices([
@@ -193,7 +199,7 @@ test('the poll voting behaviour flags can be disabled', function () {
 
 test('the poll country codes can be set', function () {
     $message = new TelegramPoll;
-    $message->countryCodes(['US', 'GB']);
+    $message->countryCodes(['us' => 'US', 'gb' => 'GB']);
 
     expect($message->getPayloadValue('country_codes'))->toEqual('["US","GB"]');
 });

@@ -56,6 +56,31 @@ it('throws exception on invalid file identifier', function () {
     $this->telegramFile->file('invalid/path/with/slashes', FileType::Document);
 })->throws(CouldNotSendNotification::class);
 
+it('rejects a directory path as a file', function () {
+    $this->telegramFile->file(__DIR__, FileType::Document);
+})->throws(CouldNotSendNotification::class, 'Invalid file identifier: '.__DIR__);
+
+it('strips unsupported captions from the multipart payload', function () {
+    $mockStream = Mockery::mock(StreamInterface::class);
+
+    $this->telegramFile
+        ->content('This caption must not survive')
+        ->file($mockStream, FileType::VideoNote);
+
+    $names = array_column($this->telegramFile->toArray(), 'name');
+
+    expect($names)->toContain('video_note')
+        ->not->toContain('caption');
+});
+
+it('ignores malformed file payload entries in toMultipart', function () {
+    $this->telegramFile->options(['file' => ['name' => 'photo']]);
+
+    $names = array_column($this->telegramFile->toMultipart(), 'name');
+
+    expect($names)->not->toContain('photo');
+});
+
 it('can add a photo', function () {
     $url = 'https://example.com/image.jpg';
     $this->telegramFile->photo($url);

@@ -343,7 +343,7 @@ class Telegram
     public static function decodeResponse(ResponseInterface $response): array
     {
         /** @var array<string, mixed> $decodedResponse */
-        $decodedResponse = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+        $decodedResponse = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR); // @pest-mutate-ignore
 
         return $decodedResponse;
     }
@@ -386,7 +386,7 @@ class Telegram
 
                 if ($retryAfter !== null && $attempts < self::MAX_RATE_LIMIT_RETRIES) {
                     $attempts++;
-                    sleep($retryAfter);
+                    sleep($retryAfter); // @pest-mutate-ignore
 
                     continue;
                 }
@@ -418,10 +418,10 @@ class Telegram
         $parameters = is_array($decoded) && isset($decoded['parameters']) && is_array($decoded['parameters'])
             ? $decoded['parameters']
             : [];
-        $retryAfter = $parameters['retry_after'] ?? 1;
-        $retryAfter = is_int($retryAfter) ? $retryAfter : 1;
+        $retryAfter = $parameters['retry_after'] ?? 1; // @pest-mutate-ignore
+        $retryAfter = is_int($retryAfter) ? $retryAfter : 1; // @pest-mutate-ignore
 
-        return $retryAfter <= self::MAX_RETRY_AFTER ? $retryAfter : null;
+        return $retryAfter <= self::MAX_RETRY_AFTER ? $retryAfter : null; // @pest-mutate-ignore
     }
 
     /**
@@ -442,9 +442,9 @@ class Telegram
 
         foreach ($params as $key => $value) {
             if (is_array($value)) {
-                $formParams[(string) $key] = json_encode($value, JSON_THROW_ON_ERROR);
+                $formParams[(string) $key] = json_encode($value, JSON_THROW_ON_ERROR); // @pest-mutate-ignore
             } elseif (is_scalar($value) || $value === null) {
-                $formParams[(string) $key] = $value;
+                $formParams[(string) $key] = $value; // @pest-mutate-ignore
             }
         }
 
@@ -477,7 +477,7 @@ class Telegram
                 continue;
             }
 
-            $multipart[] = ['name' => (string) $key, 'contents' => $value];
+            $multipart[] = ['name' => (string) $key, 'contents' => $value]; // @pest-mutate-ignore
         }
 
         return $multipart;

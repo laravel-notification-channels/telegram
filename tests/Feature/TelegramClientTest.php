@@ -533,7 +533,71 @@ it('throws when telegram keeps responding with 429', function () {
         'chat_id' => 12345,
         'text' => 'Hello',
     ]);
-})->throws(CouldNotSendNotification::class, 'Telegram responded with an error `429');
+})->throws(CouldNotSendNotification::class, 'Telegram responded with an error `429 - Too Many Requests: retry after 0`');
+
+it('preserves null form params', function () {
+    $http = Mockery::mock(HttpClient::class);
+    $http->shouldReceive('post')
+        ->once()
+        ->with('https://api.telegram.org/bottoken/sendMessage', [
+            'form_params' => [
+                'chat_id' => 12345,
+                'text' => 'Hello',
+                'reply_markup' => null,
+            ],
+        ])
+        ->andReturn(new Response(200, [], json_encode(['ok' => true])));
+
+    $telegram = new Telegram('token', $http);
+
+    expect($telegram->sendMessage([
+        'chat_id' => 12345,
+        'text' => 'Hello',
+        'reply_markup' => null,
+    ]))->toBeInstanceOf(Response::class);
+});
+
+it('wraps array values missing a multipart name into multipart items', function () {
+    $http = Mockery::mock(HttpClient::class);
+    $http->shouldReceive('post')
+        ->once()
+        ->with('https://api.telegram.org/bottoken/sendMediaGroup', [
+            'multipart' => [
+                [
+                    'name' => 'options',
+                    'contents' => ['contents' => 'raw'],
+                ],
+            ],
+        ])
+        ->andReturn(new Response(200, [], json_encode(['ok' => true])));
+
+    $telegram = new Telegram('token', $http);
+
+    expect($telegram->sendMediaGroup([
+        'options' => ['contents' => 'raw'],
+    ], true))->toBeInstanceOf(Response::class);
+});
+
+it('wraps array values without a multipart shape into multipart items', function () {
+    $http = Mockery::mock(HttpClient::class);
+    $http->shouldReceive('post')
+        ->once()
+        ->with('https://api.telegram.org/bottoken/sendMediaGroup', [
+            'multipart' => [
+                [
+                    'name' => 'options',
+                    'contents' => ['foo' => 'bar'],
+                ],
+            ],
+        ])
+        ->andReturn(new Response(200, [], json_encode(['ok' => true])));
+
+    $telegram = new Telegram('token', $http);
+
+    expect($telegram->sendMediaGroup([
+        'options' => ['foo' => 'bar'],
+    ], true))->toBeInstanceOf(Response::class);
+});
 
 it('does not retry when retry_after exceeds the wait cap', function () {
     $http = Mockery::mock(HttpClient::class);

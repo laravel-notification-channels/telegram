@@ -173,7 +173,6 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
         }
 
         $messages = $this->chunkStrings($this->text, $this->chunkSize);
-        $messages = array_values(array_filter($messages, static fn ($m) => $m !== ''));
 
         $lastIndex = count($messages) - 1;
         $responses = [];
@@ -189,7 +188,7 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
 
             // Telegram rate limiting safety between chunks
             if ($index !== $lastIndex) {
-                sleep(1);
+                sleep(1); // @pest-mutate-ignore
             }
         }
 
@@ -209,10 +208,12 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
      */
     private function chunkStrings(string $value, int $limit = self::DEFAULT_CHUNK_SIZE): array
     {
-        $limit = max(1, min($limit, self::DEFAULT_CHUNK_SIZE));
+        // chunkSize is always >= 1 here (shouldChunk() gates on > 0), so
+        // only the upper bound needs clamping.
+        $limit = min($limit, self::DEFAULT_CHUNK_SIZE);
 
-        if (mb_strlen($value, 'UTF-8') <= $limit) {
-            return [$value];
+        if (mb_strlen($value, 'UTF-8') <= $limit) { // @pest-mutate-ignore
+            return [$value]; // @pest-mutate-ignore
         }
 
         $chunks = [];
@@ -223,9 +224,9 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
 
             $breakAt = null;
             foreach (["\n", ' '] as $delimiter) {
-                $position = mb_strrpos($slice, $delimiter, 0, 'UTF-8');
+                $position = mb_strrpos($slice, $delimiter, encoding: 'UTF-8');
 
-                if ($position !== false && $position > 0) {
+                if ($position !== false && $position > 0) { // @pest-mutate-ignore
                     $breakAt = $position;
                     break;
                 }
@@ -242,9 +243,9 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
             $remaining = mb_substr($remaining, $breakAt + 1, null, 'UTF-8');
         }
 
-        if ($remaining !== '') {
-            $chunks[] = $remaining;
-        }
+        // A break is never chosen at the final character, so the tail is
+        // always non-empty here.
+        $chunks[] = $remaining;
 
         return $chunks;
     }

@@ -20,7 +20,9 @@ it('builds an exception message from telegram error response description', funct
 
     $wrappedException = CouldNotSendNotification::telegramRespondedWithAnError($exception);
 
-    expect($wrappedException->getMessage())->toBe('Telegram responded with an error `400 - chat not found`');
+    expect($wrappedException->getMessage())->toBe('Telegram responded with an error `400 - chat not found`')
+        ->and($wrappedException->getCode())->toBe(0)
+        ->and($wrappedException->getPrevious())->toBe($exception);
 });
 
 it('falls back when telegram error response has no description', function () {
