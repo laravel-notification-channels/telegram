@@ -86,7 +86,7 @@ class TelegramRichMessageDraft extends TelegramRichMessage
      * @throws CouldNotSendNotification
      * @throws JsonException
      */
-    public function send(): ?ResponseInterface
+    public function send(): ResponseInterface
     {
         if ($this->getPayloadValue('draft_id') === null) {
             throw CouldNotSendNotification::richMessageDraftIdNotProvided();
@@ -104,7 +104,7 @@ class TelegramRichMessageDraft extends TelegramRichMessage
      * @throws CouldNotSendNotification
      * @throws JsonException
      */
-    public function finalize(): ?ResponseInterface
+    public function finalize(): ResponseInterface
     {
         $params = $this->toArray();
 

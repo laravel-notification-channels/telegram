@@ -15,8 +15,6 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
 {
     private const DEFAULT_CHUNK_SIZE = 4096;
 
-    private const CHUNK_SEPARATOR = '%#TGMSG#%';
-
     private string $text = '';
 
     public function __construct(
@@ -42,6 +40,17 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
             fn ($matches): string => "\\$matches[0]",
             $content
         );
+    }
+
+    /** @see https://core.telegram.org/bots/api#markdown-style */
+    public static function escapeLegacyMarkdown(string $content): string
+    {
+        return strtr($content, [
+            '_' => '\_',
+            '*' => '\*',
+            '`' => '\`',
+            '[' => '\[',
+        ]);
     }
 
     public function content(string $content, ?int $limit = null): self
@@ -71,11 +80,22 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
         return $this;
     }
 
+    /**
+     * Append a line, escaped for the currently set parse mode.
+     *
+     * Legacy Markdown only supports escaping `_`, `*`, `` ` `` and `[`;
+     * MarkdownV2 gets the full special character set. Lines are appended
+     * untouched for HTML or when no parse mode is set.
+     */
     public function escapedLine(string $content): self
     {
-        $content = str_replace('\\', '\\\\', $content);
-
-        $escaped = self::escapeMarkdown($content) ?? $content;
+        $escaped = match ($this->getPayloadValue('parse_mode')) {
+            ParseMode::MarkdownV2->value => self::escapeMarkdown(
+                str_replace('\\', '\\\\', $content)
+            ) ?? $content,
+            ParseMode::Markdown->value => self::escapeLegacyMarkdown($content),
+            default => $content,
+        };
 
         return $this->line($escaped);
     }
@@ -91,22 +111,22 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
 
     /**
      * @param  list<array<string, mixed>>  $entities
+     *
+     * @throws JsonException When JSON encoding fails
      */
     public function entities(array $entities): self
     {
-        $this->payload['entities'] = json_encode($entities, JSON_THROW_ON_ERROR);
-
-        return $this;
+        return $this->jsonPayload('entities', $entities);
     }
 
     /**
      * @param  array<string, mixed>  $linkPreviewOptions
+     *
+     * @throws JsonException When JSON encoding fails
      */
     public function linkPreviewOptions(array $linkPreviewOptions): self
     {
-        $this->payload['link_preview_options'] = json_encode($linkPreviewOptions, JSON_THROW_ON_ERROR);
-
-        return $this;
+        return $this->jsonPayload('link_preview_options', $linkPreviewOptions);
     }
 
     public function chunk(int $limit = self::DEFAULT_CHUNK_SIZE): self
@@ -122,12 +142,12 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
     }
 
     /**
-     * @return array<int, array<string, mixed>>|ResponseInterface|null
+     * @return array<int, array<string, mixed>>|ResponseInterface
      *
      * @throws CouldNotSendNotification
      * @throws JsonException
      */
-    public function send(): array|ResponseInterface|null
+    public function send(): array|ResponseInterface
     {
         /** @var array<string, mixed> $payload */
         $payload = $this->toArray();
@@ -153,7 +173,6 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
         }
 
         $messages = $this->chunkStrings($this->text, $this->chunkSize);
-        $messages = array_values(array_filter($messages, static fn ($m) => $m !== ''));
 
         $lastIndex = count($messages) - 1;
         $responses = [];
@@ -165,13 +184,11 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
                 $payload['reply_markup'] = $replyMarkup;
             }
 
-            $response = $this->telegram->sendMessage($payload);
+            $responses[] = Telegram::decodeResponse($this->telegram->sendMessage($payload));
 
-            // Telegram rate limiting safety
-            sleep(1);
-
-            if ($response !== null) {
-                $responses[] = Telegram::decodeResponse($response);
+            // Telegram rate limiting safety between chunks
+            if ($index !== $lastIndex) {
+                sleep(1); // @pest-mutate-ignore
             }
         }
 
@@ -179,22 +196,58 @@ final class TelegramMessage extends TelegramBase implements TelegramSenderContra
     }
 
     /**
+     * Split text into chunks of at most `$limit` characters.
+     *
+     * Prefers breaking at the last newline within the chunk, then the last
+     * space, and only hard-splits when neither is available. Note: a break
+     * can still land inside a Markdown entity (e.g. an unclosed `*bold*`),
+     * which Telegram rejects — prefer chunk-sized paragraphs or `normal()`
+     * for machine-generated content.
+     *
      * @return list<string>
      */
     private function chunkStrings(string $value, int $limit = self::DEFAULT_CHUNK_SIZE): array
     {
-        $limit = max(1, min($limit, self::DEFAULT_CHUNK_SIZE));
+        // chunkSize is always >= 1 here (shouldChunk() gates on > 0), so
+        // only the upper bound needs clamping.
+        $limit = min($limit, self::DEFAULT_CHUNK_SIZE);
 
-        if (mb_strwidth($value, 'UTF-8') <= $limit) {
-            return [$value];
+        if (mb_strlen($value, 'UTF-8') <= $limit) { // @pest-mutate-ignore
+            return [$value]; // @pest-mutate-ignore
         }
 
-        $wrapped = wordwrap($value, $limit, self::CHUNK_SEPARATOR);
-        $parts = explode(self::CHUNK_SEPARATOR, $wrapped);
+        $chunks = [];
+        $remaining = $value;
 
-        return count($parts) > 1
-            ? $parts
-            : mb_str_split($value, $limit, 'UTF-8');
+        while (mb_strlen($remaining, 'UTF-8') > $limit) {
+            $slice = mb_substr($remaining, 0, $limit, 'UTF-8');
+
+            $breakAt = null;
+            foreach (["\n", ' '] as $delimiter) {
+                $position = mb_strrpos($slice, $delimiter, encoding: 'UTF-8');
+
+                if ($position !== false && $position > 0) { // @pest-mutate-ignore
+                    $breakAt = $position;
+                    break;
+                }
+            }
+
+            if ($breakAt === null) {
+                $chunks[] = $slice;
+                $remaining = mb_substr($remaining, $limit, null, 'UTF-8');
+
+                continue;
+            }
+
+            $chunks[] = mb_substr($remaining, 0, $breakAt, 'UTF-8');
+            $remaining = mb_substr($remaining, $breakAt + 1, null, 'UTF-8');
+        }
+
+        // A break is never chosen at the final character, so the tail is
+        // always non-empty here.
+        $chunks[] = $remaining;
+
+        return $chunks;
     }
 
     /**

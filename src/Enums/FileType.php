@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NotificationChannels\Telegram\Enums;
 
 /**
@@ -18,59 +20,6 @@ enum FileType: string
     case VideoNote = 'video_note';
     case Sticker = 'sticker';
     case LivePhoto = 'live_photo';
-
-    /**
-     * Get the mime type associated with this file type.
-     */
-    public function getMimeType(): string
-    {
-        return match ($this) {
-            self::Document => 'application/octet-stream',
-            self::Photo => 'image/jpeg',
-            self::Audio => 'audio/mp3',
-            self::Video => 'video/mp4',
-            self::Animation => 'video/mp4',
-            self::Voice => 'audio/ogg',
-            self::VideoNote => 'video/mp4',
-            self::Sticker => 'image/webp',
-            self::LivePhoto => 'image/jpeg',
-        };
-    }
-
-    /**
-     * Get allowed file extensions for this type.
-     *
-     * @return array<string>
-     */
-    public function getAllowedExtensions(): array
-    {
-        return match ($this) {
-            self::Document => [], // Any extension allowed
-            self::Photo => ['jpg', 'jpeg', 'png', 'webp'],
-            self::Audio => ['mp3', 'ogg', 'm4a'],
-            self::Video => ['mp4', 'avi', 'mov', 'mkv'],
-            self::Animation => ['gif', 'mp4'],
-            self::Voice => ['ogg', 'mp3'],
-            self::VideoNote => ['mp4'],
-            self::Sticker => ['png', 'webp', 'tgs', 'webm'],
-            self::LivePhoto => ['jpg', 'jpeg', 'png', 'webp'],
-        };
-    }
-
-    /**
-     * Check if a file extension is allowed for this type.
-     */
-    public function isExtensionAllowed(string $extension): bool
-    {
-        $extensions = $this->getAllowedExtensions();
-
-        // Document allows all extensions
-        if ($this === self::Document || empty($extensions)) {
-            return true;
-        }
-
-        return in_array(strtolower($extension), $extensions, true);
-    }
 
     /**
      * Get all file types as an array.

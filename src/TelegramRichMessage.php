@@ -423,7 +423,7 @@ class TelegramRichMessage extends TelegramBase implements TelegramSenderContract
      * @throws CouldNotSendNotification
      * @throws JsonException
      */
-    public function send(): ?ResponseInterface
+    public function send(): ResponseInterface
     {
         return $this->telegram->sendRichMessage($this->toArray());
     }

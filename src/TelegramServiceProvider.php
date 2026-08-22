@@ -21,12 +21,18 @@ class TelegramServiceProvider extends ServiceProvider
             /** @var string|null $baseUri */
             $baseUri = config('services.telegram.base_uri')
                 ?? config('services.telegram-bot-api.base_uri');
+            /** @var array<string, mixed> $httpOptions */
+            $httpOptions = config('services.telegram.http') ?? [];
 
-            return new Telegram(
-                $token,
-                $app->make(HttpClient::class),
-                $baseUri
-            );
+            /** @var HttpClient $httpClient */
+            $httpClient = $app->make(HttpClient::class, [
+                'config' => $httpOptions + [
+                    'timeout' => Telegram::DEFAULT_TIMEOUT,
+                    'connect_timeout' => Telegram::DEFAULT_CONNECT_TIMEOUT,
+                ],
+            ]);
+
+            return new Telegram($token, $httpClient, $baseUri);
         });
 
         Notification::resolved(function (ChannelManager $service): void {

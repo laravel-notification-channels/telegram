@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NotificationChannels\Telegram;
 
 use Illuminate\Support\Facades\View;
+use JsonException;
 use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Enums\FileType;
 use NotificationChannels\Telegram\Enums\ParseMode;
@@ -73,9 +74,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
      */
     public function file(mixed $file, FileType|string $type, ?string $filename = null): self
     {
-        $this->type = is_string($type)
-            ? FileType::tryFrom($type) ?? FileType::Document
-            : $type;
+        $this->type = $this->resolveFileType($type);
 
         $typeValue = $this->type->value;
 
@@ -89,6 +88,52 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
         $contents = $this->normalizeUpload($file, $filename);
 
         $this->payload['file'] = $this->makeMultipartItem($typeValue, $contents, $filename);
+
+        return $this;
+    }
+
+    /**
+     * Attach an existing Telegram file by its file ID.
+     *
+     * Use this instead of `file()` when you know the identifier is a
+     * Telegram file ID; it skips the local-file/URL detection heuristics.
+     *
+     * @param  string  $fileId  An existing Telegram file identifier
+     * @param  FileType|string  $type  The file type
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function fileId(string $fileId, FileType|string $type = FileType::Document): self
+    {
+        if (preg_match('/^[a-zA-Z0-9_-]+$/', $fileId) !== 1) {
+            throw CouldNotSendNotification::invalidFileIdentifier($fileId);
+        }
+
+        $this->type = $this->resolveFileType($type);
+        $this->payload[$this->type->value] = $fileId;
+
+        return $this;
+    }
+
+    /**
+     * Attach a remote file by its URL.
+     *
+     * Use this instead of `file()` when you know the identifier is a URL;
+     * it skips the local-file/file-ID detection heuristics.
+     *
+     * @param  string  $url  A publicly reachable file URL
+     * @param  FileType|string  $type  The file type
+     *
+     * @throws CouldNotSendNotification
+     */
+    public function url(string $url, FileType|string $type = FileType::Document): self
+    {
+        if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+            throw CouldNotSendNotification::invalidFileIdentifier($url);
+        }
+
+        $this->type = $this->resolveFileType($type);
+        $this->payload[$this->type->value] = $url;
 
         return $this;
     }
@@ -178,12 +223,12 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
 
     /**
      * @param  list<array<string, mixed>>  $captionEntities
+     *
+     * @throws JsonException When JSON encoding fails
      */
     public function captionEntities(array $captionEntities): self
     {
-        $this->payload['caption_entities'] = json_encode($captionEntities, JSON_THROW_ON_ERROR);
-
-        return $this;
+        return $this->jsonPayload('caption_entities', $captionEntities);
     }
 
     public function showCaptionAboveMedia(bool $show = true): self
@@ -199,6 +244,20 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
     public function hasFile(): bool
     {
         return isset($this->payload['file']);
+    }
+
+    /**
+     * Resolve the file type, rejecting unknown string values.
+     *
+     * @throws CouldNotSendNotification
+     */
+    protected function resolveFileType(FileType|string $type): FileType
+    {
+        if ($type instanceof FileType) {
+            return $type;
+        }
+
+        return FileType::tryFrom($type) ?? throw CouldNotSendNotification::invalidFileType($type);
     }
 
     /**
@@ -258,7 +317,7 @@ class TelegramFile extends TelegramBase implements TelegramSenderContract
      *
      * @throws CouldNotSendNotification
      */
-    public function send(): ?ResponseInterface
+    public function send(): ResponseInterface
     {
         // Get the method endpoint based on file type
         return $this->telegram->sendFile(

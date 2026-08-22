@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace NotificationChannels\Telegram\Exceptions;
 
 use Exception;
-use GuzzleHttp\Exception\ClientException;
-use JsonException;
+use GuzzleHttp\Exception\BadResponseException;
+use NotificationChannels\Telegram\Enums\FileType;
 
 /**
  * Class CouldNotSendNotification.
@@ -14,16 +14,14 @@ use JsonException;
 final class CouldNotSendNotification extends Exception
 {
     /**
-     * Thrown when there's a bad request and an error is responded.
-     *
-     * @throws JsonException
+     * Thrown when Telegram responds with an error (4xx or 5xx).
      */
-    public static function telegramRespondedWithAnError(ClientException $exception): self
+    public static function telegramRespondedWithAnError(BadResponseException $exception): self
     {
         $response = $exception->getResponse();
         $statusCode = $response->getStatusCode();
 
-        $result = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+        $result = json_decode($response->getBody()->getContents(), true);
         $description = is_array($result) && is_string($result['description'] ?? null)
             ? $result['description']
             : 'no description given';
@@ -61,6 +59,16 @@ final class CouldNotSendNotification extends Exception
     public static function invalidFileIdentifier(string $file): self
     {
         return new self("Invalid file identifier: {$file}");
+    }
+
+    /**
+     * Thrown when the given file type is not supported.
+     */
+    public static function invalidFileType(string $type): self
+    {
+        $supported = implode(', ', array_column(FileType::cases(), 'value'));
+
+        return new self("Invalid file type: {$type}. Supported types: {$supported}.");
     }
 
     /**

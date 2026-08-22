@@ -3,9 +3,37 @@
 namespace NotificationChannels\Telegram\Tests\Feature;
 
 use GuzzleHttp\Psr7\Response;
+use NotificationChannels\Telegram\Enums\FileType;
+use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Telegram\TelegramMediaGroup;
 use NotificationChannels\Telegram\Tests\TestSupport\TestMediaGroupNotification;
 use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;
+
+it('can add remote videos, audio and documents to a media group', function () {
+    $group = TelegramMediaGroup::create()
+        ->to(12345)
+        ->video('https://example.com/clip.mp4', 'A clip')
+        ->audio('https://example.com/tune.mp3')
+        ->document('https://example.com/spec.pdf');
+
+    expect($group->hasAttachments())->toBeFalse()
+        ->and($group->toArray())->toMatchArray([
+            'chat_id' => 12345,
+            'media' => '[{"type":"video","media":"https:\/\/example.com\/clip.mp4","caption":"A clip","parse_mode":"Markdown"},{"type":"audio","media":"https:\/\/example.com\/tune.mp3"},{"type":"document","media":"https:\/\/example.com\/spec.pdf"}]',
+        ]);
+});
+
+it('rejects media types that are not allowed in groups', function () {
+    $group = new class extends TelegramMediaGroup
+    {
+        public function sticker(string $media): self
+        {
+            return $this->addMedia(FileType::Sticker, $media);
+        }
+    };
+
+    $group->sticker('https://example.com/sticker.webp');
+})->throws(CouldNotSendNotification::class, 'Invalid file identifier: sticker');
 
 it('can add remote photos to a media group', function () {
     $group = TelegramMediaGroup::create()
@@ -67,8 +95,10 @@ it('can add live photos to a media group', function () {
 it('can apply common telegram send options to media groups', function () {
     $group = TelegramMediaGroup::create()
         ->to(12345)
+        ->businessConnectionId('biz-1')
         ->messageThreadId(77)
         ->directMessagesTopicId(12)
+        ->disableNotification()
         ->protectContent()
         ->allowPaidBroadcast()
         ->messageEffectId('effect-1')
@@ -78,8 +108,10 @@ it('can apply common telegram send options to media groups', function () {
 
     expect($group->toArray())->toMatchArray([
         'chat_id' => 12345,
+        'business_connection_id' => 'biz-1',
         'message_thread_id' => 77,
         'direct_messages_topic_id' => 12,
+        'disable_notification' => true,
         'protect_content' => true,
         'allow_paid_broadcast' => true,
         'message_effect_id' => 'effect-1',

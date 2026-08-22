@@ -56,6 +56,31 @@ it('throws exception on invalid file identifier', function () {
     $this->telegramFile->file('invalid/path/with/slashes', FileType::Document);
 })->throws(CouldNotSendNotification::class);
 
+it('rejects a directory path as a file', function () {
+    $this->telegramFile->file(__DIR__, FileType::Document);
+})->throws(CouldNotSendNotification::class, 'Invalid file identifier: '.__DIR__);
+
+it('strips unsupported captions from the multipart payload', function () {
+    $mockStream = Mockery::mock(StreamInterface::class);
+
+    $this->telegramFile
+        ->content('This caption must not survive')
+        ->file($mockStream, FileType::VideoNote);
+
+    $names = array_column($this->telegramFile->toArray(), 'name');
+
+    expect($names)->toContain('video_note')
+        ->not->toContain('caption');
+});
+
+it('ignores malformed file payload entries in toMultipart', function () {
+    $this->telegramFile->options(['file' => ['name' => 'photo']]);
+
+    $names = array_column($this->telegramFile->toMultipart(), 'name');
+
+    expect($names)->not->toContain('photo');
+});
+
 it('can add a photo', function () {
     $url = 'https://example.com/image.jpg';
     $this->telegramFile->photo($url);
@@ -160,12 +185,8 @@ it('can add a live photo', function () {
         ->and($this->telegramFile->getPayloadValue(FileType::LivePhoto->value))->toBe($url);
 });
 
-it('exposes live photo metadata on the file type enum', function () {
+it('exposes file type values on the enum', function () {
     expect(FileType::LivePhoto->value)->toBe('live_photo')
-        ->and(FileType::LivePhoto->getMimeType())->toBe('image/jpeg')
-        ->and(FileType::LivePhoto->getAllowedExtensions())->toBe(['jpg', 'jpeg', 'png', 'webp'])
-        ->and(FileType::LivePhoto->isExtensionAllowed('JPEG'))->toBeTrue()
-        ->and(FileType::LivePhoto->isExtensionAllowed('mp4'))->toBeFalse()
         ->and(FileType::toArray())->toHaveKey('LivePhoto', 'live_photo');
 });
 
@@ -260,12 +281,33 @@ it('supports file type from string', function () {
         ->and($this->telegramFile->getPayloadValue(FileType::Audio->value))->toBe('https://example.com/file.mp3');
 });
 
-it('defaults to document for invalid file type string', function () {
+it('throws for an invalid file type string', function () {
     $this->telegramFile->file('https://example.com/file.xyz', 'invalid_type');
+})->throws(CouldNotSendNotification::class, 'Invalid file type: invalid_type');
+
+it('can attach a telegram file id explicitly', function () {
+    $this->telegramFile->fileId('ABC-123_xyz', FileType::Photo);
+
+    expect($this->telegramFile->type)->toBe(FileType::Photo)
+        ->and($this->telegramFile->getPayloadValue(FileType::Photo->value))->toBe('ABC-123_xyz')
+        ->and($this->telegramFile->hasFile())->toBeFalse();
+});
+
+it('rejects an invalid telegram file id', function () {
+    $this->telegramFile->fileId('not a file id!');
+})->throws(CouldNotSendNotification::class, 'Invalid file identifier: not a file id!');
+
+it('can attach a remote url explicitly', function () {
+    $this->telegramFile->url('https://example.com/file.pdf', FileType::Document);
 
     expect($this->telegramFile->type)->toBe(FileType::Document)
-        ->and($this->telegramFile->getPayloadValue(FileType::Document->value))->toBe('https://example.com/file.xyz');
+        ->and($this->telegramFile->getPayloadValue(FileType::Document->value))->toBe('https://example.com/file.pdf')
+        ->and($this->telegramFile->hasFile())->toBeFalse();
 });
+
+it('rejects an invalid remote url', function () {
+    $this->telegramFile->url('not a url');
+})->throws(CouldNotSendNotification::class, 'Invalid file identifier: not a url');
 
 it('can set caption with content method', function () {
     $caption = 'New caption with *markdown*';
@@ -289,6 +331,17 @@ it('can set caption entities and show caption above media', function () {
         'caption_entities' => '[{"offset":0,"length":4,"type":"bold"}]',
         'show_caption_above_media' => true,
     ]);
+});
+
+it('returns a multipart payload from toArray when a file is attached', function () {
+    $this->telegramFile->document('Hello Text Content', 'hello.txt');
+
+    $payload = $this->telegramFile->toArray();
+
+    expect($payload)->toBeList()
+        ->and($payload[0])->toHaveKey('name', 'caption')
+        ->and($payload[2])->toHaveKey('name', 'document')
+        ->and($payload[2])->toHaveKey('filename', 'hello.txt');
 });
 
 it('sends file through Telegram', function () {

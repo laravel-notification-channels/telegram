@@ -3,9 +3,9 @@
 namespace NotificationChannels\Telegram\Tests\Feature;
 
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use JsonException;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
 
 it('builds an exception message from telegram error response description', function () {
@@ -20,7 +20,9 @@ it('builds an exception message from telegram error response description', funct
 
     $wrappedException = CouldNotSendNotification::telegramRespondedWithAnError($exception);
 
-    expect($wrappedException->getMessage())->toBe('Telegram responded with an error `400 - chat not found`');
+    expect($wrappedException->getMessage())->toBe('Telegram responded with an error `400 - chat not found`')
+        ->and($wrappedException->getCode())->toBe(0)
+        ->and($wrappedException->getPrevious())->toBe($exception);
 });
 
 it('falls back when telegram error response has no description', function () {
@@ -37,15 +39,32 @@ it('falls back when telegram error response has no description', function () {
     expect($wrappedException->getMessage())->toBe('Telegram responded with an error `400 - no description given`');
 });
 
-it('throws a json exception when the telegram error response is not valid json', function () {
+it('falls back when the telegram error response is not valid json', function () {
     $exception = new ClientException(
         'Bad Request',
         new Request('POST', 'https://api.telegram.org/bot/sendMessage'),
         new Response(400, [], '{invalid json')
     );
 
-    CouldNotSendNotification::telegramRespondedWithAnError($exception);
-})->throws(JsonException::class);
+    $wrappedException = CouldNotSendNotification::telegramRespondedWithAnError($exception);
+
+    expect($wrappedException->getMessage())->toBe('Telegram responded with an error `400 - no description given`');
+});
+
+it('accepts server exceptions', function () {
+    $exception = new ServerException(
+        'Internal Server Error',
+        new Request('POST', 'https://api.telegram.org/bot/sendMessage'),
+        new Response(500, [], json_encode([
+            'ok' => false,
+            'description' => 'Internal Server Error',
+        ]))
+    );
+
+    $wrappedException = CouldNotSendNotification::telegramRespondedWithAnError($exception);
+
+    expect($wrappedException->getMessage())->toBe('Telegram responded with an error `500 - Internal Server Error`');
+});
 
 it('builds helper exception messages', function () {
     expect(CouldNotSendNotification::telegramBotTokenNotProvided('Missing token')->getMessage())

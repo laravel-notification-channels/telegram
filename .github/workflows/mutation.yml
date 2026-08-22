@@ -1,21 +1,20 @@
-name: PHPStan
+name: Mutation tests
 
 on:
   push:
     paths:
       - '**.php'
-      - 'phpstan.neon.dist'
-      - '.github/workflows/phpstan.yml'
+      - '.github/workflows/mutation.yml'
   pull_request:
 
 jobs:
-  phpstan:
+  mutation:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
 
     env:
       COMPOSER_CACHE_DIR: ~/.composer/cache
-      LARAVEL_VERSION: '12.*'
+      LARAVEL_VERSION: '13.*'
 
     steps:
       - name: Checkout
@@ -24,9 +23,9 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '8.5'
           tools: composer:v2
-          coverage: none
+          coverage: pcov
           extensions: mbstring, curl, fileinfo
           ini-values: memory_limit=-1
 
@@ -34,7 +33,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ${{ env.COMPOSER_CACHE_DIR }}
-          key: composer-${{ runner.os }}-phpstan-${{ hashFiles('composer.json') }}
+          key: composer-${{ runner.os }}-mutation-${{ hashFiles('composer.json') }}
           restore-keys: |
             composer-${{ runner.os }}-${{ hashFiles('composer.json') }}
             composer-${{ runner.os }}-
@@ -44,5 +43,8 @@ jobs:
           composer require laravel/framework:${{ env.LARAVEL_VERSION }} --no-interaction --no-update
           composer update --prefer-dist --no-interaction --no-progress
 
-      - name: Run PHPStan
-        run: vendor/bin/phpstan analyse --error-format=github
+      # --parallel is deliberately NOT used: parallel runs lose the
+      # mutant-to-covering-test mapping and report covered mutants as
+      # "untested" (score drops to ~89% with identical code and tests).
+      - name: Run mutation tests
+        run: vendor/bin/pest --mutate --everything --covered-only --min=100

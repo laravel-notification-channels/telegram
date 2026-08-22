@@ -5,11 +5,14 @@ namespace NotificationChannels\Telegram\Tests\Feature;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\Telegram\Contracts\TelegramSenderContract;
 use NotificationChannels\Telegram\Exceptions\CouldNotSendNotification;
+use NotificationChannels\Telegram\TelegramBase;
 use NotificationChannels\Telegram\TelegramMessage;
 use NotificationChannels\Telegram\Tests\TestSupport\TestNotifiable;
 use NotificationChannels\Telegram\Tests\TestSupport\TestNotification;
 use NotificationChannels\Telegram\Tests\TestSupport\TestNotificationNoChatId;
+use Psr\Http\Message\ResponseInterface;
 
 it('can send a message', function () {
     $notifiable = new TestNotifiable;
@@ -64,13 +67,62 @@ it('returns null when message sending is disabled', function () {
     {
         public function toTelegram($notifiable): TelegramMessage
         {
-            return TelegramMessage::create('No-op')->sendWhen(false);
+            return TelegramMessage::create('No-op')->to(12345)->sendWhen(false);
         }
     };
 
     $result = $this->channel->send(new TestNotifiable, $notification);
 
     expect($result)->toBeNull();
+});
+
+it('returns null for a message builder that cannot send', function () {
+    $notification = new class extends Notification
+    {
+        public function toTelegram($notifiable): TelegramBase
+        {
+            return (new TelegramBase)->to(12345);
+        }
+    };
+
+    expect($this->channel->send(new TestNotifiable, $notification))->toBeNull();
+});
+
+it('returns null for a sender that is not a message builder', function () {
+    $notification = new class extends Notification
+    {
+        public function toTelegram($notifiable): TelegramSenderContract
+        {
+            return new class implements TelegramSenderContract
+            {
+                public function send(): ResponseInterface|array
+                {
+                    return [];
+                }
+            };
+        }
+    };
+
+    expect($this->channel->send(new TestNotifiable, $notification))->toBeNull();
+});
+
+it('returns chunked responses through the channel as-is', function () {
+    $notification = new class extends Notification
+    {
+        public function toTelegram($notifiable): TelegramMessage
+        {
+            return TelegramMessage::create('chunky')->to(12345)->chunk();
+        }
+    };
+
+    $this->telegram
+        ->shouldReceive('sendMessage')
+        ->once()
+        ->andReturn(new Response(200, [], json_encode(['ok' => true, 'result' => ['message_id' => 1]])));
+
+    expect($this->channel->send(new TestNotifiable, $notification))->toBe([
+        ['ok' => true, 'result' => ['message_id' => 1]],
+    ]);
 });
 
 it('uses the routed telegram recipient when chat id is not set on the message', function () {
@@ -102,4 +154,78 @@ it('returns null when no telegram recipient can be resolved', function () {
     $result = $this->channel->send(new TestNotifiable, new TestNotificationNoChatId);
 
     expect($result)->toBeNull();
+});
+
+it('wraps a plain string returned from toTelegram into a message', function () {
+    $notifiable = new class
+    {
+        public function routeNotificationFor(string $driver, Notification $notification): int|false
+        {
+            return $driver === 'telegram' ? 67890 : false;
+        }
+    };
+
+    $notification = new class extends Notification
+    {
+        public function toTelegram($notifiable): string
+        {
+            return 'Hello from a plain string!';
+        }
+    };
+
+    $expectedResponse = ['ok' => true, 'result' => ['message_id' => 123, 'chat' => ['id' => 67890]]];
+
+    $this->telegram
+        ->shouldReceive('sendMessage')
+        ->with([
+            'text' => 'Hello from a plain string!',
+            'parse_mode' => 'Markdown',
+            'chat_id' => 67890,
+        ])
+        ->once()
+        ->andReturn(new Response(200, [], json_encode($expectedResponse)));
+
+    expect($this->channel->send($notifiable, $notification))->toBe($expectedResponse);
+});
+
+it('returns null when toTelegram returns an unsupported type', function () {
+    $notification = new class extends Notification
+    {
+        public function toTelegram($notifiable): array
+        {
+            return ['not' => 'a message'];
+        }
+    };
+
+    expect($this->channel->send(new TestNotifiable, $notification))->toBeNull();
+});
+
+it('returns null when the notifiable cannot route notifications', function () {
+    $result = $this->channel->send(new \stdClass, new TestNotificationNoChatId);
+
+    expect($result)->toBeNull();
+});
+
+it('overrides the bot token when set on the message', function () {
+    $notification = new class extends Notification
+    {
+        public function toTelegram($notifiable): TelegramMessage
+        {
+            return TelegramMessage::create('Custom bot')->to(12345)->token('custom-token');
+        }
+    };
+
+    $expectedResponse = ['ok' => true, 'result' => ['message_id' => 123]];
+
+    $this->telegram
+        ->shouldReceive('setToken')
+        ->with('custom-token')
+        ->once();
+
+    $this->telegram
+        ->shouldReceive('sendMessage')
+        ->once()
+        ->andReturn(new Response(200, [], json_encode($expectedResponse)));
+
+    expect($this->channel->send(new TestNotifiable, $notification))->toBe($expectedResponse);
 });

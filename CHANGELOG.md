@@ -12,8 +12,26 @@ All notable changes to `telegram` will be documented in this file
 - `Telegram::sendRichMessage()` and `Telegram::sendRichMessageDraft()` client methods.
 - Optional `style` parameter (`'danger'`, `'success'`, `'primary'`) on `button()`, `buttonWithCallback()`, and `buttonWithWebApp()` methods for colored inline keyboard buttons (Telegram Bot API 9.4).
 - Support for `guzzlehttp/guzzle` 8.x alongside 7.x (`^7.8 || ^8.0`).
+- `TelegramMessage::escapeLegacyMarkdown()` helper that escapes the characters supported by the legacy `Markdown` parse mode (`_`, `*`, `` ` ``, `[`).
+- `TelegramFile::fileId()` and `TelegramFile::url()` for attaching an existing Telegram file ID or a remote URL explicitly, bypassing the local-file/URL/file-ID detection heuristics of `file()`. Both validate their input and throw `CouldNotSendNotification::invalidFileIdentifier()` when it is malformed.
+- `CouldNotSendNotification::invalidFileType()` exception constructor.
+- Default HTTP timeouts on the bundled Guzzle client (`Telegram::DEFAULT_TIMEOUT` = 30s, `Telegram::DEFAULT_CONNECT_TIMEOUT` = 10s), so a network stall can no longer hang a queue worker indefinitely. Configurable via the new `services.telegram.http` config array, which is passed through to the Guzzle client (e.g. `timeout`, `connect_timeout`, `proxy`).
+- Automatic retry on rate limiting: when Telegram responds with a 429, the client waits for the reported `parameters.retry_after` and retries once. Responses with a `retry_after` above 60 seconds are not retried and fail immediately.
+- `NotificationChannels\Telegram\Facades\Telegram` facade for direct Bot API access (`Telegram::sendMessage([...])` etc.). No alias is auto-registered to avoid clashing with other packages — import the class directly.
+- `TelegramUpdates::create()` (and its constructor) accept an optional `Telegram` client instance, so updates can be fetched without resolving the client from the container.
 
 ### Changed
+
+- **Breaking:** `escapedLine()` now escapes according to the currently set parse mode. Under the default legacy `Markdown` mode only `_`, `*`, `` ` `` and `[` are escaped (the only characters that mode supports escaping — previously the full MarkdownV2 set was escaped, which rendered stray backslashes). Under `MarkdownV2` the previous full escaping is applied, and with `HTML` or no parse mode the line is appended untouched. Set the parse mode before calling `escapedLine()`.
+- **Breaking:** `TelegramFile::file()` (and the string `$type` on the new `fileId()`/`url()`) now throws `CouldNotSendNotification::invalidFileType()` for an unknown file type string instead of silently falling back to `document`.
+- **Breaking:** `Telegram` client methods (`sendMessage()`, `sendFile()`, `getUpdates()`, etc.) and `TelegramSenderContract::send()` no longer have nullable return types; they either return a PSR-7 response (or a decoded array for chunked messages) or throw. `TelegramUpdates::get()` no longer returns an empty array for a missing response.
+- **Breaking:** `CouldNotSendNotification::telegramRespondedWithAnError()` now accepts any `GuzzleHttp\Exception\BadResponseException` (previously `ClientException` only) and no longer throws `JsonException` for a non-JSON error body — it falls back to `no description given` instead.
+- Server errors (5xx) from Telegram are now wrapped by `CouldNotSendNotification::telegramRespondedWithAnError()` with the status code and description, instead of the generic "communication failed" message.
+- **Breaking:** Removed the unused `FileType::getMimeType()`, `FileType::getAllowedExtensions()`, and `FileType::isExtensionAllowed()` enum helpers. They were never consulted by the package and carried incorrect data (e.g. the non-standard `audio/mp3` MIME type). `FileType::toArray()` remains.
+- **Breaking:** Array values passed as form params to the `Telegram` client (e.g. via `options()` or direct client calls) are now JSON encoded before sending, as the Bot API expects for structured parameters such as `message_ids`. Previously they were passed to Guzzle's `form_params` and serialized in PHP's `key[0]=...` style, which Telegram rejects. Pre-encoded JSON strings are unaffected.
+- `onError()` now declares a `static` return type instead of `self`, preserving fluent chain types in subclasses.
+- Message chunking is now accurate for multibyte text: chunks are measured in UTF-8 characters (Telegram's 4096-character limit) instead of a byte/display-width mix, and the splitter prefers breaking at the last newline, then the last space, before hard-splitting. Note that a split can still land inside a Markdown entity; prefer chunk-sized paragraphs or `normal()` for machine-generated content.
+- Chunked messages no longer sleep after the final chunk (previously a fixed 1-second delay was added after every chunk, including the last one).
 
 - Allowed Pest 5 / PHPUnit 13 for the test suite (`pestphp/pest` and `pestphp/pest-plugin-laravel` `^4.0 || ^5.0`). Pest 5 requires PHP 8.4+ and Laravel 13 (via Testbench 11 / PHPUnit 13), so Pest 4 is kept for the PHP 8.3 and Laravel 12 test matrix. No test or configuration changes were required.
 - `TelegramRichMessage` is no longer `final` and its fluent builders now return `static` instead of `self`, so subclasses (such as `TelegramRichMessageDraft`) keep chainability.

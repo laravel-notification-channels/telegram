@@ -18,6 +18,12 @@ it('can be created using static method', function () {
     expect($dice->getPayloadValue('emoji'))->toBe('🎯');
 });
 
+it('omits the emoji when none is given', function () {
+    $dice = TelegramDice::create();
+
+    expect($dice->toArray())->not->toHaveKey('emoji');
+});
+
 it('can set the emoji', function () {
     $dice = TelegramDice::create()->emoji('🎰');
 

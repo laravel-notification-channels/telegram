@@ -3,6 +3,8 @@
 namespace NotificationChannels\Telegram\Tests\Feature;
 
 use GuzzleHttp\Psr7\Response;
+use Mockery;
+use NotificationChannels\Telegram\Telegram;
 use NotificationChannels\Telegram\TelegramUpdates;
 
 it('can limit number of updates', function () {
@@ -104,14 +106,15 @@ it('can get updates', function () {
     expect($actualResponse)->toBe($expectedResponse);
 });
 
-it('returns an empty array when telegram does not return a psr response', function () {
-    $update = TelegramUpdates::create();
-
-    $this->telegram
+it('uses an injected telegram client instead of the container', function () {
+    $telegram = Mockery::mock(Telegram::class);
+    $telegram
         ->shouldReceive('getUpdates')
-        ->with($update->toArray())
         ->once()
-        ->andReturn(null);
+        ->with(['limit' => 1])
+        ->andReturn(new Response(200, [], json_encode(['ok' => true, 'result' => []])));
 
-    expect($update->get())->toBe([]);
+    $updates = TelegramUpdates::create($telegram)->limit(1);
+
+    expect($updates->get())->toBe(['ok' => true, 'result' => []]);
 });

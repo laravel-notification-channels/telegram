@@ -4,6 +4,7 @@ namespace NotificationChannels\Telegram\Tests\Feature;
 
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\View;
+use NotificationChannels\Telegram\Enums\ParseMode;
 use NotificationChannels\Telegram\TelegramMessage;
 
 it('accepts content when constructed', function () {
@@ -41,7 +42,41 @@ it('can escape special markdown characters per line', function () {
         ->escapedLine('Laravel Notification_Channels are awesome!')
         ->line('Telegram Notification Channel is fantastic :)');
 
-    expect($message->getPayloadValue('text'))->toEqual("Laravel Notification\_Channels are awesome\!\nTelegram Notification Channel is fantastic :)\n");
+    expect($message->getPayloadValue('text'))->toEqual("Laravel Notification\_Channels are awesome!\nTelegram Notification Channel is fantastic :)\n");
+});
+
+it('escapes only legacy markdown characters with the default parse mode', function () {
+    $message = TelegramMessage::create()->escapedLine('_*`[.!-(){}');
+
+    expect($message->getPayloadValue('text'))->toEqual("\\_\\*\\`\\[.!-(){}\n");
+});
+
+it('escapes the full character set when parse mode is markdownv2', function () {
+    $message = TelegramMessage::create()
+        ->parseMode(ParseMode::MarkdownV2)
+        ->escapedLine('Hello_world! v2.0 (beta)');
+
+    expect($message->getPayloadValue('text'))->toEqual("Hello\\_world\\! v2\\.0 \\(beta\\)\n");
+});
+
+it('escapes backslashes when parse mode is markdownv2', function () {
+    $message = TelegramMessage::create()
+        ->parseMode(ParseMode::MarkdownV2)
+        ->escapedLine('C:\path');
+
+    expect($message->getPayloadValue('text'))->toEqual("C:\\\\path\n");
+});
+
+it('does not escape lines when markdown parsing is disabled', function () {
+    $message = TelegramMessage::create()->normal()->escapedLine('Hello_world!');
+
+    expect($message->getPayloadValue('text'))->toEqual("Hello_world!\n");
+});
+
+it('does not escape lines when parse mode is html', function () {
+    $message = TelegramMessage::create()->parseMode('HTML')->escapedLine('Hello_world!');
+
+    expect($message->getPayloadValue('text'))->toEqual("Hello_world!\n");
 });
 
 it('can escape markdown characters', function (string $input, string $expected) {
@@ -256,6 +291,177 @@ test('an inline button with primary style can be added to the message', function
 test('an inline button without style has no style field', function () {
     $message = TelegramMessage::create()->button('Laravel', 'https://laravel.com');
     expect($message->getPayloadValue('reply_markup'))->toEqual('{"inline_keyboard":[[{"text":"Laravel","url":"https:\/\/laravel.com"}]]}');
+});
+
+it('chunks by character count for multibyte text', function () {
+    $message = TelegramMessage::create(str_repeat('й', 12))->chunk(5);
+
+    $sent = [];
+    $this->telegram
+        ->shouldReceive('sendMessage')
+        ->times(3)
+        ->andReturnUsing(function (array $params) use (&$sent) {
+            $sent[] = $params['text'];
+
+            return new Response(200, [], json_encode(['ok' => true]));
+        });
+
+    $message->send();
+
+    expect($sent)->toBe([
+        str_repeat('й', 5),
+        str_repeat('й', 5),
+        str_repeat('й', 2),
+    ]);
+});
+
+it('prefers splitting chunks at newlines over words', function () {
+    $message = TelegramMessage::create("aaa\nbbb")->chunk(5);
+
+    $sent = [];
+    $this->telegram
+        ->shouldReceive('sendMessage')
+        ->times(2)
+        ->andReturnUsing(function (array $params) use (&$sent) {
+            $sent[] = $params['text'];
+
+            return new Response(200, [], json_encode(['ok' => true]));
+        });
+
+    $message->send();
+
+    expect($sent)->toBe(['aaa', 'bbb']);
+});
+
+it('does not sleep after sending the final chunk', function () {
+    $message = TelegramMessage::create('short message')->chunk();
+
+    $this->telegram
+        ->shouldReceive('sendMessage')
+        ->once()
+        ->andReturn(new Response(200, [], json_encode(['ok' => true])));
+
+    $start = microtime(true);
+    $message->send();
+
+    expect(microtime(true) - $start)->toBeLessThan(1.0);
+});
+
+it('attaches reply markup only to the final chunk', function () {
+    $message = TelegramMessage::create("first\nlast")
+        ->chunk(6)
+        ->button('Laravel', 'https://laravel.com');
+
+    $sent = [];
+    $this->telegram
+        ->shouldReceive('sendMessage')
+        ->times(2)
+        ->andReturnUsing(function (array $params) use (&$sent) {
+            $sent[] = $params;
+
+            return new Response(200, [], json_encode(['ok' => true]));
+        });
+
+    $message->send();
+
+    expect($sent[0])->toBe([
+        'text' => 'first',
+        'parse_mode' => 'Markdown',
+    ])->and($sent[1])->toBe([
+        'text' => 'last',
+        'parse_mode' => 'Markdown',
+        'reply_markup' => '{"inline_keyboard":[[{"text":"Laravel","url":"https:\/\/laravel.com"}]]}',
+    ]);
+});
+
+it('can chunk down to single characters', function () {
+    $message = TelegramMessage::create('ab')->chunk(1);
+
+    $sent = [];
+    $this->telegram
+        ->shouldReceive('sendMessage')
+        ->times(2)
+        ->andReturnUsing(function (array $params) use (&$sent) {
+            $sent[] = $params['text'];
+
+            return new Response(200, [], json_encode(['ok' => true]));
+        });
+
+    $message->send();
+
+    expect($sent)->toBe(['a', 'b']);
+});
+
+it('keeps a delimiter-free tail chunk intact', function () {
+    $message = TelegramMessage::create('aaaa b c')->chunk(4);
+
+    $sent = [];
+    $this->telegram
+        ->shouldReceive('sendMessage')
+        ->times(2)
+        ->andReturnUsing(function (array $params) use (&$sent) {
+            $sent[] = $params['text'];
+
+            return new Response(200, [], json_encode(['ok' => true]));
+        });
+
+    $message->send();
+
+    expect($sent)->toBe(['aaaa', ' b c']);
+});
+
+it('prefers splitting chunks at spaces over hard splits', function () {
+    $message = TelegramMessage::create('aa bb')->chunk(4);
+
+    $sent = [];
+    $this->telegram
+        ->shouldReceive('sendMessage')
+        ->times(2)
+        ->andReturnUsing(function (array $params) use (&$sent) {
+            $sent[] = $params['text'];
+
+            return new Response(200, [], json_encode(['ok' => true]));
+        });
+
+    $message->send();
+
+    expect($sent)->toBe(['aa', 'bb']);
+});
+
+it('prefers a newline break even when a space appears earlier in the chunk', function () {
+    $message = TelegramMessage::create("a b\nc d")->chunk(6);
+
+    $sent = [];
+    $this->telegram
+        ->shouldReceive('sendMessage')
+        ->times(2)
+        ->andReturnUsing(function (array $params) use (&$sent) {
+            $sent[] = $params['text'];
+
+            return new Response(200, [], json_encode(['ok' => true]));
+        });
+
+    $message->send();
+
+    expect($sent)->toBe(['a b', 'c d']);
+});
+
+it('splits at a delimiter on the chunk boundary', function () {
+    $message = TelegramMessage::create('aaaa bb')->chunk(5);
+
+    $sent = [];
+    $this->telegram
+        ->shouldReceive('sendMessage')
+        ->times(2)
+        ->andReturnUsing(function (array $params) use (&$sent) {
+            $sent[] = $params['text'];
+
+            return new Response(200, [], json_encode(['ok' => true]));
+        });
+
+    $message->send();
+
+    expect($sent)->toBe(['aaaa', 'bb']);
 });
 
 it('returns chunked telegram responses as decoded arrays', function () {
