@@ -3,8 +3,10 @@ name: Check & fix styling
 on:
     push:
         paths:
-            - '**.php'
-            - 'code-style.yml'
+            - 'src/**'
+            - 'tests/**'
+            - 'pint.json'
+            - '.github/workflows/code-style.yml'
 
 permissions:
     contents: write

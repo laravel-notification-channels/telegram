@@ -2,7 +2,20 @@ name: Tests
 
 on:
   push:
+    branches: [master]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'composer.json'
+      - 'phpunit.xml.dist'
+      - '.github/workflows/tests.yml'
   pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'composer.json'
+      - 'phpunit.xml.dist'
+      - '.github/workflows/tests.yml'
 
 concurrency:
   group: ci-${{ github.ref }}
