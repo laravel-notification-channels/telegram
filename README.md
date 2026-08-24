@@ -195,8 +195,12 @@ class InvoicePaid extends Notification
         // ->buttonWithCallback('Delete', 'delete', style: 'danger')
         // ->buttonWithCallback('Approve', 'approve', style: 'success')
         // ->button('Details', $url, iconCustomEmojiId: '5368324170671202286')
+        // ->disabledButton('Expired')
+        // ->forceReply()
         // ->receiverUserId($notifiable->telegram_user_id)
         // ->callbackQueryId($callbackQueryId)
+        // ->replaceCallbackQueryMessage()
+        // ->ephemeralMessageParameters(['receiver_user_id' => $notifiable->telegram_user_id])
     }
 }
 ```
@@ -335,9 +339,13 @@ public function toTelegram($notifiable)
             striped: true,
             caption: 'Invoice summary'
         )
+        ->expandableBlockquote('The full terms of the plan...')
         ->divider()
         ->footer('Questions? Just reply to this message.')
-        ->button('Download Invoice', url('/invoice/1234/download'));
+        ->buttons([
+            ['text' => 'Download Invoice', 'url' => url('/invoice/1234/download')],
+            ['text' => 'View Receipt', 'callback_data' => 'receipt 1234', 'style' => 'primary'],
+        ], align: 'center');
 }
 ```
 
@@ -355,7 +363,9 @@ use NotificationChannels\Telegram\TelegramRichMessageDraft;
 
 $draft = TelegramRichMessageDraft::create()
     ->to($chatId)
-    ->draftId($chatId); // Any non-zero integer, stable for this stream.
+    ->draftId($chatId) // Any non-zero integer, stable for this stream.
+    ->canStop() // Optional: show a button that stops the generation.
+    ->keepOnStop(); // Optional: keep the partial draft around when it's stopped.
 
 $buffer = '';
 
@@ -373,7 +383,7 @@ $draft->markdown($buffer)->finalize();
 Every content and block builder of `TelegramRichMessage` is available on the draft, so you can stream blocks instead of Markdown if you prefer.
 
 > [!IMPORTANT]
-> Drafts can only be sent to **private chats** and the `draft_id` must be a **non-zero** integer. Batch your updates (roughly one `send()` every 0.5-1 seconds) instead of sending one per token, otherwise your bot will quickly hit the API rate limits. A draft that's never finalized simply disappears: only `finalize()` leaves a permanent message behind. The endpoint accepts `chat_id`, `message_thread_id`, `draft_id` and `rich_message` only, so buttons and notification flags are applied when the draft is finalized.
+> Drafts can only be sent to **private chats** and the `draft_id` must be a **non-zero** integer. Batch your updates (roughly one `send()` every 0.5-1 seconds) instead of sending one per token, otherwise your bot will quickly hit the API rate limits. A draft that's never finalized simply disappears: only `finalize()` leaves a permanent message behind. The endpoint accepts `chat_id`, `message_thread_id`, `draft_id`, `rich_message`, `can_stop` and `keep_on_stop` only, so buttons and notification flags are applied when the draft is finalized.
 
 ### Attach a Contact
 
@@ -853,6 +863,8 @@ For more information on supported parameters, check out these [docs](https://cor
 - `button(string $text, string $url, int $columns = 2, ?string $style = null, ?string $iconCustomEmojiId = null)` - Add inline CTA button. Optional `style`: `'danger'` (red), `'success'` (green), `'primary'` (blue). Optional `iconCustomEmojiId`: custom emoji identifier shown as the button icon.
 - `buttonWithCallback(string $text, string $callbackData, int $columns = 2, ?string $style = null, ?string $iconCustomEmojiId = null)` - Add inline button with callback.
 - `buttonWithWebApp(string $text, string $url, int $columns = 2, ?string $style = null, ?string $iconCustomEmojiId = null)` - Add inline web app button.
+- `disabledButton(string $text, int $columns = 2, ?string $style = null, ?string $iconCustomEmojiId = null)` - Add an inline button that is [disabled](https://core.telegram.org/bots/api#disabledbutton) and does nothing.
+- `forceReply(bool $force = true)` - Show the reply interface to the user, as if they had manually selected the message and tapped 'Reply'. Applies to the inline and regular keyboard markups, whenever it's called.
 - `disableNotification(bool $disableNotification = true)` - Send silently (notification without sound).
 - `businessConnectionId(string $businessConnectionId)` - Send on behalf of a connected business account.
 - `messageThreadId(int $messageThreadId)` - Send to a forum / topic thread.
@@ -860,8 +872,10 @@ For more information on supported parameters, check out these [docs](https://cor
 - `protectContent(bool $protect = true)` - Protect content from forwarding and saving.
 - `allowPaidBroadcast(bool $allow = true)` - Allow paid high-throughput broadcasts.
 - `messageEffectId(string $messageEffectId)` - Add a private-chat message effect.
-- `receiverUserId(int $userId)` - Send an ephemeral message that is visible only to the given user.
+- `ephemeralMessageParameters(array $parameters)` - Set the [`EphemeralMessageParameters`](https://core.telegram.org/bots/api#ephemeralmessageparameters) of the message. Repeated calls are merged into the parameters set so far.
+- `receiverUserId(int $userId)` - Send an ephemeral message that is visible only to the given user (`ephemeral_message_parameters.receiver_user_id`).
 - `callbackQueryId(string $callbackQueryId)` - Send an ephemeral message in response to the given callback query.
+- `replaceCallbackQueryMessage(bool $replace = true)` - Show the ephemeral message in place of the original message. Must stay false for callback queries coming from ephemeral messages.
 - `replyParameters(array $replyParameters)` - Set structured reply parameters.
 - `suggestedPostParameters(array $suggestedPostParameters)` - Set suggested post parameters for supported direct message topics.
 - `options(array $options)` - Add/override payload parameters. Array values are JSON encoded automatically when the request is sent.
@@ -1004,7 +1018,7 @@ Each media item may be a Telegram file ID, a URL, a local path, a stream/resourc
 - `markdown(string $markdown)` - Set the Markdown content of the message. Also settable via the constructor / `create()`.
 - `html(string $html)` - Set the HTML content of the message.
 - `view(string $view, array $data = [], array $mergeData = [])` - Render a Blade template as the HTML content.
-- `media(string $id, array $media)` - Attach an [`InputRichMessageMedia`](https://core.telegram.org/bots/api#inputrichmessagemedia) item that can be referenced from the content with `tg://photo?id=`, `tg://video?id=` or `tg://audio?id=` links. The `$id` must be 1-64 characters long and contain only letters, digits, underscores and hyphens, otherwise a `CouldNotSendNotification` exception is thrown.
+- `media(string $id, array $media)` - Attach an [`InputRichMessageMedia`](https://core.telegram.org/bots/api#inputrichmessagemedia) item that can be referenced from the content with `tg://photo?id=`, `tg://video?id=`, `tg://document?id=` or `tg://audio?id=` links. The `$id` must be 1-64 characters long and contain only letters, digits, underscores and hyphens, otherwise a `CouldNotSendNotification` exception is thrown.
 - `rtl(bool $rtl = true)` - Render the message right-to-left (`is_rtl`).
 - `skipEntityDetection(bool $skip = true)` - Skip automatic detection of entities such as links and mentions.
 - `getRichMessage()` - Get the `InputRichMessage` array built so far.
@@ -1021,9 +1035,11 @@ Each media item may be a Telegram file ID, a URL, a local path, a stream/resourc
 - `math(string $expression)` - Add a mathematical expression.
 - `anchor(string $name)` - Add a named anchor that can be linked to.
 - `blockquote(array|string $blocks, string|array|null $credit = null)` - Add a blockquote. A string is wrapped into a single paragraph block.
+- `expandableBlockquote(string|array $text, string|array|null $credit = null)` - Add a blockquote that can be expanded and collapsed back.
 - `pullquote(string|array $text, string|array|null $credit = null)` - Add a pullquote.
 - `details(string|array $summary, array $blocks, bool $isOpen = false)` - Add a collapsible details block.
-- `table(array $cells, bool $bordered = false, bool $striped = false, string|array|null $caption = null)` - Add a table from rows of [`RichBlockTableCell`](https://core.telegram.org/bots/api#richblocktablecell) arrays.
+- `table(array $cells, bool $bordered = false, bool $striped = false, string|array|null $caption = null, bool $compact = false)` - Add a table from rows of [`RichBlockTableCell`](https://core.telegram.org/bots/api#richblocktablecell) arrays. `$compact` renders the cells with smaller indents.
+- `buttons(array $buttons, ?string $align = null)` - Add a row of 1-8 [`RichMessageButton`](https://core.telegram.org/bots/api#richmessagebutton) arrays, optionally aligned `left`, `center` or `right`.
 - `listBlock(array $items)` - Add a list. Each item may be a string (wrapped into a single paragraph block) or an [`InputRichBlockListItem`](https://core.telegram.org/bots/api#inputrichblocklistitem) array (`blocks`, `has_checkbox`, `is_checked`, `value`, `type`).
 - `thinking(string|array $text)` - Add a thinking block.
 - `map(float $latitude, float $longitude, int $zoom, int $width, int $height)` - Add a map block.
@@ -1032,6 +1048,7 @@ Each media item may be a Telegram file ID, a URL, a local path, a stream/resourc
 - `audioBlock(array $audio, ?array $caption = null)` - Add an audio block.
 - `animationBlock(array $animation, ?array $caption = null)` - Add an animation block.
 - `voiceNoteBlock(array $voiceNote, ?array $caption = null)` - Add a voice note block.
+- `documentBlock(array $document, ?array $caption = null)` - Add a general file block from an `InputMediaDocument` array.
 - `block(array $block)` - Escape hatch to append any raw `InputRichBlock` array, such as `collage` or `slideshow`.
 
 #### Draft Methods:
@@ -1039,8 +1056,10 @@ Each media item may be a Telegram file ID, a URL, a local path, a stream/resourc
 > `TelegramRichMessageDraft` extends `TelegramRichMessage`, so every content and block method above is available on a draft as well. See [Streaming Drafts](#streaming-drafts).
 
 - `draftId(int $draftId)` - Set the identifier of the draft. Must be a non-zero integer, otherwise a `CouldNotSendNotification` exception is thrown. Sending repeatedly with the same identifier animates the replacement of the previously sent content.
+- `canStop(bool $canStop = true)` - Show the user a button to stop further drafts. The bot receives a `stopped_message_generation` update when it's pressed.
+- `keepOnStop(bool $keepOnStop = true)` - Keep the draft in the chat when the stop button is pressed. It still disappears after a short time, so send the partial content as a new message to preserve it.
 - `send()` - Send (or replace) the draft via [`sendRichMessageDraft`](https://core.telegram.org/bots/api#sendrichmessagedraft). Throws a `CouldNotSendNotification` exception when no `draftId()` was given.
-- `finalize()` - Send the current content as a permanent message via `sendRichMessage`, dropping the `draft_id` param. The draft state is left untouched.
+- `finalize()` - Send the current content as a permanent message via `sendRichMessage`, dropping the draft-only params (`draft_id`, `can_stop` and `keep_on_stop`). The draft state is left untouched.
 
 ## Alternatives
 
