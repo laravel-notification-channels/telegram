@@ -8,6 +8,7 @@ use Closure;
 use Illuminate\Support\Traits\Conditionable;
 use JsonException;
 use NotificationChannels\Telegram\Enums\ParseMode;
+use stdClass;
 
 /**
  * Trait HasSharedLogic
@@ -32,6 +33,12 @@ trait HasSharedLogic
 
     /** @var list<array{text: string} & array<string, mixed>> Inline Keyboard Buttons */
     protected array $buttons = [];
+
+    /** @var array<string, mixed> Ephemeral message parameters */
+    protected array $ephemeralParameters = [];
+
+    /** @var bool|null Whether the reply interface must be shown with the keyboard */
+    protected ?bool $forceReply = null;
 
     /** @var bool|null Condition for sending the message */
     private ?bool $sendCondition = null;
@@ -60,7 +67,39 @@ trait HasSharedLogic
      */
     public function keyboardMarkup(array $markup): static
     {
+        if ($this->forceReply !== null && (isset($markup['inline_keyboard']) || isset($markup['keyboard']))) {
+            $markup['force_reply'] = $this->forceReply;
+        }
+
         $this->payload['reply_markup'] = json_encode($markup, JSON_THROW_ON_ERROR);
+
+        return $this;
+    }
+
+    /**
+     * Show the reply interface to the user, as if they had manually selected
+     * the message and tapped 'Reply'.
+     *
+     * Applies to the `inline_keyboard` and `keyboard` markups only.
+     *
+     * @param  bool  $force  Whether the reply interface must be shown
+     *
+     * @throws JsonException When JSON encoding fails
+     */
+    public function forceReply(bool $force = true): static
+    {
+        $this->forceReply = $force;
+
+        $markup = $this->payload['reply_markup'] ?? null;
+
+        if (is_string($markup)) {
+            /** @var array<string, mixed> $decoded */
+            $decoded = json_decode($markup, true, 512, JSON_THROW_ON_ERROR);
+
+            unset($decoded['force_reply']);
+
+            $this->keyboardMarkup($decoded);
+        }
 
         return $this;
     }
@@ -178,6 +217,25 @@ trait HasSharedLogic
     }
 
     /**
+     * Add a disabled inline button that does nothing.
+     *
+     * @param  string  $text  The text to display on the button
+     * @param  int  $columns  Number of columns for button layout
+     * @param  ?string  $style  Button style: 'danger' (red), 'success' (green), 'primary' (blue)
+     * @param  ?string  $iconCustomEmojiId  Custom emoji identifier to show as the button icon
+     *
+     * @throws JsonException When JSON encoding fails
+     */
+    public function disabledButton(string $text, int $columns = 2, ?string $style = null, ?string $iconCustomEmojiId = null): static
+    {
+        return $this->addInlineButton([
+            'text' => $text,
+            // `DisabledButton` currently holds no information and must be encoded as a JSON object.
+            'disabled' => new stdClass,
+        ], $columns, $style, $iconCustomEmojiId);
+    }
+
+    /**
      * Add an inline button and rebuild the inline keyboard markup.
      *
      * @param  array{text: string} & array<string, mixed>  $button
@@ -254,27 +312,59 @@ trait HasSharedLogic
     }
 
     /**
+     * Set the `EphemeralMessageParameters` of the message.
+     *
+     * The given parameters are merged into the ones set so far.
+     *
+     * @param  array<string, mixed>  $parameters  An `EphemeralMessageParameters` array
+     *
+     * @throws JsonException When JSON encoding fails
+     *
+     * @see https://core.telegram.org/bots/api#ephemeralmessageparameters
+     */
+    public function ephemeralMessageParameters(array $parameters): static
+    {
+        $this->ephemeralParameters = [...$this->ephemeralParameters, ...$parameters];
+
+        return $this->jsonPayload('ephemeral_message_parameters', $this->ephemeralParameters);
+    }
+
+    /**
      * Send the message as an ephemeral message visible only to the given user.
      *
      * @param  int  $userId  Unique identifier of the user that will see the message
+     *
+     * @throws JsonException When JSON encoding fails
      */
     public function receiverUserId(int $userId): static
     {
-        $this->payload['receiver_user_id'] = $userId;
-
-        return $this;
+        return $this->ephemeralMessageParameters(['receiver_user_id' => $userId]);
     }
 
     /**
      * Send the message as an ephemeral message in response to a callback query.
      *
      * @param  string  $callbackQueryId  Unique identifier of the answered callback query
+     *
+     * @throws JsonException When JSON encoding fails
      */
     public function callbackQueryId(string $callbackQueryId): static
     {
-        $this->payload['callback_query_id'] = $callbackQueryId;
+        return $this->ephemeralMessageParameters(['callback_query_id' => $callbackQueryId]);
+    }
 
-        return $this;
+    /**
+     * Show the ephemeral message in place of the original message.
+     *
+     * Must be false for callback queries from ephemeral messages.
+     *
+     * @param  bool  $replace  Whether the original message must be replaced
+     *
+     * @throws JsonException When JSON encoding fails
+     */
+    public function replaceCallbackQueryMessage(bool $replace = true): static
+    {
+        return $this->ephemeralMessageParameters(['replace_callback_query_message' => $replace]);
     }
 
     /**

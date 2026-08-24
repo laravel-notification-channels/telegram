@@ -55,8 +55,8 @@ class TelegramRichMessage extends TelegramBase implements TelegramSenderContract
     /**
      * Set the Markdown content of the rich message.
      *
-     * Media can be referenced with `tg://photo?id=`, `tg://video?id=`
-     * and `tg://audio?id=` links.
+     * Media can be referenced with `tg://photo?id=`, `tg://video?id=`,
+     * `tg://document?id=` and `tg://audio?id=` links.
      */
     public function markdown(string $markdown): static
     {
@@ -68,8 +68,8 @@ class TelegramRichMessage extends TelegramBase implements TelegramSenderContract
     /**
      * Set the HTML content of the rich message.
      *
-     * Media can be referenced with `tg://photo?id=`, `tg://video?id=`
-     * and `tg://audio?id=` links.
+     * Media can be referenced with `tg://photo?id=`, `tg://video?id=`,
+     * `tg://document?id=` and `tg://audio?id=` links.
      */
     public function html(string $html): static
     {
@@ -113,7 +113,7 @@ class TelegramRichMessage extends TelegramBase implements TelegramSenderContract
      * Attach a media item that can be referenced from the content by its ID.
      *
      * @param  string  $id  1-64 characters, only `A-Z`, `a-z`, `0-9`, `_` and `-`
-     * @param  array<string, mixed>  $media  An `InputMediaPhoto`/`Video`/`Animation`/`Audio`/`VoiceNote` array
+     * @param  array<string, mixed>  $media  An `InputMediaPhoto`/`Video`/`Animation`/`Audio`/`Document`/`VoiceNote` array
      *
      * @throws CouldNotSendNotification When the given ID is invalid
      */
@@ -224,6 +224,23 @@ class TelegramRichMessage extends TelegramBase implements TelegramSenderContract
     }
 
     /**
+     * Add an expandable blockquote block that can be collapsed back.
+     *
+     * @param  RichText  $text
+     * @param  RichText|null  $credit
+     */
+    public function expandableBlockquote(string|array $text, string|array|null $credit = null): static
+    {
+        $block = ['type' => 'expandable_blockquote', 'text' => $text];
+
+        if ($credit !== null) {
+            $block['credit'] = $credit;
+        }
+
+        return $this->block($block);
+    }
+
+    /**
      * Add a pullquote block.
      *
      * @param  RichText  $text
@@ -261,14 +278,16 @@ class TelegramRichMessage extends TelegramBase implements TelegramSenderContract
      *
      * @param  array<int, array<int, array<string, mixed>>>  $cells  Rows of `RichBlockTableCell` arrays
      * @param  RichText|null  $caption
+     * @param  bool  $compact  Whether the table cells must have smaller indents
      */
-    public function table(array $cells, bool $bordered = false, bool $striped = false, string|array|null $caption = null): static
+    public function table(array $cells, bool $bordered = false, bool $striped = false, string|array|null $caption = null, bool $compact = false): static
     {
         $block = [
             'type' => 'table',
             'cells' => $cells,
             'is_bordered' => $bordered,
             'is_striped' => $striped,
+            'is_compact' => $compact,
         ];
 
         if ($caption !== null) {
@@ -296,6 +315,23 @@ class TelegramRichMessage extends TelegramBase implements TelegramSenderContract
         );
 
         return $this->block(['type' => 'list', 'items' => $items]);
+    }
+
+    /**
+     * Add a block with a row of buttons.
+     *
+     * @param  array<int, array<string, mixed>>  $buttons  1-8 `RichMessageButton` arrays
+     * @param  string|null  $align  Horizontal alignment: `left`, `center` or `right`
+     */
+    public function buttons(array $buttons, ?string $align = null): static
+    {
+        $block = ['type' => 'buttons', 'buttons' => array_values($buttons)];
+
+        if ($align !== null) {
+            $block['align'] = $align;
+        }
+
+        return $this->block($block);
     }
 
     /**
@@ -353,6 +389,17 @@ class TelegramRichMessage extends TelegramBase implements TelegramSenderContract
     public function audioBlock(array $audio, ?array $caption = null): static
     {
         return $this->mediaBlock('audio', $audio, $caption);
+    }
+
+    /**
+     * Add a document block.
+     *
+     * @param  array<string, mixed>  $document  An `InputMediaDocument` array
+     * @param  array<string, mixed>|null  $caption  A `RichBlockCaption` array
+     */
+    public function documentBlock(array $document, ?array $caption = null): static
+    {
+        return $this->mediaBlock('document', $document, $caption);
     }
 
     /**

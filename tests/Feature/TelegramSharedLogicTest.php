@@ -125,13 +125,69 @@ it('can set ephemeral message parameters', function () {
     $message = new TelegramBase;
     $message->to(12345)
         ->receiverUserId(6789)
-        ->callbackQueryId('callback-query-id');
+        ->callbackQueryId('callback-query-id')
+        ->replaceCallbackQueryMessage();
 
     expect($message->toArray())->toBe([
         'chat_id' => 12345,
-        'receiver_user_id' => 6789,
-        'callback_query_id' => 'callback-query-id',
+        'ephemeral_message_parameters' => '{"receiver_user_id":6789,"callback_query_id":"callback-query-id","replace_callback_query_message":true}',
     ]);
+});
+
+it('merges raw ephemeral message parameters', function () {
+    $message = new TelegramBase;
+    $message->ephemeralMessageParameters(['receiver_user_id' => 6789])
+        ->ephemeralMessageParameters(['replace_callback_query_message' => false])
+        ->receiverUserId(1234);
+
+    expect($message->toArray())->toBe([
+        'ephemeral_message_parameters' => '{"receiver_user_id":1234,"replace_callback_query_message":false}',
+    ]);
+});
+
+it('can add a disabled inline button', function () {
+    $message = new TelegramBase;
+    $message->buttonWithCallback('Confirm', 'confirm')
+        ->disabledButton('Expired', style: 'danger');
+
+    expect($message->getPayloadValue('reply_markup'))
+        ->toBe('{"inline_keyboard":[[{"text":"Confirm","callback_data":"confirm"},{"text":"Expired","disabled":{},"style":"danger"}]]}');
+});
+
+it('forces a reply on the inline keyboard markup', function () {
+    $message = new TelegramBase;
+    $message->button('Docs', 'https://example.com/docs')->forceReply();
+
+    expect($message->getPayloadValue('reply_markup'))
+        ->toBe('{"inline_keyboard":[[{"text":"Docs","url":"https:\\/\\/example.com\\/docs"}]],"force_reply":true}');
+
+    $message->button('Blog', 'https://example.com/blog');
+
+    expect(json_decode((string) $message->getPayloadValue('reply_markup'), true, 512, JSON_THROW_ON_ERROR))
+        ->toHaveKey('force_reply', true);
+
+    $message->forceReply(false);
+
+    expect(json_decode((string) $message->getPayloadValue('reply_markup'), true, 512, JSON_THROW_ON_ERROR))
+        ->toHaveKey('force_reply', false);
+});
+
+it('forces a reply on the keyboard markup set before and after the buttons', function () {
+    $before = (new TelegramBase)->forceReply()->keyboard('One');
+
+    $after = (new TelegramBase)->keyboard('One')->forceReply();
+
+    expect(json_decode((string) $before->getPayloadValue('reply_markup'), true, 512, JSON_THROW_ON_ERROR))
+        ->toHaveKey('force_reply', true)
+        ->and($after->getPayloadValue('reply_markup'))
+        ->toBe($before->getPayloadValue('reply_markup'));
+});
+
+it('does not force a reply on markups without buttons', function () {
+    $message = new TelegramBase;
+    $message->forceReply()->keyboardMarkup(['remove_keyboard' => true]);
+
+    expect($message->getPayloadValue('reply_markup'))->toBe('{"remove_keyboard":true}');
 });
 
 it('supports non closure error handlers and send conditions', function () {

@@ -119,6 +119,45 @@ it('finalizes the draft through the send rich message endpoint without the draft
         ->and($draft->toArray())->toHaveKey('draft_id');
 });
 
+it('adds the stop generation params to the payload', function () {
+    $draft = TelegramRichMessageDraft::create('*Thinking...*')
+        ->to(12345)
+        ->draftId(777)
+        ->canStop()
+        ->keepOnStop();
+
+    expect($draft->toArray())->toBe([
+        'chat_id' => 12345,
+        'draft_id' => 777,
+        'can_stop' => true,
+        'keep_on_stop' => true,
+        'rich_message' => '{"markdown":"*Thinking...*"}',
+    ]);
+});
+
+it('drops the stop generation params when the draft is finalized', function () {
+    $expectedResponse = new Response(200, [], json_encode(['ok' => true]));
+
+    $this->telegram
+        ->shouldReceive('sendRichMessage')
+        ->once()
+        ->with([
+            'chat_id' => 12345,
+            'rich_message' => '{"markdown":"All done"}',
+        ])
+        ->andReturns($expectedResponse);
+
+    $draft = TelegramRichMessageDraft::create('All done')
+        ->to(12345)
+        ->draftId(777)
+        ->canStop()
+        ->keepOnStop(false);
+
+    expect($draft->finalize())->toBe($expectedResponse)
+        ->and($draft->toArray())
+        ->toHaveKeys(['draft_id', 'can_stop', 'keep_on_stop']);
+});
+
 it('can be finalized without a draft id', function () {
     $expectedResponse = new Response(200, [], json_encode(['ok' => true]));
 

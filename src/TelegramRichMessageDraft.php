@@ -46,9 +46,10 @@ use Psr\Http\Message\ResponseInterface;
  * - The `draft_id` must be a non-zero integer.
  * - A draft that is never finalized simply disappears; only `finalize()` (which
  *   calls `sendRichMessage`) leaves a permanent message behind.
- * - Only `chat_id`, `message_thread_id`, `draft_id` and `rich_message` are
- *   accepted by the endpoint. Any other param (buttons, notification flags,
- *   ...) is ignored by Telegram until the draft is finalized.
+ * - Only `chat_id`, `message_thread_id`, `draft_id`, `rich_message`, `can_stop`
+ *   and `keep_on_stop` are accepted by the endpoint. Any other param (buttons,
+ *   notification flags, ...) is ignored by Telegram until the draft is
+ *   finalized.
  *
  * @see https://core.telegram.org/bots/api#sendrichmessagedraft
  */
@@ -81,6 +82,36 @@ class TelegramRichMessageDraft extends TelegramRichMessage
     }
 
     /**
+     * Show the user a button to stop further drafts.
+     *
+     * The bot receives a `stopped_message_generation` update when the button
+     * is pressed.
+     *
+     * @param  bool  $canStop  Whether the stop button must be shown
+     */
+    public function canStop(bool $canStop = true): static
+    {
+        $this->payload['can_stop'] = $canStop;
+
+        return $this;
+    }
+
+    /**
+     * Keep the draft in the chat when the stop button is pressed.
+     *
+     * The draft still disappears after a short time or once the bot sends a
+     * message, so send the partial content as a new message to preserve it.
+     *
+     * @param  bool  $keepOnStop  Whether the draft must be kept
+     */
+    public function keepOnStop(bool $keepOnStop = true): static
+    {
+        $this->payload['keep_on_stop'] = $keepOnStop;
+
+        return $this;
+    }
+
+    /**
      * Send (or replace) the draft.
      *
      * @throws CouldNotSendNotification
@@ -98,8 +129,9 @@ class TelegramRichMessageDraft extends TelegramRichMessage
     /**
      * Send the current content as a permanent message via `sendRichMessage`.
      *
-     * The draft state is left untouched, only the `draft_id` param is dropped
-     * from the payload that is sent.
+     * The draft state is left untouched, only the draft-only params
+     * (`draft_id`, `can_stop` and `keep_on_stop`) are dropped from the payload
+     * that is sent.
      *
      * @throws CouldNotSendNotification
      * @throws JsonException
@@ -108,7 +140,7 @@ class TelegramRichMessageDraft extends TelegramRichMessage
     {
         $params = $this->toArray();
 
-        unset($params['draft_id']);
+        unset($params['draft_id'], $params['can_stop'], $params['keep_on_stop']);
 
         return $this->telegram->sendRichMessage($params);
     }

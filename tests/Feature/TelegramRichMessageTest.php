@@ -220,6 +220,37 @@ test('a blockquote block accepts blocks and a credit', function () {
     ]);
 });
 
+test('an expandable blockquote block can be added with and without a credit', function () {
+    $message = TelegramRichMessage::create()
+        ->expandableBlockquote('To be, or not to be.')
+        ->expandableBlockquote(['Long ', ['type' => 'bold', 'text' => 'story']], 'Shakespeare');
+
+    expect(richBlocks($message))->toBe([
+        ['type' => 'expandable_blockquote', 'text' => 'To be, or not to be.'],
+        [
+            'type' => 'expandable_blockquote',
+            'text' => ['Long ', ['type' => 'bold', 'text' => 'story']],
+            'credit' => 'Shakespeare',
+        ],
+    ]);
+});
+
+test('a buttons block can be added with and without an alignment', function () {
+    $buttons = [
+        ['text' => 'Docs', 'url' => 'https://example.com/docs'],
+        ['text' => 'Confirm', 'callback_data' => 'confirm', 'style' => 'success'],
+    ];
+
+    $message = TelegramRichMessage::create()
+        ->buttons($buttons)
+        ->buttons([1 => $buttons[1]], 'center');
+
+    expect(richBlocks($message))->toBe([
+        ['type' => 'buttons', 'buttons' => $buttons],
+        ['type' => 'buttons', 'buttons' => [$buttons[1]], 'align' => 'center'],
+    ]);
+});
+
 test('a pullquote block can be added with and without a credit', function () {
     $message = TelegramRichMessage::create()
         ->pullquote('Stay hungry.')
@@ -264,7 +295,7 @@ test('a table block can be added', function () {
 
     $message = TelegramRichMessage::create()
         ->table($cells)
-        ->table($cells, true, true, 'Pricing');
+        ->table($cells, true, true, 'Pricing', true);
 
     expect(richBlocks($message))->toBe([
         [
@@ -272,12 +303,14 @@ test('a table block can be added', function () {
             'cells' => $cells,
             'is_bordered' => false,
             'is_striped' => false,
+            'is_compact' => false,
         ],
         [
             'type' => 'table',
             'cells' => $cells,
             'is_bordered' => true,
             'is_striped' => true,
+            'is_compact' => true,
             'caption' => 'Pricing',
         ],
     ]);
@@ -369,6 +402,7 @@ test('media blocks can be added', function (string $method, string $type) {
     ['audioBlock', 'audio'],
     ['animationBlock', 'animation'],
     ['voiceNoteBlock', 'voice_note'],
+    ['documentBlock', 'document'],
 ]);
 
 test('a raw block can be added with the escape hatch', function () {
