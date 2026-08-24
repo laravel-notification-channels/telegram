@@ -37,6 +37,9 @@ trait HasSharedLogic
     /** @var array<string, mixed> Ephemeral message parameters */
     protected array $ephemeralParameters = [];
 
+    /** @var array<string, mixed> Reply markup, as given before the force reply flag is applied */
+    protected array $replyMarkup = [];
+
     /** @var bool|null Whether the reply interface must be shown with the keyboard */
     protected ?bool $forceReply = null;
 
@@ -67,6 +70,8 @@ trait HasSharedLogic
      */
     public function keyboardMarkup(array $markup): static
     {
+        $this->replyMarkup = $markup;
+
         if ($this->forceReply !== null && (isset($markup['inline_keyboard']) || isset($markup['keyboard']))) {
             $markup['force_reply'] = $this->forceReply;
         }
@@ -90,15 +95,8 @@ trait HasSharedLogic
     {
         $this->forceReply = $force;
 
-        $markup = $this->payload['reply_markup'] ?? null;
-
-        if (is_string($markup)) {
-            /** @var array<string, mixed> $decoded */
-            $decoded = json_decode($markup, true, 512, JSON_THROW_ON_ERROR);
-
-            unset($decoded['force_reply']);
-
-            $this->keyboardMarkup($decoded);
+        if ($this->replyMarkup !== []) {
+            $this->keyboardMarkup($this->replyMarkup);
         }
 
         return $this;

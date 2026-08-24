@@ -183,6 +183,13 @@ it('forces a reply on the keyboard markup set before and after the buttons', fun
         ->toBe($before->getPayloadValue('reply_markup'));
 });
 
+it('does not add a markup when a reply is forced without buttons', function () {
+    $message = new TelegramBase;
+    $message->forceReply();
+
+    expect($message->toArray())->toBe([]);
+});
+
 it('does not force a reply on markups without buttons', function () {
     $message = new TelegramBase;
     $message->forceReply()->keyboardMarkup(['remove_keyboard' => true]);
